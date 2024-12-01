@@ -76,7 +76,7 @@ class CurriculumTask:
         yellow_behaviors = self.get_yellow_behaviors()
 
         for item in yellow_behaviors:
-            if item.robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_MODEL:
+            if item.robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL:
                 item.set_model_path(model_path)
 
     def get_yellow_behaviors(self) -> 'list[RobotCurriculumBehavior]':

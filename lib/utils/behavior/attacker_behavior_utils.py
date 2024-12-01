@@ -380,7 +380,7 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            RobotCurriculumBehaviorEnum.FROM_MODEL,
+            RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL,
             updates_per_task
         )
 
@@ -398,7 +398,7 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            RobotCurriculumBehaviorEnum.FROM_MODEL,
+            RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL,
             updates_per_task
         )
 

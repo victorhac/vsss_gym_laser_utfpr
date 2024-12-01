@@ -123,7 +123,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             velocity_alpha = behavior.get_velocity_alpha()
             
             return create_robot(left_speed * velocity_alpha, right_speed * velocity_alpha)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_MODEL:
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL:
             actions = self._get_opponent_actions(behavior)
 
             left_speed, right_speed = self._actions_to_v_wheels(actions)
