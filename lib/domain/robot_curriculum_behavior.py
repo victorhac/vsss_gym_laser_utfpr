@@ -14,14 +14,14 @@ class RobotCurriculumBehavior:
         self.robot_curriculum_behavior_enum = robot_curriculum_behavior_enum
         self.updates_per_task = updates_per_task
 
+        self.updates = 0
+
         self.position_enum = None
 
-        self.is_positive_distance_beta = None
         self.distance = None
         self.distance_range = None
         self.distance_beta = None
 
-        self.is_positive_velocity_beta = None
         self.velocity_alpha = None
         self.velocity_alpha_range = None
         self.velocity_beta = None
@@ -30,22 +30,16 @@ class RobotCurriculumBehavior:
 
     def set_distance_range(
         self,
-        distance_range: 'tuple[float, float]',
-        is_positive_distance_beta: bool
+        distance_range: 'tuple[float, float]'
     ):
         self.distance_range = distance_range
-        self.is_positive_distance_beta = is_positive_distance_beta
-
         self._try_set_distance()
     
     def set_velocity_alpha_range(
         self,
-        velocity_alpha_range,
-        is_positive_velocity_beta
+        velocity_alpha_range: 'tuple[float, float]'
     ):
         self.velocity_alpha_range = velocity_alpha_range
-        self.is_positive_velocity_beta = is_positive_velocity_beta
-
         self._try_set_velocity_alpha()
 
     def set_model_path(self, model_path: str):
@@ -53,28 +47,25 @@ class RobotCurriculumBehavior:
 
     def _try_set_distance(self):
         if self.distance_range is not None:
-            self.distance = RobotCurriculumBehavior._get_start_value(
-                self.is_positive_distance_beta,
-                self.distance_range)
+            self.distance = self.distance_range[0]
             
             self.distance_beta = RobotCurriculumBehavior._get_beta(
-                self.updates_per_task,
                 self.distance_range,
-                self.is_positive_distance_beta)
+                self.updates_per_task)
             
     def _try_set_velocity_alpha(self):
         if self.velocity_alpha_range is not None:
-            self.velocity_alpha = RobotCurriculumBehavior._get_start_value(
-                self.is_positive_velocity_beta,
-                self.velocity_alpha_range)
+            self.velocity_alpha = self.velocity_alpha_range[0]
 
             self.velocity_beta = RobotCurriculumBehavior._get_beta(
-                self.updates_per_task,
                 self.velocity_alpha_range,
-                self.is_positive_velocity_beta)
+                self.updates_per_task)
 
     def update(self, times: int = 1):
         def clip(value: float, range: 'tuple[float, float]'):
+            if range[0] > range[1]:
+                return np.clip(value, range[1], range[0])
+            
             return np.clip(value, range[0], range[1])
         
         if self.distance_range is not None:
@@ -86,44 +77,37 @@ class RobotCurriculumBehavior:
             self.velocity_alpha = clip(
                 self.velocity_alpha + self.velocity_beta * times,
                 self.velocity_alpha_range)
+            
+        self.updates = clip(self.updates + times, (0, 100))
 
     def reset(self):
         if self.velocity_alpha_range is not None:
-            self.velocity_alpha = RobotCurriculumBehavior._get_start_value(
-                self.is_positive_velocity_beta,
-                self.velocity_alpha_range)
+            self.velocity_alpha = self.velocity_alpha_range[0]
         else:
             self.velocity_alpha = None
 
         if self.distance_range is not None:
-            self.distance = RobotCurriculumBehavior._get_start_value(
-                self.is_positive_velocity_beta,
-                self.distance_range)
+            self.distance = self.distance_range[0]
         else:
             self.distance = None
 
         self.model_path = None
+        self.updates = 0
         
     def _is_distance_in_limit(self):
         if self.distance_range is None:
             return True
-        if self.distance_beta > 0:
-            return self.distance == self.distance_range[1]
-        elif self.distance_beta < 0:
-            return self.distance == self.distance_range[0]
-        return True
+        
+        return self.distance == self.distance_range[1]
     
     def _is_velocity_alpha_in_limit(self):
         if self.velocity_alpha_range is None:
             return True
-        if self.velocity_beta > 0:
-            return self.velocity_alpha == self.velocity_alpha_range[1]
-        elif self.velocity_beta < 0:
-            return self.velocity_alpha == self.velocity_alpha_range[0]
-        return True
+        
+        return self.velocity_alpha == self.velocity_alpha_range[1]
 
     def is_over(self):
-        return self._is_distance_in_limit() and self._is_velocity_alpha_in_limit()
+        return self.updates == self.updates_per_task
     
     def has_behavior(
         self,
@@ -138,20 +122,7 @@ class RobotCurriculumBehavior:
     
     @staticmethod
     def _get_beta(
-        updates_per_task: int,
         range: 'tuple[float, float]',
-        is_positive: bool
+        updates_per_task: int
     ):
-        beta = (range[1] - range[0]) / updates_per_task
-        if not is_positive:
-            return -beta
-        return beta
-    
-    @staticmethod
-    def _get_start_value(
-        is_positive_beta: float,
-        range: 'tuple[float, float]'
-    ):
-        if is_positive_beta:
-            return range[0]
-        return range[1]
+        return (range[1] - range[0]) / updates_per_task

@@ -143,7 +143,7 @@ class RSoccerUtils:
         return RSoccerUtils.get_default_observation(field_data, is_left_team, robot_id)
     
     @staticmethod
-    def get_defensor_observation(
+    def get_defender_observation(
         field_data: FieldData,
         is_left_team: bool,
         robot_id: int

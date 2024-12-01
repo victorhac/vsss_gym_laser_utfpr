@@ -1,6 +1,6 @@
 from stable_baselines3 import PPO
 from lib.utils.behavior.attacker_behavior_utils import AttackerBehaviorUtils
-from lib.environment.defensor.environment import Environment
+from lib.environment.defender.environment import Environment
 import matplotlib.pyplot as plt
 
 render_mode = "human"
