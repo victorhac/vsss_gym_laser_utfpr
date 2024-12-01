@@ -4,7 +4,7 @@ from stable_baselines3.common.monitor import Monitor
 
 from lib.domain.behavior_callback import BehaviorCallback
 from lib.environment.attacker.environment import Environment
-from lib.utils.behavior.behavior_utils import BehaviorUtils
+from lib.utils.behavior.attacker_behavior_utils import AttackerBehaviorUtils
 
 import os
 from datetime import datetime
@@ -68,12 +68,12 @@ def get_task_models_path():
     return f"models/{task_training_name}/{algorithm_name}/{get_datetime_folder_name()}"
 
 def main():
-    get_first_task = lambda: BehaviorUtils.get_task_6(starting_update)
+    get_first_task = lambda: AttackerBehaviorUtils.get_task_6(starting_update)
 
     tasks = [
         get_first_task(),
-        BehaviorUtils.get_task_7(),
-        BehaviorUtils.get_task_8()
+        AttackerBehaviorUtils.get_task_7(),
+        AttackerBehaviorUtils.get_task_8()
     ]
 
     save_path = get_task_models_path()

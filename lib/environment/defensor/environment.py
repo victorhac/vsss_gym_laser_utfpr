@@ -34,7 +34,7 @@ class Environment(BaseCurriculumEnvironment):
             shape=(34,),
             dtype=np.float32)
         
-        self.defensive_line_x = -.2
+        self.defensive_line_x = 0
         self.last_robot_touched_ball = None
         self.threshold_ball = .07
         self.is_yellow_team = False
