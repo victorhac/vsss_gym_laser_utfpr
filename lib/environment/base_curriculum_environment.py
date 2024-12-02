@@ -52,7 +52,6 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         self.previous_ball_potential = None
         self.last_game_score = None
-        self.error = 0
 
         self._set_error_dictionaries()
         self._set_model_dictionaries()
@@ -113,12 +112,9 @@ class BaseCurriculumEnvironment(BaseEnvironment):
     ):
         if is_yellow:
             robot = RSoccerUtils.to_robot(self.frame.robots_yellow[robot_id])
-        else:
-            robot = RSoccerUtils.to_robot(self.frame.robots_blue[robot_id])
-
-        if is_yellow:
             error = self.opponent_error_dictionary[robot_id]
         else:
+            robot = RSoccerUtils.to_robot(self.frame.robots_blue[robot_id])
             error = self.own_team_error_dictionary[robot_id]
 
         left_speed, right_speed, current_error = MotionUtils.go_to_point(
@@ -133,61 +129,85 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             self.own_team_error_dictionary[robot_id] = current_error
 
         return left_speed, right_speed
-
-    def _create_robot_command_by_behavior(self, behavior: RobotCurriculumBehavior):
-        robot = self._get_robot_by_id(behavior.robot_id, behavior.is_yellow)
-
-        robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
-        robot_id = robot.id
+    
+    def _create_ball_following_robot_command(self, behavior: RobotCurriculumBehavior):
+        ball = self.get_ball()
+        robot_id = behavior.robot_id
         is_yellow = behavior.is_yellow
 
-        ball = self.get_ball()
+        left_speed, right_speed = self._go_to_point_v_wheels(
+            robot_id,
+            is_yellow,
+            (ball.x, ball.y))
+        
+        velocity_alpha = behavior.get_velocity_alpha()
 
-        def create_robot_command(v_wheel_0, v_wheel_1):
-            return self._create_robot_command(
-                robot_id,
-                is_yellow,
-                v_wheel_0,
-                v_wheel_1)
+        return self._create_robot_command(
+            robot_id,
+            is_yellow,
+            left_speed * velocity_alpha,
+            right_speed * velocity_alpha)
+    
+    def _create_goalkeeper_ball_following_robot_command(self, behavior: RobotCurriculumBehavior):
+        is_yellow = behavior.is_yellow
+        robot_id = behavior.robot_id
+
+        ball = self.get_ball()
+        robot = self._get_robot_by_id(robot_id, is_yellow)
+
+        if self._is_inside_own_goal_area((ball.x, ball.y), is_yellow):
+            position = (ball.x, ball.y)
+        else:
+            max_y = self.get_penalty_width() / 2
+            position = robot.x, np.clip(ball.y, -max_y, max_y)
+
+        left_speed, right_speed = self._go_to_point_v_wheels(
+            robot_id,
+            is_yellow,
+            position)
+        
+        velocity_alpha = behavior.get_velocity_alpha()
+        
+        return self._create_robot_command(
+            robot_id,
+            is_yellow,
+            left_speed * velocity_alpha,
+            right_speed * velocity_alpha)
+    
+    def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
+        is_yellow = behavior.is_yellow
+        robot_id = behavior.robot_id
+
+        actions = self._get_from_model_actions(behavior)
+
+        left_speed, right_speed = self._actions_to_v_wheels(actions)
+        velocity_alpha = behavior.get_velocity_alpha()
+
+        return self._create_robot_command(
+            robot_id,
+            is_yellow,
+            left_speed * velocity_alpha,
+            right_speed * velocity_alpha)
+
+    def _create_robot_command_by_behavior(self, behavior: RobotCurriculumBehavior):
+        robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
 
         if robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.BALL_FOLLOWING:
-            left_speed, right_speed = self._go_to_point_v_wheels(
-                robot_id,
-                is_yellow,
-                (ball.x, ball.y))
-            
-            velocity_alpha = behavior.get_velocity_alpha()
-
-            return create_robot_command(left_speed * velocity_alpha, right_speed * velocity_alpha)
+            return self._create_ball_following_robot_command(behavior)
         elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING:
-            if self._is_inside_own_goal_area((ball.x, ball.y), is_yellow):
-                position = (ball.x, ball.y)
-            else:
-                max_y = self.get_penalty_width() / 2
-                position = robot.x, np.clip(ball.y, -max_y, max_y)
-
-            left_speed, right_speed = self._go_to_point_v_wheels(
-                robot_id,
-                is_yellow,
-                position)
-            
-            velocity_alpha = behavior.get_velocity_alpha()
-            
-            return create_robot_command(left_speed * velocity_alpha, right_speed * velocity_alpha)
+            return self._create_goalkeeper_ball_following_robot_command(behavior)
         elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL or\
             robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL:
-
-            actions = self._get_from_model_actions(behavior)
-
-            left_speed, right_speed = self._actions_to_v_wheels(actions)
-            velocity_alpha = behavior.get_velocity_alpha()
-
-            return create_robot_command(left_speed * velocity_alpha, right_speed * velocity_alpha)
+            return self._create_from_model_robot_command(behavior)
         
-        return create_robot_command(0, 0)
+        return self._create_robot_command(
+            behavior.robot_id,
+            behavior.is_yellow,
+            0,
+            0)
     
     def _get_from_model_actions(self, behavior: RobotCurriculumBehavior):
-        model = self._get_model(
+        model = self._update_model(
             behavior.robot_id,
             behavior.is_yellow,
             behavior.model_path)
@@ -412,7 +432,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
     def set_task(self, task: CurriculumTask):
         self.task = task
 
-    def _get_model(
+    def _update_model(
         self,
         robot_id: int,
         is_yellow: bool,
