@@ -222,3 +222,8 @@ class ConfigurationUtils:
     def get_field_ball_radius():
         configuration = ConfigurationUtils._get_configuration()
         return configuration["field"]["ball"]["radius"]
+    
+    @staticmethod
+    def get_model_attacker_path():
+        configuration = ConfigurationUtils._get_configuration()
+        return configuration["model"]["attacker"]["path"]

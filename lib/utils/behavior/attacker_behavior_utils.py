@@ -219,7 +219,7 @@ class AttackerBehaviorUtils:
                 False,
                 PositionEnum.GOAL_AREA,
                 updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_from_model_behavior(
+            AttackerBehaviorUtils.get_opponent_team_from_previous_model_behavior(
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
@@ -260,11 +260,11 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             is_yellow,
-            RobotCurriculumBehaviorEnum.BALL_FOLLOWING,
             updates_per_task
         )
 
         return builder\
+            .set_ball_following_behavior()\
             .set_position_enum(position_enum)\
             .set_velocity_alpha_range([0, 0])\
             .build()
@@ -278,17 +278,17 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL,
             updates_per_task
         )
 
         return builder\
+            .set_from_model_behavior()\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
             .build()
     
     @staticmethod
-    def get_opponent_team_from_model_behavior(
+    def get_opponent_team_from_previous_model_behavior(
         robot_id: int,
         position_enum: PositionEnum,
         updates_per_task: int
@@ -296,11 +296,11 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL,
             updates_per_task
         )
 
         return builder\
+            .set_from_previous_model_behavior()\
             .set_position_enum(position_enum)\
             .set_distance_range((.3, .6))\
             .set_velocity_alpha_range((0, .5))\
@@ -318,11 +318,12 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             is_yellow,
-            RobotCurriculumBehaviorEnum.BALL_FOLLOWING,
             updates_per_task
         )
 
-        builder.set_position_enum(position_enum)
+        builder\
+            .set_ball_following_behavior()\
+            .set_position_enum(position_enum)
 
         if distance_range is not None:
             builder.set_distance_range(distance_range)
@@ -340,11 +341,11 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            RobotCurriculumBehaviorEnum.BALL_FOLLOWING,
             updates_per_task
         )
 
         return builder\
+            .set_ball_following_behavior()\
             .set_position_enum(PositionEnum.RELATIVE_TO_BALL)\
             .set_distance_range((.3, .6))\
             .set_velocity_alpha_range((0, .5))\

@@ -2,7 +2,7 @@ from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehavi
 from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.curriculum_task import CurriculumTask
 from lib.enums.position_enum import PositionEnum
-from lib.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.utils.configuration_utils import ConfigurationUtils
 
 class DefenderBehaviorUtils:
     @staticmethod
@@ -178,11 +178,11 @@ class DefenderBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            RobotCurriculumBehaviorEnum.FROM_MODEL,
             updates_per_task
         )
 
         return builder\
+            .set_from_model_behavior()\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
             .build()
@@ -196,11 +196,13 @@ class DefenderBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL,
             updates_per_task
         )
 
+        model_path = ConfigurationUtils.get_model_attacker_path()
+
         return builder\
+            .set_from_fixed_model_behavior(model_path)\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
             .build()
@@ -214,11 +216,11 @@ class DefenderBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            RobotCurriculumBehaviorEnum.BALL_FOLLOWING,
             updates_per_task
         )
 
         return builder\
+            .set_ball_following_behavior()\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
             .build()
@@ -232,11 +234,11 @@ class DefenderBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            RobotCurriculumBehaviorEnum.BALL_FOLLOWING,
             updates_per_task
         )
 
         return builder\
+            .set_ball_following_behavior()\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
             .build()
@@ -250,10 +252,10 @@ class DefenderBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             is_yellow,
-            RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING,
             updates_per_task
         )
 
         return builder\
+            .set_goalkeeper_ball_following_behavior()\
             .set_position_enum(PositionEnum.OWN_AREA)\
             .build()

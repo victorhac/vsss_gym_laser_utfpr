@@ -82,5 +82,10 @@
         "ball": {
             "radius": 0.0215
         }
+    },
+    "model": {
+        "attacker": {
+            "path": "models/attacker/PPO/2024_9_24_14_48_13/PPO_model_task_6_update_117_13999986_steps.zip"
+        }
     }
 }

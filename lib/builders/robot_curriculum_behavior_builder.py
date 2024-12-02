@@ -7,17 +7,38 @@ class RobotCurriculumBehaviorBuilder:
         self,
         robot_id: int,
         is_yellow: bool,
-        robot_curriculum_behavior_enum: RobotCurriculumBehaviorEnum,
         updates_per_task: int
     ):
         self.robot_id = robot_id
         self.is_yellow = is_yellow
-        self.robot_curriculum_behavior_enum = robot_curriculum_behavior_enum
         self.updates_per_task = updates_per_task
 
         self.position_enum = None
         self.distance_range = None
         self.velocity_alpha_range = None
+        self.model_path = None
+
+    def set_ball_following_behavior(self):
+        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.BALL_FOLLOWING
+        return self
+    
+    def set_goalkeeper_ball_following_behavior(self):
+        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING
+        return self
+    
+    def set_from_previous_model_behavior(self, model_path: 'str | None' = None):
+        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL
+        self.model_path = model_path
+        return self
+    
+    def set_from_fixed_model_behavior(self, model_path: str):
+        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL
+        self.model_path = model_path
+        return self
+    
+    def set_from_model_behavior(self):
+        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_MODEL
+        return self
 
     def set_position_enum(
         self,
@@ -56,6 +77,9 @@ class RobotCurriculumBehaviorBuilder:
 
         if self.velocity_alpha_range is not None:
             self._set_velocity_alpha_range(robot_curriculum_behavior)
+
+        if self.model_path is not None:
+            robot_curriculum_behavior.set_model_path(self.model_path)
             
         return robot_curriculum_behavior
 
