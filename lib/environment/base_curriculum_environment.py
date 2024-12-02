@@ -265,6 +265,54 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         return commands
     
+    def _get_own_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_area
+        else:
+            return self._get_random_position_inside_own_area
+        
+    def _get_opponent_area_position_function(self, is_yellow: bool):
+        return self._get_own_area_position_function(not is_yellow)
+        
+    def _get_goal_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_penalty_area
+        else:
+            return self._get_random_position_inside_own_penalty_area
+        
+    def _get_opponent_goal_area_position_function(self, is_yellow: bool):
+        return self._get_goal_area_position_function(not is_yellow)
+        
+    #TODO: fix it
+    def _get_own_area_except_goal_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_area
+        else:
+            return self._get_random_position_inside_own_area
+    
+    def _get_opponent_area_except_goal_area_position_function(self, is_yellow: bool):
+        return self._get_own_area_except_goal_area_position_function(not is_yellow)
+    
+    def _get_relative_to_own_goal_position_function(self, is_yellow: bool, distance: float):
+        if not is_yellow:
+            return lambda: self._get_random_position_at_distance(
+                distance,
+                self._get_own_goal_position())
+        else:
+            return lambda: self._get_random_position_at_distance(
+                distance,
+                self._get_opponent_goal_position())
+        
+    def _get_relative_to_opponent_goal_position_function(self, is_yellow: bool, distance: float):
+        return self._get_relative_to_own_goal_position_function(not is_yellow, distance)
+    
+    def _get_random_position_at_distance_position_function(
+        self,
+        distance: float,
+        position: 'tuple[float, float]'
+    ):
+        return lambda: self._get_random_position_at_distance(distance, position)
+    
     def get_position_function_by_behavior(
         self,
         behavior: 'RobotCurriculumBehavior | BallCurriculumBehavior',
@@ -278,61 +326,33 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             is_yellow = False
 
         if position_enum == PositionEnum.OWN_AREA:
-            if is_yellow:
-                return self._get_random_position_inside_opponent_area
-            else:
-                return self._get_random_position_inside_own_area
+            return self._get_own_area_position_function(is_yellow)
         elif position_enum == PositionEnum.GOAL_AREA:
-            if is_yellow:
-                return self._get_random_position_inside_opponent_penalty_area
-            else:
-                return self._get_random_position_inside_own_penalty_area
-        elif position_enum == PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA:#TODO: fix it
-            if is_yellow:
-                return self._get_random_position_inside_opponent_area
-            else:
-                return self._get_random_position_inside_own_area
+            return self._get_goal_area_position_function(is_yellow)
+        elif position_enum == PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA:
+            return self._get_own_area_except_goal_area_position_function(is_yellow)
         elif position_enum == PositionEnum.OPPONENT_AREA:
-            if not is_yellow:
-                return self._get_random_position_inside_opponent_area
-            else:
-                return self._get_random_position_inside_own_area
+            return self._get_opponent_area_position_function(is_yellow)
         elif position_enum == PositionEnum.OPPONENT_GOAL_AREA:
-            if not is_yellow:
-                return self._get_random_position_inside_opponent_area
-            else:
-                return self._get_random_position_inside_own_area
-        elif position_enum == PositionEnum.OPPONENT_AREA_EXCEPT_GOAL_AREA:#TODO: fix it
-            if not is_yellow:
-                return self._get_random_position_inside_opponent_area
-            else:
-                return self._get_random_position_inside_own_area
+            return self._get_opponent_goal_area_position_function(is_yellow)
+        elif position_enum == PositionEnum.OPPONENT_AREA_EXCEPT_GOAL_AREA:
+            return self._get_opponent_area_except_goal_area_position_function(is_yellow)
         elif position_enum == PositionEnum.RELATIVE_TO_BALL:
-            return lambda: self._get_random_position_at_distance(
+            return self._get_random_position_at_distance_position_function(
                 behavior.distance,
                 relative_position)
         elif position_enum == PositionEnum.RELATIVE_TO_OWN_GOAL:
-            if not is_yellow:
-                return lambda: self._get_random_position_at_distance(
-                    behavior.distance,
-                    self._get_own_goal_position())
-            else:
-                return lambda: self._get_random_position_at_distance(
-                    behavior.distance,
-                    self._get_opponent_goal_position())
+            return self._get_relative_to_own_goal_position_function(
+                is_yellow,
+                behavior.distance)
         elif position_enum == PositionEnum.RELATIVE_TO_OPPONENT_GOAL:
-            if is_yellow:
-                return lambda: self._get_random_position_at_distance(
-                    behavior.distance,
-                    self._get_own_goal_position())
-            else:
-                return lambda: self._get_random_position_at_distance(
-                    behavior.distance,
-                    self._get_opponent_goal_position())
+            return self._get_relative_to_opponent_goal_position_function(
+                is_yellow,
+                behavior.distance)
         elif position_enum == PositionEnum.FIELD:
             return self._get_random_position_inside_field
         
-        return self._get_random_position_inside_own_area
+        return self._get_random_position_inside_field
 
     def _get_initial_positions_frame(self):
         frame: Frame = Frame()
