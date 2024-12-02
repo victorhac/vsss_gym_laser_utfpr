@@ -27,7 +27,7 @@ TIME_STEP = ConfigurationUtils.get_rsoccer_training_time_step_seconds()
 # addapt this for your robot
 MAX_MOTOR_SPEED = ConfigurationUtils.get_firasim_robot_speed_max_radians_seconds()
 
-class Environment(BaseEnvironment):
+class GoalkeeperEnvironment(BaseEnvironment):
     def __init__(self, render_mode="rgb_array"):
         super().__init__(
             field_type=0,

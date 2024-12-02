@@ -2,16 +2,17 @@ import math
 import numpy as np
 
 from gymnasium.spaces import Box
-
 from rsoccer_gym.Entities import Robot
 
 from lib.domain.curriculum_task import CurriculumTask
+from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
+from lib.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
+from lib.environment.base_environment import BaseEnvironment
 from lib.geometry.geometry_utils import GeometryUtils
-
 from lib.utils.rsoccer_utils import RSoccerUtils
 
-class Environment(BaseCurriculumEnvironment):
+class AttackerEnvironment(BaseCurriculumEnvironment):
     def __init__(
         self,
         task: CurriculumTask,
@@ -186,6 +187,49 @@ class Environment(BaseCurriculumEnvironment):
             extend_observation_by_robot(frame.robots_blue[i])
 
         return np.array(observation, dtype=np.float32)
+    
+    def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
+        is_yellow = behavior.is_yellow
+        robot_id = behavior.robot_id
+
+        actions = self._get_from_model_actions(behavior)
+
+        left_speed, right_speed = self._actions_to_v_wheels(actions)
+        velocity_alpha = behavior.get_velocity_alpha()
+
+        return self._create_robot_command(
+            robot_id,
+            is_yellow,
+            left_speed * velocity_alpha,
+            right_speed * velocity_alpha)
+    
+    def _create_robot_command_by_behavior(self, behavior: RobotCurriculumBehavior):
+        robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
+
+        if robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.BALL_FOLLOWING:
+            return self._create_ball_following_robot_command(behavior)
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING:
+            return self._create_goalkeeper_ball_following_robot_command(behavior)
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL or\
+            robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL:
+            return self._create_from_model_robot_command(behavior)
+
+        return self._create_robot_command(
+            behavior.robot_id,
+            behavior.is_yellow,
+            0,
+            0)
+
+    def _get_from_model_actions(self, behavior: RobotCurriculumBehavior):
+        model = self._update_model(
+            behavior.robot_id,
+            behavior.is_yellow,
+            behavior.model_path)
+
+        if model is None:
+            return (0, 0)
+
+        return model.predict(self._frame_to_opponent_observations(behavior.robot_id))[0]
 
     def _ball_gradient_reward(
         self,
@@ -269,4 +313,3 @@ class Environment(BaseCurriculumEnvironment):
                 self.last_game_score = 0
 
         return reward, is_done
-    

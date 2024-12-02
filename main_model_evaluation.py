@@ -1,10 +1,10 @@
 from stable_baselines3 import PPO
-from lib.environment.attacker.environment import Environment
+from lib.environment.attacker_environment import AttackerEnvironment
 import time
 
 model = PPO.load("models/attacker/PPO/2024_6_12_9_49_55/PPO_model")
 
-env = Environment("human")
+env = AttackerEnvironment("human")
 
 episode_duration = 20
 

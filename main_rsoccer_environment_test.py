@@ -1,6 +1,6 @@
 from stable_baselines3 import PPO
 from lib.utils.behavior.attacker_behavior_utils import AttackerBehaviorUtils
-from lib.environment.defender.environment import Environment
+from lib.environment.defender_environment import DefenderEnvironment
 import matplotlib.pyplot as plt
 
 render_mode = "human"
@@ -16,7 +16,7 @@ def plot_reward(reward_per_step: list):
 
 task = AttackerBehaviorUtils.get_task_1(97)
 
-env = Environment(task, render_mode)
+env = DefenderEnvironment(task, render_mode)
 
 model = PPO.load("models/attacker/PPO/2024_9_24_14_48_13/PPO_model_task_6_update_117_13999986_steps.zip")
 

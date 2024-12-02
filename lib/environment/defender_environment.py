@@ -1,17 +1,16 @@
-import math
 import numpy as np
 
 from gymnasium.spaces import Box
-
 from rsoccer_gym.Entities import Robot
 
 from lib.domain.curriculum_task import CurriculumTask
+from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
+from lib.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
 from lib.geometry.geometry_utils import GeometryUtils
-
 from lib.utils.rsoccer_utils import RSoccerUtils
 
-class Environment(BaseCurriculumEnvironment):
+class DefenderEnvironment(BaseCurriculumEnvironment):
     def __init__(
         self,
         task: CurriculumTask,
@@ -64,47 +63,21 @@ class Environment(BaseCurriculumEnvironment):
         current_robot = self._get_robot_by_id(self.robot_id, self.is_yellow_team)
         ball = self.get_ball()
 
-        def get_normalized_distance(distance: float):
-            return distance / self._get_max_distance()
-
         def extend_observation_by_ball():
-            current_robot_position = current_robot.x, -current_robot.y
-            ball_position = ball.x, -ball.y
-
-            distance = GeometryUtils.distance(current_robot_position, ball_position)
-            angle = GeometryUtils.angle_between_points(current_robot_position, ball_position)
-
             observation.extend([
-                get_normalized_distance(distance),
-                angle / np.pi,
+                self.norm_x(ball.x),
+                self.norm_y(-ball.y),
                 self.norm_v(ball.v_x),
                 self.norm_v(-ball.v_y)
             ])
 
-        def extend_observation_by_current_robot():
+        def extend_observation_by_robot(robot: Robot):
             theta = -RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
 
-            observation.extend([
-                self.norm_x(current_robot.x),
-                self.norm_y(-current_robot.y),
-                theta,
-                self.norm_v(current_robot.v_x),
-                self.norm_v(-current_robot.v_y)
-            ])
-
-        def extend_observation_by_robot(robot: Robot):
-            if self._is_inside_field((robot.x, robot.y)):
-                theta = -RSoccerUtils.get_corrected_angle(robot.theta) / np.pi
-
-                current_robot_position = current_robot.x, -current_robot.y
-                robot_position = robot.x, -robot.y
-
-                distance = GeometryUtils.distance(current_robot_position, robot_position)
-                angle = GeometryUtils.angle_between_points(current_robot_position, robot_position)
-
+            if self._is_inside_field((robot.x, robot.y)): 
                 observation.extend([
-                    get_normalized_distance(distance),
-                    angle / np.pi,
+                    self.norm_x(robot.x),
+                    self.norm_y(-robot.y),
                     theta,
                     self.norm_v(robot.v_x),
                     self.norm_v(-robot.v_y)
@@ -113,20 +86,18 @@ class Environment(BaseCurriculumEnvironment):
                 observation.extend([0, 0, 0, 0, 0])
 
         extend_observation_by_ball()
-        extend_observation_by_current_robot()
 
         frame = self.frame
 
         for i in range(self.n_robots_blue):
-            if i != self.robot_id:
-                extend_observation_by_robot(frame.robots_blue[i])
+            extend_observation_by_robot(frame.robots_blue[i])
 
         for i in range(self.n_robots_yellow):
             extend_observation_by_robot(frame.robots_yellow[i])
 
         return np.array(observation, dtype=np.float32)
 
-    def _frame_to_opponent_observations(self, robot_id: int):
+    def _frame_to_opponent_attacker_observations(self, robot_id: int):
         observation = []
 
         current_robot = self._get_robot_by_id(robot_id, True)
@@ -203,39 +174,49 @@ class Environment(BaseCurriculumEnvironment):
             extend_observation_by_robot(frame.robots_blue[i])
 
         return np.array(observation, dtype=np.float32)
+    
+    def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
+        is_yellow = behavior.is_yellow
+        robot_id = behavior.robot_id
 
-    def _ball_gradient_reward(
-        self,
-        previous_ball_potential: float
-    ):
-        field_length = self.get_field_length()
-        goal_depth = self.get_goal_depth()
-        ball = self.get_ball()
+        actions = self._get_from_model_actions(behavior)
 
-        convert_m_to_cm = lambda x: x * 100
+        left_speed, right_speed = self._actions_to_v_wheels(actions)
+        velocity_alpha = behavior.get_velocity_alpha()
 
-        length_cm = convert_m_to_cm(field_length)
-        half_length = (field_length / 2) + goal_depth
+        return self._create_robot_command(
+            robot_id,
+            is_yellow,
+            left_speed * velocity_alpha,
+            right_speed * velocity_alpha)
+    
+    def _create_robot_command_by_behavior(self, behavior: RobotCurriculumBehavior):
+        robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
 
-        dx_d = convert_m_to_cm((half_length + ball.x))
-        dx_a = convert_m_to_cm((half_length - ball.x))
-        dy = convert_m_to_cm(ball.y)
+        if robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.BALL_FOLLOWING:
+            return self._create_ball_following_robot_command(behavior)
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING:
+            return self._create_goalkeeper_ball_following_robot_command(behavior)
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL or\
+            robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL:
+            return self._create_from_model_robot_command(behavior)
 
-        dist_1 = math.sqrt(dx_a ** 2 + 2 * dy ** 2)
-        dist_2 = math.sqrt(dx_d ** 2 + 2 * dy ** 2)
+        return self._create_robot_command(
+            behavior.robot_id,
+            behavior.is_yellow,
+            0,
+            0)
 
-        ball_potential = ((-dist_1 + dist_2) / length_cm - 1) / 2
+    def _get_from_model_actions(self, behavior: RobotCurriculumBehavior):
+        model = self._update_model(
+            behavior.robot_id,
+            behavior.is_yellow,
+            behavior.model_path)
 
-        if previous_ball_potential is not None:
-            diff = ball_potential - previous_ball_potential
-            reward = np.clip(
-                diff * 3 / self.time_step,
-                -5.0,
-                5.0)
-        else:
-            reward = 0
+        if model is None:
+            return (0, 0)
 
-        return reward, ball_potential
+        return model.predict(self._frame_to_opponent_attacker_observations(behavior.robot_id))[0]
 
     def _ball_gradient_reward_by_positions(
         self,
@@ -246,7 +227,10 @@ class Environment(BaseCurriculumEnvironment):
         field_length = self.get_field_length()
         ball = self.get_ball()
 
-        distance_to_desired = GeometryUtils.distance((ball.x, ball.y), desired_position)
+        distance_to_desired = GeometryUtils.distance(
+            (ball.x, ball.y),
+            desired_position)
+            
         distance_to_undesired = GeometryUtils.distance((ball.x, ball.y), undesired_position)
 
         ball_potential = ((distance_to_desired - distance_to_undesired) / field_length - 1) / 2
@@ -356,10 +340,8 @@ class Environment(BaseCurriculumEnvironment):
         last_robot_touched_ball = self.last_robot_touched_ball
 
         if last_robot_touched_ball is not None:
-            robot = last_robot_touched_ball["robot"]
-            is_yellow_team = last_robot_touched_ball["is_yellow_team"]
-
-            return not is_yellow_team and robot.id == self.robot_id
+            return not last_robot_touched_ball.yellow and\
+                last_robot_touched_ball.id == self.robot_id
 
         return False
 
@@ -390,10 +372,6 @@ class Environment(BaseCurriculumEnvironment):
 
             if distance < self.threshold_ball and\
                     (minimum_distance is None or distance < minimum_distance):
-                self.last_robot_touched_ball = {
-                    "robot": robot,
-                    "is_yellow_team": item.is_yellow
-                }
-
+                self.last_robot_touched_ball = robot
                 minimum_distance = distance
                 

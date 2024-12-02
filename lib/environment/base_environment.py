@@ -411,3 +411,49 @@ class BaseEnvironment(gym.Env):
 
         return self._get_blue_robot_by_id(id)
     
+    def _get_own_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_area
+
+        return self._get_random_position_inside_own_area
+
+    def _get_opponent_area_position_function(self, is_yellow: bool):
+        return self._get_own_area_position_function(not is_yellow)
+
+    def _get_goal_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_penalty_area
+
+        return self._get_random_position_inside_own_penalty_area
+
+    def _get_opponent_goal_area_position_function(self, is_yellow: bool):
+        return self._get_goal_area_position_function(not is_yellow)
+
+    def _get_own_area_except_goal_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_area_except_goal_area
+
+        return self._get_random_position_inside_own_area_except_goal_area
+
+    def _get_opponent_area_except_goal_area_position_function(self, is_yellow: bool):
+        return self._get_own_area_except_goal_area_position_function(not is_yellow)
+
+    def _get_relative_to_own_goal_position_function(self, is_yellow: bool, distance: float):
+        if not is_yellow:
+            return lambda: self._get_random_position_at_distance(
+                distance,
+                self._get_own_goal_position())
+
+        return lambda: self._get_random_position_at_distance(
+            distance,
+            self._get_opponent_goal_position())
+
+    def _get_relative_to_opponent_goal_position_function(self, is_yellow: bool, distance: float):
+        return self._get_relative_to_own_goal_position_function(not is_yellow, distance)
+
+    def _get_random_position_at_distance_position_function(
+        self,
+        distance: float,
+        position: 'tuple[float, float]'
+    ):
+        return lambda: self._get_random_position_at_distance(distance, position)

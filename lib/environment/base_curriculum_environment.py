@@ -9,7 +9,6 @@ from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.curriculum_task import CurriculumTask
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
 from lib.enums.position_enum import PositionEnum
-from lib.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.environment.base_environment import BaseEnvironment
 from lib.motion.motion_utils import MotionUtils
 
@@ -173,51 +172,8 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             is_yellow,
             left_speed * velocity_alpha,
             right_speed * velocity_alpha)
-
-    def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
-        is_yellow = behavior.is_yellow
-        robot_id = behavior.robot_id
-
-        actions = self._get_from_model_actions(behavior)
-
-        left_speed, right_speed = self._actions_to_v_wheels(actions)
-        velocity_alpha = behavior.get_velocity_alpha()
-
-        return self._create_robot_command(
-            robot_id,
-            is_yellow,
-            left_speed * velocity_alpha,
-            right_speed * velocity_alpha)
-
+    
     def _create_robot_command_by_behavior(self, behavior: RobotCurriculumBehavior):
-        robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
-
-        if robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.BALL_FOLLOWING:
-            return self._create_ball_following_robot_command(behavior)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING:
-            return self._create_goalkeeper_ball_following_robot_command(behavior)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL or\
-            robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL:
-            return self._create_from_model_robot_command(behavior)
-
-        return self._create_robot_command(
-            behavior.robot_id,
-            behavior.is_yellow,
-            0,
-            0)
-
-    def _get_from_model_actions(self, behavior: RobotCurriculumBehavior):
-        model = self._update_model(
-            behavior.robot_id,
-            behavior.is_yellow,
-            behavior.model_path)
-
-        if model is None:
-            return (0, 0)
-
-        return model.predict(self._frame_to_opponent_observations(behavior.robot_id))[0]
-
-    def _frame_to_opponent_observations(self, robot_id: int):
         raise NotImplementedError
 
     def _get_velocity_factor(self):
@@ -285,53 +241,6 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 commands.append(self._create_robot_command_by_behavior(behavior))
 
         return commands
-
-    def _get_own_area_position_function(self, is_yellow: bool):
-        if is_yellow:
-            return self._get_random_position_inside_opponent_area
-
-        return self._get_random_position_inside_own_area
-
-    def _get_opponent_area_position_function(self, is_yellow: bool):
-        return self._get_own_area_position_function(not is_yellow)
-
-    def _get_goal_area_position_function(self, is_yellow: bool):
-        if is_yellow:
-            return self._get_random_position_inside_opponent_penalty_area
-
-        return self._get_random_position_inside_own_penalty_area
-
-    def _get_opponent_goal_area_position_function(self, is_yellow: bool):
-        return self._get_goal_area_position_function(not is_yellow)
-
-    def _get_own_area_except_goal_area_position_function(self, is_yellow: bool):
-        if is_yellow:
-            return self._get_random_position_inside_opponent_area_except_goal_area
-
-        return self._get_random_position_inside_own_area_except_goal_area
-
-    def _get_opponent_area_except_goal_area_position_function(self, is_yellow: bool):
-        return self._get_own_area_except_goal_area_position_function(not is_yellow)
-
-    def _get_relative_to_own_goal_position_function(self, is_yellow: bool, distance: float):
-        if not is_yellow:
-            return lambda: self._get_random_position_at_distance(
-                distance,
-                self._get_own_goal_position())
-
-        return lambda: self._get_random_position_at_distance(
-            distance,
-            self._get_opponent_goal_position())
-
-    def _get_relative_to_opponent_goal_position_function(self, is_yellow: bool, distance: float):
-        return self._get_relative_to_own_goal_position_function(not is_yellow, distance)
-
-    def _get_random_position_at_distance_position_function(
-        self,
-        distance: float,
-        position: 'tuple[float, float]'
-    ):
-        return lambda: self._get_random_position_at_distance(distance, position)
 
     def get_position_function_by_behavior(
         self,
