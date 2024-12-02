@@ -8,7 +8,6 @@ from lib.domain.curriculum_task import CurriculumTask
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
 from lib.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
-from lib.environment.base_environment import BaseEnvironment
 from lib.geometry.geometry_utils import GeometryUtils
 from lib.utils.rsoccer_utils import RSoccerUtils
 
