@@ -1,4 +1,4 @@
-from lib.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 import numpy as np
 
 class RobotCurriculumBehavior:

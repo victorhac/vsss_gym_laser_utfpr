@@ -2,7 +2,7 @@ from lib.comm.vision import ProtoVision
 from lib.comm.control import ProtoControl
 
 from lib.utils.configuration_utils import ConfigurationUtils
-from lib.motion.motion_utils import MotionUtils
+from lib.utils.motion_utils import MotionUtils
 from lib.utils.field_utils import FieldUtils
 from lib.utils.firasim_utils import FIRASimUtils
 

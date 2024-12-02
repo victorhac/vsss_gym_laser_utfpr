@@ -9,7 +9,7 @@ from rsoccer_gym.Render import COLORS, Ball, VSSRenderField, VSSRobot
 from rsoccer_gym.Simulators.rsim import RSimVSS
 from rsoccer_gym.Utils import KDTree
 
-from lib.geometry.geometry_utils import GeometryUtils
+from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.field_utils import FieldUtils
 
 class BaseEnvironment(gym.Env):

@@ -1,6 +1,6 @@
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
-from lib.enums.position_enum import PositionEnum
-from lib.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.domain.enums.position_enum import PositionEnum
+from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 
 class RobotCurriculumBehaviorBuilder:
     def __init__(

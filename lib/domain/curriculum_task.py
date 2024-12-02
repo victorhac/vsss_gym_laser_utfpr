@@ -3,7 +3,7 @@ import numpy as np
 
 from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
-from lib.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 
 class CurriculumTask:
     def __init__(

@@ -1,4 +1,4 @@
-from lib.enums.position_enum import PositionEnum
+from lib.domain.enums.position_enum import PositionEnum
 import numpy as np
 
 class BallCurriculumBehavior:

@@ -2,7 +2,7 @@ from .configuration_utils import ConfigurationUtils
 from lib.domain.field_data import FieldData
 from lib.domain.robot import Robot
 from lib.domain.ball import Ball
-from lib.geometry.geometry_utils import GeometryUtils
+from lib.utils.geometry_utils import GeometryUtils
 
 from rsoccer_gym.Entities import Robot as RSoccerRobot, Ball as RSoccerBall
 from rsoccer_gym.Entities.Frame import Frame

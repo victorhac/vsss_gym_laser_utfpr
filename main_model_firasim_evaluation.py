@@ -5,7 +5,7 @@ from lib.comm.control import ProtoControl
 
 from lib.utils.configuration_utils import ConfigurationUtils
 from lib.utils.rsoccer_utils import RSoccerUtils
-from lib.motion.motion_utils import MotionUtils
+from lib.utils.motion_utils import MotionUtils
 
 from lib.domain.field_data import FieldData
 

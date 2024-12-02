@@ -8,9 +8,9 @@ from stable_baselines3 import PPO
 from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.curriculum_task import CurriculumTask
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
-from lib.enums.position_enum import PositionEnum
+from lib.domain.enums.position_enum import PositionEnum
 from lib.environment.base_environment import BaseEnvironment
-from lib.motion.motion_utils import MotionUtils
+from lib.utils.motion_utils import MotionUtils
 
 from lib.utils.configuration_utils import ConfigurationUtils
 from lib.utils.rsoccer_utils import RSoccerUtils

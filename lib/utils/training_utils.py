@@ -1,6 +1,6 @@
 import math
 from lib.domain.robot import Robot
-from lib.geometry.geometry_utils import GeometryUtils
+from lib.utils.geometry_utils import GeometryUtils
 from lib.domain.ball import Ball
 
 import numpy as np

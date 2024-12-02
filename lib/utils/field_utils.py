@@ -1,7 +1,7 @@
 import random
 import math
 
-from lib.geometry.geometry_utils import GeometryUtils
+from lib.utils.geometry_utils import GeometryUtils
 
 class FieldUtils:
     @staticmethod

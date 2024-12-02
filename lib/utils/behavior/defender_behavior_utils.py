@@ -1,7 +1,7 @@
 from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehaviorBuilder
 from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.curriculum_task import CurriculumTask
-from lib.enums.position_enum import PositionEnum
+from lib.domain.enums.position_enum import PositionEnum
 from lib.utils.configuration_utils import ConfigurationUtils
 
 class DefenderBehaviorUtils:

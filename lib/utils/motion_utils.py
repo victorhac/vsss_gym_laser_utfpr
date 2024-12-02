@@ -1,5 +1,5 @@
 from lib.domain.robot import Robot
-from lib.geometry.geometry_utils import GeometryUtils
+from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.configuration_utils import ConfigurationUtils
 from lib.utils.robot_utils import RobotUtils
 
@@ -70,8 +70,8 @@ class MotionUtils:
         return left_motor_speed, right_motor_speed
     
     @staticmethod
-    def spin(clockwise: bool, spinPower: float):
+    def spin(clockwise: bool, spin_power: float):
         if clockwise:
-            return spinPower, -spinPower
+            return spin_power, -spin_power
         
-        return -spinPower, spinPower
+        return -spin_power, spin_power
