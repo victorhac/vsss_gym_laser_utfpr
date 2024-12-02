@@ -249,109 +249,7 @@ class AttackerBehaviorUtils:
             default_threshold=default_threshold,
             games_count=games_count,
             threshold_intervals=[(14, .3)])
-    
-    @staticmethod
-    def get_task_7(
-        update_count: int = 0,
-        updates_per_task: int = 100,
-        default_threshold: float = .2,
-        games_count: int = 300
-    ):
-        behaviors = [
-            AttackerBehaviorUtils.get_own_team_from_model_behavior(
-                0,
-                PositionEnum.RELATIVE_TO_BALL,
-                updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
-                1,
-                False,
-                PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA,
-                updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
-                2,
-                False,
-                PositionEnum.GOAL_AREA,
-                updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_from_model_behavior(
-                0,
-                PositionEnum.RELATIVE_TO_BALL,
-                updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
-                1,
-                updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
-                2,
-                True,
-                PositionEnum.GOAL_AREA,
-                updates_per_task)
-        ]
-    
-        ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
-            PositionEnum.OWN_AREA,
-            updates_per_task
-        )
 
-        return CurriculumTask(
-            "7",
-            behaviors,
-            ball_behavior,
-            update_count=update_count,
-            updates_per_task=updates_per_task,
-            default_threshold=default_threshold,
-            games_count=games_count)
-    
-    @staticmethod
-    def get_task_8(
-        update_count: int = 0,
-        updates_per_task: int = 100,
-        default_threshold: float = .1,
-        games_count: int = 300
-    ):
-        behaviors = [
-            AttackerBehaviorUtils.get_own_team_from_model_behavior(
-                0,
-                PositionEnum.RELATIVE_TO_BALL,
-                updates_per_task),
-            AttackerBehaviorUtils.get_ball_following_behavior(
-                1,
-                False,
-                PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA,
-                True,
-                None,
-                True,
-                [.2, .2],
-                updates_per_task=updates_per_task),
-            AttackerBehaviorUtils.get_goalkeeper_ball_following_behavior(
-                2,
-                False,
-                updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_from_model_behavior(
-                0,
-                PositionEnum.RELATIVE_TO_BALL,
-                updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
-                1,
-                updates_per_task),
-            AttackerBehaviorUtils.get_goalkeeper_ball_following_behavior(
-                2,
-                True,
-                updates_per_task)
-        ]
-    
-        ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
-            PositionEnum.OWN_AREA,
-            updates_per_task
-        )
-
-        return CurriculumTask(
-            "8",
-            behaviors,
-            ball_behavior,
-            update_count=update_count,
-            updates_per_task=updates_per_task,
-            default_threshold=default_threshold,
-            games_count=games_count)
-    
     @staticmethod
     def get_stopped_behavior(
         robot_id: int,
@@ -368,7 +266,7 @@ class AttackerBehaviorUtils:
 
         return builder\
             .set_position_enum(position_enum)\
-            .set_velocity_alpha_range([0, 0], True)\
+            .set_velocity_alpha_range([0, 0])\
             .build()
     
     @staticmethod
@@ -386,7 +284,7 @@ class AttackerBehaviorUtils:
 
         return builder\
             .set_position_enum(position_enum)\
-            .set_distance_range((.2, .5), True)\
+            .set_distance_range((.2, .5))\
             .build()
     
     @staticmethod
@@ -404,8 +302,8 @@ class AttackerBehaviorUtils:
 
         return builder\
             .set_position_enum(position_enum)\
-            .set_distance_range((.3, .6), True)\
-            .set_velocity_alpha_range((0, .5), True)\
+            .set_distance_range((.3, .6))\
+            .set_velocity_alpha_range((0, .5))\
             .build()
     
     @staticmethod
@@ -448,8 +346,8 @@ class AttackerBehaviorUtils:
 
         return builder\
             .set_position_enum(PositionEnum.RELATIVE_TO_BALL)\
-            .set_distance_range((.3, .6), True)\
-            .set_velocity_alpha_range((0, .5), True)\
+            .set_distance_range((.3, .6))\
+            .set_velocity_alpha_range((0, .5))\
             .build()
     
     @staticmethod
@@ -467,7 +365,7 @@ class AttackerBehaviorUtils:
 
         return builder\
             .set_position_enum(PositionEnum.GOAL_AREA)\
-            .set_velocity_alpha_range([.2, .2], True)\
+            .set_velocity_alpha_range((.2, .2))\
             .build()
     
     @staticmethod

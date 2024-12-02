@@ -54,8 +54,48 @@ class BaseCurriculumEnvironment(BaseEnvironment):
         self.last_game_score = None
         self.error = 0
 
-        self.opponent_model = None
-        self.opponent_model_path = None
+        self._set_error_dictionaries()
+        self._set_model_dictionaries()
+        self._set_model_path_dictionaries()
+    
+    def _set_error_dictionaries(self):
+        self.own_team_error_dictionary = {
+            0: 0,
+            1: 0,
+            2: 0,
+        }
+
+        self.opponent_error_dictionary = {
+            0: 0,
+            1: 0,
+            2: 0
+        }
+
+    def _set_model_dictionaries(self):
+        self.own_team_model_dictionary = {
+            0: None,
+            1: None,
+            2: None
+        }
+
+        self.opponent_model_dictionary = {
+            0: None,
+            1: None,
+            2: None
+        }
+
+    def _set_model_path_dictionaries(self):
+        self.own_team_model_path_dictionary = {
+            0: None,
+            1: None,
+            2: None
+        }
+
+        self.opponent_model_path_dictionary = {
+            0: None,
+            1: None,
+            2: None
+        }
     
     def _has_episode_time_exceeded(self):
         elapsed_time = int(self.steps * self.time_step)
@@ -68,22 +108,33 @@ class BaseCurriculumEnvironment(BaseEnvironment):
     def _go_to_point_v_wheels(
         self,
         robot_id: int,
-        is_yellow_team: bool,
+        is_yellow: bool,
         point: 'tuple[float, float]'
     ):
-        if is_yellow_team:
+        if is_yellow:
             robot = RSoccerUtils.to_robot(self.frame.robots_yellow[robot_id])
         else:
             robot = RSoccerUtils.to_robot(self.frame.robots_blue[robot_id])
 
-        velocities = MotionUtils.go_to_point(robot, point, self.error, self.max_motor_speed)
+        if is_yellow:
+            error = self.opponent_error_dictionary[robot_id]
+        else:
+            error = self.own_team_error_dictionary[robot_id]
 
-        #TODO: verificar se salvo o erro para cada robô
-        (left_speed, right_speed, self.error) = velocities
+        left_speed, right_speed, current_error = MotionUtils.go_to_point(
+            robot,
+            point,
+            error,
+            self.max_motor_speed)
+
+        if is_yellow:
+            self.opponent_error_dictionary[robot_id] = current_error
+        else:
+            self.own_team_error_dictionary[robot_id] = current_error
 
         return left_speed, right_speed
 
-    def _create_robot_by_behavior(self, behavior: RobotCurriculumBehavior):
+    def _create_robot_command_by_behavior(self, behavior: RobotCurriculumBehavior):
         robot = self._get_robot_by_id(behavior.robot_id, behavior.is_yellow)
 
         robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
@@ -92,8 +143,8 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         ball = self.get_ball()
 
-        def create_robot(v_wheel_0, v_wheel_1):
-            return self._create_robot(
+        def create_robot_command(v_wheel_0, v_wheel_1):
+            return self._create_robot_command(
                 robot_id,
                 is_yellow,
                 v_wheel_0,
@@ -107,7 +158,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             
             velocity_alpha = behavior.get_velocity_alpha()
 
-            return create_robot(left_speed * velocity_alpha, right_speed * velocity_alpha)
+            return create_robot_command(left_speed * velocity_alpha, right_speed * velocity_alpha)
         elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING:
             if self._is_inside_own_goal_area((ball.x, ball.y), is_yellow):
                 position = (ball.x, ball.y)
@@ -122,19 +173,24 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             
             velocity_alpha = behavior.get_velocity_alpha()
             
-            return create_robot(left_speed * velocity_alpha, right_speed * velocity_alpha)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL:
-            actions = self._get_opponent_actions(behavior)
+            return create_robot_command(left_speed * velocity_alpha, right_speed * velocity_alpha)
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL or\
+            robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL:
+
+            actions = self._get_from_model_actions(behavior)
 
             left_speed, right_speed = self._actions_to_v_wheels(actions)
             velocity_alpha = behavior.get_velocity_alpha()
 
-            return create_robot(left_speed * velocity_alpha, right_speed * velocity_alpha)
+            return create_robot_command(left_speed * velocity_alpha, right_speed * velocity_alpha)
         
-        return create_robot(0, 0)
+        return create_robot_command(0, 0)
     
-    def _get_opponent_actions(self, behavior: RobotCurriculumBehavior):
-        model = self._get_model(behavior.model_path)
+    def _get_from_model_actions(self, behavior: RobotCurriculumBehavior):
+        model = self._get_model(
+            behavior.robot_id,
+            behavior.is_yellow,
+            behavior.model_path)
 
         if model is None:
             return (0, 0)
@@ -181,7 +237,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         v_wheel0, v_wheel1 = self._actions_to_v_wheels(actions)
 
-        robot = self._create_robot(
+        robot = self._create_robot_command(
             self.robot_id,
             False,
             v_wheel0,
@@ -195,17 +251,17 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             behavior = self.task.get_blue_behaviors_by_robot_id(i)
 
             if behavior is None:
-                commands.append(self._create_robot(i, False, 0, 0))
+                commands.append(self._create_robot_command(i, False, 0, 0))
             else:
-                commands.append(self._create_robot_by_behavior(behavior))
+                commands.append(self._create_robot_command_by_behavior(behavior))
 
         for i in range(self.n_robots_yellow):
             behavior = self.task.get_yellow_behaviors_by_robot_id(i)
 
             if behavior is None:
-                commands.append(self._create_robot(i, True, 0, 0))
+                commands.append(self._create_robot_command(i, True, 0, 0))
             else:
-                commands.append(self._create_robot_by_behavior(behavior))
+                commands.append(self._create_robot_command_by_behavior(behavior))
 
         return commands
     
@@ -231,7 +287,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 return self._get_random_position_inside_opponent_penalty_area
             else:
                 return self._get_random_position_inside_own_penalty_area
-        elif position_enum == PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA:#mudar
+        elif position_enum == PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA:#TODO: fix it
             if is_yellow:
                 return self._get_random_position_inside_opponent_area
             else:
@@ -246,13 +302,15 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 return self._get_random_position_inside_opponent_area
             else:
                 return self._get_random_position_inside_own_area
-        elif position_enum == PositionEnum.OPPONENT_AREA_EXCEPT_GOAL_AREA:#mudar
+        elif position_enum == PositionEnum.OPPONENT_AREA_EXCEPT_GOAL_AREA:#TODO: fix it
             if not is_yellow:
                 return self._get_random_position_inside_opponent_area
             else:
                 return self._get_random_position_inside_own_area
         elif position_enum == PositionEnum.RELATIVE_TO_BALL:
-            return lambda: self._get_random_position_at_distance(behavior.distance, relative_position)
+            return lambda: self._get_random_position_at_distance(
+                behavior.distance,
+                relative_position)
         elif position_enum == PositionEnum.RELATIVE_TO_OWN_GOAL:
             if not is_yellow:
                 return lambda: self._get_random_position_at_distance(
@@ -279,12 +337,15 @@ class BaseCurriculumEnvironment(BaseEnvironment):
     def _get_initial_positions_frame(self):
         frame: Frame = Frame()
         places = KDTree()
-        min_distance = 0.15
+        minimal_distance = 0.15
 
         def theta(): return random.uniform(0, 360)
 
         def get_position(position_funcion):
-            return BaseCurriculumEnvironment.get_position(places, min_distance, position_funcion)
+            return BaseCurriculumEnvironment.get_position(
+                places,
+                minimal_distance,
+                position_funcion)
         
         ball_position = self.get_position_function_by_behavior(self.task.ball_behavior)()
 
@@ -296,6 +357,9 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             behavior = self.task.get_blue_behaviors_by_robot_id(i)
 
             if behavior is None:
+                # this is a default position placed outside the field
+                # in order for the robot to not interfere with the game
+                # and do not appear in the render
                 position = (10 + i, 10 + i)
             else:
                 position_function = self.get_position_function_by_behavior(behavior, ball_position)
@@ -310,6 +374,9 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             behavior = self.task.get_yellow_behaviors_by_robot_id(i)
 
             if behavior is None:
+                # this is a default position placed outside the field
+                # in order for the robot to not interfere with the game
+                # and do not appear in the render
                 position = (20 + i, 20 + i)
             else:
                 position_function = self.get_position_function_by_behavior(behavior, ball_position)
@@ -325,9 +392,26 @@ class BaseCurriculumEnvironment(BaseEnvironment):
     def set_task(self, task: CurriculumTask):
         self.task = task
 
-    def _get_model(self, model_path: str):
-        if self.opponent_model_path != model_path:
-            self.opponent_model = PPO.load(model_path)
-            self.opponent_model_path = model_path
+    def _get_model(
+        self,
+        robot_id: int,
+        is_yellow: bool,
+        model_path: str
+    ) -> PPO | None:
+        if is_yellow:
+            current_model_path = self.opponent_model_path_dictionary[robot_id]
+        else:
+            current_model_path = self.own_team_model_path_dictionary[robot_id]
 
-        return self.opponent_model
+        if is_yellow:
+            if current_model_path != model_path:
+                self.opponent_model_dictionary[robot_id] = PPO.load(model_path)
+                self.opponent_model_path_dictionary[robot_id] = model_path
+
+            return self.opponent_model_dictionary[robot_id]
+        else:
+            if current_model_path != model_path:
+                self.own_team_model_dictionary[robot_id] = PPO.load(model_path)
+                self.own_team_model_path_dictionary[robot_id] = model_path
+
+            return self.own_team_model_dictionary[robot_id]

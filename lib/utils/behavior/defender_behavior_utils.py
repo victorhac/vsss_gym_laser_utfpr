@@ -10,7 +10,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .7
+        default_threshold: float = .8
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -82,9 +82,8 @@ class DefenderBehaviorUtils:
             DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
                 2,
                 False,
-                PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
-            DefenderBehaviorUtils.get_opponent_team_from_model_behavior(
+            DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
@@ -129,9 +128,8 @@ class DefenderBehaviorUtils:
             DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
                 2,
                 False,
-                PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
-            DefenderBehaviorUtils.get_opponent_team_from_model_behavior(
+            DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
@@ -142,7 +140,6 @@ class DefenderBehaviorUtils:
             DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
                 2,
                 True,
-                PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task)
         ]
 
@@ -164,7 +161,7 @@ class DefenderBehaviorUtils:
     @staticmethod
     def get_ball_behavior(
         position_enum: PositionEnum,
-        updates_per_task: int = 10,
+        updates_per_task: int,
         distance_range: 'tuple[float, float] | None' = None
     ):
         return BallCurriculumBehavior(
@@ -181,7 +178,7 @@ class DefenderBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL,
+            RobotCurriculumBehaviorEnum.FROM_MODEL,
             updates_per_task
         )
 
@@ -191,7 +188,7 @@ class DefenderBehaviorUtils:
             .build()
     
     @staticmethod
-    def get_opponent_team_from_model_behavior(
+    def get_opponent_team_from_fixed_model_behavior(
         robot_id: int,
         position_enum: PositionEnum,
         updates_per_task: int
@@ -199,7 +196,7 @@ class DefenderBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL,
+            RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL,
             updates_per_task
         )
 
@@ -248,7 +245,6 @@ class DefenderBehaviorUtils:
     def get_goalkeeper_ball_following_behavior(
         robot_id: int,
         is_yellow: bool,
-        position_enum: PositionEnum,
         updates_per_task: int
     ):
         builder = RobotCurriculumBehaviorBuilder(
@@ -259,6 +255,5 @@ class DefenderBehaviorUtils:
         )
 
         return builder\
-            .set_position_enum(position_enum)\
-            .set_distance_range((.2, .5))\
+            .set_position_enum(PositionEnum.OWN_AREA)\
             .build()

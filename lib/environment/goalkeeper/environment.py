@@ -65,7 +65,7 @@ class Environment(BaseEnvironment):
             return True
         return False
     
-    def _create_robot(
+    def _create_robot_command(
         self,
         id: int,
         is_yellow_robot: bool,
@@ -156,7 +156,7 @@ class Environment(BaseEnvironment):
 
         v_wheel0, v_wheel1 = self._actions_to_v_wheels(actions, True)
 
-        robot = self._create_robot(0, False, v_wheel0, v_wheel1)
+        robot = self._create_robot_command(0, False, v_wheel0, v_wheel1)
         
         commands.append(robot)
             
@@ -164,7 +164,7 @@ class Environment(BaseEnvironment):
 
         v_wheel0, v_wheel1 = self._actions_to_v_wheels(attacker_actions, False)
 
-        robot = self._create_robot(0, True, v_wheel0, v_wheel1)
+        robot = self._create_robot_command(0, True, v_wheel0, v_wheel1)
 
         commands.append(robot)
 

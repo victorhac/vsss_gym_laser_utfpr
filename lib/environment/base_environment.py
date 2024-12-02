@@ -371,7 +371,7 @@ class BaseEnvironment(gym.Env):
     def _get_agent(self):
         return self.frame.robots_blue[self.robot_id]
     
-    def _create_robot(
+    def _create_robot_command(
         self,
         id: int,
         is_yellow_robot: bool,
