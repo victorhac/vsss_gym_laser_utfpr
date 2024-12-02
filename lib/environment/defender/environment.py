@@ -9,7 +9,7 @@ from lib.domain.curriculum_task import CurriculumTask
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
 from lib.geometry.geometry_utils import GeometryUtils
 
-from ...utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer_utils import RSoccerUtils
 
 class Environment(BaseCurriculumEnvironment):
     def __init__(
@@ -33,7 +33,7 @@ class Environment(BaseCurriculumEnvironment):
             high=1,
             shape=(34,),
             dtype=np.float32)
-        
+
         self.defensive_line_x = 0
         self.last_robot_touched_ball = None
         self.threshold_ball = .07
@@ -47,7 +47,7 @@ class Environment(BaseCurriculumEnvironment):
     ):
         self.last_robot_touched_ball = None
         return super().reset(seed=seed, options=options)
-    
+
     def _is_done(self):
         if self._is_ball_inside_goal_area():
             return True
@@ -57,7 +57,7 @@ class Environment(BaseCurriculumEnvironment):
         elif self._has_episode_time_exceeded():
             return True
         return False
-    
+
     def _frame_to_observations(self):
         observation = []
 
@@ -66,7 +66,7 @@ class Environment(BaseCurriculumEnvironment):
 
         def get_normalized_distance(distance: float):
             return distance / self._get_max_distance()
-        
+
         def extend_observation_by_ball():
             current_robot_position = current_robot.x, -current_robot.y
             ball_position = ball.x, -ball.y
@@ -80,7 +80,7 @@ class Environment(BaseCurriculumEnvironment):
                 self.norm_v(ball.v_x),
                 self.norm_v(-ball.v_y)
             ])
-        
+
         def extend_observation_by_current_robot():
             theta = -RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
 
@@ -125,7 +125,7 @@ class Environment(BaseCurriculumEnvironment):
             extend_observation_by_robot(frame.robots_yellow[i])
 
         return np.array(observation, dtype=np.float32)
-    
+
     def _frame_to_opponent_observations(self, robot_id: int):
         observation = []
 
@@ -141,10 +141,10 @@ class Environment(BaseCurriculumEnvironment):
                 theta -= np.pi
 
             return theta / np.pi
-        
+
         def get_normalized_distance(distance: float):
             return distance / self._get_max_distance()
-        
+
         def extend_observation_by_ball():
             current_robot_position = -current_robot.x, current_robot.y
             ball_position = -ball.x, ball.y
@@ -169,7 +169,7 @@ class Environment(BaseCurriculumEnvironment):
                 self.norm_v(-current_robot.v_x),
                 self.norm_v(current_robot.v_y)
             ])
-        
+
         def extend_observation_by_robot(robot: Robot):
             if self._is_inside_field((robot.x, robot.y)):
                 theta = get_norm_theta(robot)
@@ -234,9 +234,9 @@ class Environment(BaseCurriculumEnvironment):
                 5.0)
         else:
             reward = 0
-        
+
         return reward, ball_potential
-    
+
     def _ball_gradient_reward_by_positions(
         self,
         previous_ball_potential: 'float | None',
@@ -259,20 +259,20 @@ class Environment(BaseCurriculumEnvironment):
                 5.0)
         else:
             reward = 0
-        
+
         return reward, ball_potential
-        
+
     def _move_towards_ball_reward(self):
         ball = self.get_ball()
         return self._move_reward((ball.x, ball.y))
-    
+
     def _move_reward(
         self,
         position: 'tuple[float, float]'
     ):
         robot = self._get_agent()
         robot_position = np.array([robot.x, robot.y])
-        
+
         robot_velocities = np.array([robot.v_x, robot.v_y])
         robot_ball_vector = np.array(position) - robot_position
         robot_ball_vector = robot_ball_vector / np.linalg.norm(robot_ball_vector)
@@ -280,7 +280,7 @@ class Environment(BaseCurriculumEnvironment):
         move_reward = np.dot(robot_ball_vector, robot_velocities)
 
         return np.clip(move_reward / 0.4, -5.0, 5.0)
-    
+
     def _calculate_reward_and_done(self):
         self._try_set_last_robot_touched_ball()
 
@@ -298,7 +298,7 @@ class Environment(BaseCurriculumEnvironment):
                 reward = 10
 
         return reward, is_done
-    
+
     def _get_reward_when_is_not_done(self):
         w_move = 0.2
         w_ball_gradient = 0.8
@@ -312,7 +312,7 @@ class Environment(BaseCurriculumEnvironment):
         if self._is_ball_inside_defensive_area():
             gradient_ball_potential, ball_gradient = \
                 self._get_ball_gradient_towards_defensive_line_reward()
-            
+
             self.previous_ball_potential = ball_gradient
             move_reward = self._move_towards_ball_reward()
 
@@ -339,9 +339,9 @@ class Environment(BaseCurriculumEnvironment):
                 reward = w_move * move_reward + \
                     w_energy * energy_penalty - \
                     base_penalty
-                
+
         return reward
-    
+
     def _get_ball_gradient_towards_defensive_line_reward(self):
         ball = self.get_ball()
         own_goal_position = self.get_inside_own_goal_position(self.is_yellow_team)
@@ -351,7 +351,7 @@ class Environment(BaseCurriculumEnvironment):
             self.previous_ball_potential,
             own_goal_position,
             defensive_line_position)
-    
+
     def _is_last_robot_touched_ball(self):
         last_robot_touched_ball = self.last_robot_touched_ball
 
@@ -360,9 +360,9 @@ class Environment(BaseCurriculumEnvironment):
             is_yellow_team = last_robot_touched_ball["is_yellow_team"]
 
             return not is_yellow_team and robot.id == self.robot_id
-        
+
         return False
-    
+
     def _is_ball_inside_defensive_area(self):
         return self.get_ball().x <= self.defensive_line_x
 
@@ -396,3 +396,4 @@ class Environment(BaseCurriculumEnvironment):
                 }
 
                 minimum_distance = distance
+                

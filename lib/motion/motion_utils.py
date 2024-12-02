@@ -1,7 +1,7 @@
-from ..domain.robot import Robot
-from ..geometry.geometry_utils import GeometryUtils
-from ..utils.configuration_utils import ConfigurationUtils
-from ..utils.robot_utils import RobotUtils
+from lib.domain.robot import Robot
+from lib.geometry.geometry_utils import GeometryUtils
+from lib.utils.configuration_utils import ConfigurationUtils
+from lib.utils.robot_utils import RobotUtils
 
 import math
 
@@ -45,7 +45,7 @@ class MotionUtils:
         leftMotorSpeed, rightMotorSpeed = MotionUtils._get_speeds(motorSpeed, base_speed, reversed)
 
         return leftMotorSpeed, rightMotorSpeed, error
-    
+
     @staticmethod
     def _get_speeds(
         motor_speed: float,

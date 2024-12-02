@@ -11,9 +11,9 @@ from stable_baselines3 import PPO
 
 from lib.utils.rsoccer_utils import RSoccerUtils
 
-from ...environment.base_environment import BaseEnvironment
-from ...utils.field_utils import FieldUtils
-from ...utils.configuration_utils import ConfigurationUtils
+from lib.environment.base_environment import BaseEnvironment
+from lib.utils.field_utils import FieldUtils
+from lib.utils.configuration_utils import ConfigurationUtils
 
 TRAINING_EPISODE_DURATION = ConfigurationUtils.get_rsoccer_training_episode_duration()
 

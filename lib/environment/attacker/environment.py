@@ -9,7 +9,7 @@ from lib.domain.curriculum_task import CurriculumTask
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
 from lib.geometry.geometry_utils import GeometryUtils
 
-from ...utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer_utils import RSoccerUtils
 
 class Environment(BaseCurriculumEnvironment):
     def __init__(
@@ -33,14 +33,14 @@ class Environment(BaseCurriculumEnvironment):
             high=1,
             shape=(34,),
             dtype=np.float32)
-    
+
     def _is_done(self):
         if self._any_team_scored_goal():
             return True
         elif self._has_episode_time_exceeded():
             return True
         return False
-    
+
     def _frame_to_observations(self):
         observation = []
 
@@ -49,7 +49,7 @@ class Environment(BaseCurriculumEnvironment):
 
         def get_normalized_distance(distance: float):
             return distance / self._get_max_distance()
-        
+
         def extend_observation_by_ball():
             current_robot_position = current_robot.x, -current_robot.y
             ball_position = ball.x, -ball.y
@@ -63,7 +63,7 @@ class Environment(BaseCurriculumEnvironment):
                 self.norm_v(ball.v_x),
                 self.norm_v(-ball.v_y)
             ])
-        
+
         def extend_observation_by_current_robot():
             theta = -RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
 
@@ -108,7 +108,7 @@ class Environment(BaseCurriculumEnvironment):
             extend_observation_by_robot(frame.robots_yellow[i])
 
         return np.array(observation, dtype=np.float32)
-    
+
     def _frame_to_opponent_observations(self, robot_id: int):
         observation = []
 
@@ -124,10 +124,10 @@ class Environment(BaseCurriculumEnvironment):
                 theta -= np.pi
 
             return theta / np.pi
-        
+
         def get_normalized_distance(distance: float):
             return distance / self._get_max_distance()
-        
+
         def extend_observation_by_ball():
             current_robot_position = -current_robot.x, current_robot.y
             ball_position = -ball.x, ball.y
@@ -152,7 +152,7 @@ class Environment(BaseCurriculumEnvironment):
                 self.norm_v(-current_robot.v_x),
                 self.norm_v(current_robot.v_y)
             ])
-        
+
         def extend_observation_by_robot(robot: Robot):
             if self._is_inside_field((robot.x, robot.y)):
                 theta = get_norm_theta(robot)
@@ -217,16 +217,16 @@ class Environment(BaseCurriculumEnvironment):
                 5.0)
         else:
             reward = 0
-        
+
         return reward, ball_potential
-        
+
     def _move_reward(self):
         ball = self.get_ball()
         robot = self._get_agent()
 
         ball_position = np.array([ball.x, ball.y])
         robot_position = np.array([robot.x, robot.y])
-        
+
         robot_velocities = np.array([robot.v_x, robot.v_y])
         robot_ball_vector = ball_position - robot_position
         robot_ball_vector = robot_ball_vector / np.linalg.norm(robot_ball_vector)
@@ -234,7 +234,7 @@ class Environment(BaseCurriculumEnvironment):
         move_reward = np.dot(robot_ball_vector, robot_velocities)
 
         return np.clip(move_reward / 0.4, -5.0, 5.0)
-    
+
     def _calculate_reward_and_done(self):
         reward = 0
 
@@ -250,7 +250,7 @@ class Environment(BaseCurriculumEnvironment):
         else:
             grad_ball_potential, ball_gradient = \
                 self._ball_gradient_reward(self.previous_ball_potential)
-            
+
             self.previous_ball_potential = ball_gradient
 
             move_reward = self._move_reward()
@@ -259,7 +259,7 @@ class Environment(BaseCurriculumEnvironment):
             reward = w_move * move_reward + \
                 w_ball_grad * grad_ball_potential + \
                 w_energy * energy_penalty
-            
+
         is_done = self._is_done()
 
         if is_done:
@@ -269,3 +269,4 @@ class Environment(BaseCurriculumEnvironment):
                 self.last_game_score = 0
 
         return reward, is_done
+    
