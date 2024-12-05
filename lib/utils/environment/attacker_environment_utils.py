@@ -95,7 +95,7 @@ class AttackerEnvironmentUtils:
         frame = base_environment.frame
 
         team = frame.robots_yellow if is_yellow else frame.robots_blue
-        foe_team = team = frame.robots_blue if is_yellow else frame.robots_yellow
+        foe_team = frame.robots_blue if is_yellow else frame.robots_yellow
 
         for i in range(3):
             if i != robot_id:
