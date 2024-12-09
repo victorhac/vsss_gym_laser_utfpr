@@ -45,7 +45,7 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
         observation = []
 
         current_robot = self._get_robot_by_id(self.robot_id, False)
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         def get_normalized_distance(distance: float):
             return distance / self._get_max_distance()
@@ -113,7 +113,7 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
         observation = []
 
         current_robot = self._get_robot_by_id(robot_id, True)
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         def get_norm_theta(robot: Robot):
             theta = -RSoccerUtils.get_corrected_angle(robot.theta)
@@ -236,7 +236,7 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
     ):
         field_length = self.get_field_length()
         goal_depth = self.get_goal_depth()
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         convert_m_to_cm = lambda x: x * 100
 
@@ -264,7 +264,7 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
         return reward, ball_potential
 
     def _move_reward(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         robot = self._get_agent()
 
         ball_position = np.array([ball.x, ball.y])

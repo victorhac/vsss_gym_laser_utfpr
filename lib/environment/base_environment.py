@@ -242,7 +242,7 @@ class BaseEnvironment(gym.Env):
             self.get_goal_depth(),
             not is_yellow_team)
 
-    def get_ball(self):
+    def _get_ball(self):
         return self.frame.ball
 
     def get_ball_radius(self):
@@ -371,11 +371,11 @@ class BaseEnvironment(gym.Env):
         return - (en_penalty_1 + en_penalty_2)
 
     def _any_team_scored_goal(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         return abs(ball.x) > (self.get_field_length() / 2)
 
     def _has_received_goal(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         return ball.x < -self.get_field_length() / 2
 
     def _has_scored_goal(self):
@@ -462,7 +462,7 @@ class BaseEnvironment(gym.Env):
         self,
         tolerance: float = 0.1
     ):
-        ball = self.get_ball()
+        ball = self._get_ball()
         robot = self._get_agent()
 
         return GeometryUtils.is_close(

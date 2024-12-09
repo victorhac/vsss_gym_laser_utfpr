@@ -61,7 +61,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         observation = []
 
         current_robot = self._get_robot_by_id(self.robot_id, self.is_yellow_team)
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         def extend_observation_by_ball():
             observation.extend([
@@ -102,8 +102,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             self,
             robot_id,
             True,
-            False
-        )
+            False)
     
     def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
         is_yellow = behavior.is_yellow
@@ -155,7 +154,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         undesired_position: float
     ):
         field_length = self.get_field_length()
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         distance_to_desired = GeometryUtils.distance(
             (ball.x, ball.y),
@@ -177,7 +176,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         return reward, ball_potential
 
     def _move_towards_ball_reward(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         return self._move_reward((ball.x, ball.y))
 
     def _move_reward(
@@ -238,7 +237,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         w_energy = 2e-4
 
         robot = self._get_agent()
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         energy_penalty = self._energy_penalty()
 
@@ -284,7 +283,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         return reward
 
     def _get_ball_gradient_towards_defensive_line_reward(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         own_goal_position = self.get_inside_own_goal_position(self.is_yellow_team)
         defensive_line_position = (self.defensive_line_x, ball.y)
 
@@ -307,10 +306,10 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             self._is_last_robot_touched_ball_defensive_area()
 
     def _is_ball_inside_defensive_area(self):
-        return self.get_ball().x <= self.defensive_line_x
+        return self._get_ball().x <= self.defensive_line_x
 
     def _is_ball_inside_goal_area(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         return self._is_inside_own_goal_area(
             (ball.x, ball.y),
             self.is_yellow_team)
@@ -319,7 +318,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         return self._get_agent().x <= self.defensive_line_x
 
     def _try_set_last_robot_touched_ball_defensive_area(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         minimum_distance = None
 
         def distance_to_ball(robot: Robot):

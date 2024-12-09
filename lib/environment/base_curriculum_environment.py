@@ -130,7 +130,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
         return left_speed, right_speed
     
     def _create_ball_following_robot_command(self, behavior: RobotCurriculumBehavior):
-        ball = self.get_ball()
+        ball = self._get_ball()
         robot_id = behavior.robot_id
         is_yellow = behavior.is_yellow
 
@@ -151,7 +151,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
         is_yellow = behavior.is_yellow
         robot_id = behavior.robot_id
 
-        ball = self.get_ball()
+        ball = self._get_ball()
         robot = self._get_robot_by_id(robot_id, is_yellow)
 
         if self._is_inside_own_goal_area((ball.x, ball.y), is_yellow):

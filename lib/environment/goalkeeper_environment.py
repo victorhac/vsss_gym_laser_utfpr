@@ -81,7 +81,7 @@ class GoalkeeperEnvironment(BaseEnvironment):
     def _frame_to_attacker_observations(self):
         observation = []
 
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         observation.extend([
             self.norm_x(-ball.x),
@@ -127,7 +127,7 @@ class GoalkeeperEnvironment(BaseEnvironment):
     def _frame_to_observations(self):
         observation = []
 
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         observation.extend([
             self.norm_x(ball.x),
@@ -208,7 +208,7 @@ class GoalkeeperEnvironment(BaseEnvironment):
     ):
         field_length = self.get_field_length()
         goal_depth = self.get_goal_depth()
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         convert_m_to_cm = lambda x: x * 100
 
@@ -236,7 +236,7 @@ class GoalkeeperEnvironment(BaseEnvironment):
         return reward, ball_potential
         
     def _move_reward(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         robot = self._get_agent()
 
         ball_position = np.array([ball.x, ball.y])
@@ -256,11 +256,11 @@ class GoalkeeperEnvironment(BaseEnvironment):
         return - (en_penalty_1 + en_penalty_2)
     
     def _any_team_scored_goal(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         return abs(ball.x) > (self.get_field_length() / 2)
     
     def _has_received_goal(self):        
-        ball = self.get_ball()
+        ball = self._get_ball()
         return ball.x < -self.get_field_length() / 2
 
     def _has_scored_goal(self):

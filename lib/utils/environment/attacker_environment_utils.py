@@ -40,7 +40,7 @@ class AttackerEnvironmentUtils:
         
         current_robot = base_environment._get_robot_by_id(robot_id, is_yellow)
         current_robot_position = get_x_and_y(current_robot.x, current_robot.y)
-        ball = base_environment.get_ball()
+        ball = base_environment._get_ball()
 
         def extend_observation_by_ball():
             ball_position = get_x_and_y(ball.x, ball.y)
