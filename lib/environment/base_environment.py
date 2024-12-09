@@ -275,16 +275,14 @@ class BaseEnvironment(gym.Env):
             self.get_field_length(),
             self.get_goal_area_length(),
             self.get_goal_area_width(),
-            True,
-            self.get_robot_radius())
+            True)
 
     def _get_random_position_inside_opponent_goal_area(self):
         return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
             self.get_goal_area_length(),
             self.get_goal_area_width(),
-            False,
-            self.get_robot_radius())
+            False)
 
     def _get_random_position_inside_own_area(self):
         return FieldUtils.get_random_position_inside_own_area(

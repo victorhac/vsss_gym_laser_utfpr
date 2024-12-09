@@ -23,7 +23,7 @@ updates_per_task = 2
 games_count = 100
 default_threshold = .8
 
-task = DefenderBehaviorUtils.get_task_3(
+task = DefenderBehaviorUtils.get_task_4(
     update_count,
     updates_per_task,
     games_count,
@@ -50,6 +50,6 @@ while True:
 
     plot_reward(reward_per_step)
 
-    input("Continue....")
+    input("Continue...")
 
     reward_per_step.clear()

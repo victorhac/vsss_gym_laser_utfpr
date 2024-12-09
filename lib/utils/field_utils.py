@@ -188,22 +188,18 @@ class FieldUtils:
         field_length: float,
         goal_area_length: float,
         goal_area_width: float,
-        is_left_team: bool,
-        robot_radius: float
+        is_left_team: bool
     ):
-        secure_robot_radius = robot_radius + 0.05
-
-        goal_area_x = random.uniform(secure_robot_radius, goal_area_length)
-
         max_x = field_length / 2
         max_y = goal_area_width / 2
 
-        y = random.uniform(-max_y + secure_robot_radius, max_y - secure_robot_radius)
+        x = max_x - random.uniform(0, goal_area_length)
+        y = random.uniform(-max_y, max_y)
 
         if is_left_team:
-            return -max_x + goal_area_x, y
+            return -x, y
         else:
-            return max_x - goal_area_x, y
+            return x, y
 
     @staticmethod  
     def get_random_position_at_distance(

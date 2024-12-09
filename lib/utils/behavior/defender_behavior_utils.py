@@ -260,5 +260,5 @@ class DefenderBehaviorUtils:
 
         return builder\
             .set_goalkeeper_ball_following_behavior()\
-            .set_position_enum(PositionEnum.OWN_AREA)\
+            .set_position_enum(PositionEnum.GOAL_AREA)\
             .build()
