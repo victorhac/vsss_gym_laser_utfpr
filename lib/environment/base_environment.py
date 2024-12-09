@@ -227,10 +227,10 @@ class BaseEnvironment(gym.Env):
     def get_field_width(self):
         return self.field.width
 
-    def get_penalty_length(self):
+    def get_goal_area_length(self):
         return self.field.penalty_length
 
-    def get_penalty_width(self):
+    def get_goal_area_width(self):
         return self.field.penalty_width
 
     def get_goal_depth(self):
@@ -270,19 +270,19 @@ class BaseEnvironment(gym.Env):
             self.get_field_length(),
             self.get_field_width())
 
-    def _get_random_position_inside_own_penalty_area(self):
-        return FieldUtils.get_random_position_inside_own_penalty_area(
+    def _get_random_position_inside_own_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             True,
             self.get_robot_radius())
 
-    def _get_random_position_inside_opponent_penalty_area(self):
-        return FieldUtils.get_random_position_inside_own_penalty_area(
+    def _get_random_position_inside_opponent_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             False,
             self.get_robot_radius())
 
@@ -323,16 +323,16 @@ class BaseEnvironment(gym.Env):
         return FieldUtils.get_random_position_inside_own_area_except_goal_area(
             self.get_field_length(),
             self.get_field_width(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             True)
 
     def _get_random_position_inside_opponent_area_except_goal_area(self):
         return FieldUtils.get_random_position_inside_own_area_except_goal_area(
             self.get_field_length(),
             self.get_field_width(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             False)
 
     def _is_inside_field(
@@ -353,8 +353,8 @@ class BaseEnvironment(gym.Env):
         return FieldUtils.is_inside_own_goal_area(
             position,
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             not is_yellow_team)
 
     def _get_max_distance(self):
@@ -422,9 +422,9 @@ class BaseEnvironment(gym.Env):
 
     def _get_goal_area_position_function(self, is_yellow: bool):
         if is_yellow:
-            return self._get_random_position_inside_opponent_penalty_area
+            return self._get_random_position_inside_opponent_goal_area
 
-        return self._get_random_position_inside_own_penalty_area
+        return self._get_random_position_inside_own_goal_area
 
     def _get_opponent_goal_area_position_function(self, is_yellow: bool):
         return self._get_goal_area_position_function(not is_yellow)
@@ -457,3 +457,26 @@ class BaseEnvironment(gym.Env):
         position: 'tuple[float, float]'
     ):
         return lambda: self._get_random_position_at_distance(distance, position)
+    
+    def _get_is_close_to_ball(
+        self,
+        tolerance: float = 0.1
+    ):
+        ball = self.get_ball()
+        robot = self._get_agent()
+
+        return GeometryUtils.is_close(
+            (robot.x, robot.y),
+            (ball.x, ball.y),
+            tolerance)
+    
+    def _get_robot_is_close_to_position(
+        self,
+        robot: Robot,
+        position: 'tuple[float, float]',
+        tolerance: float = 0.1
+    ):
+        return GeometryUtils.is_close(
+            (robot.x, robot.y),
+            position,
+            tolerance)

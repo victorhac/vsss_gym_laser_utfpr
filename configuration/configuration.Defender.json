@@ -75,7 +75,7 @@
             "width": 0.4,
             "depth": 0.1
         },
-        "penalty": {
+        "goal-area": {
             "length": 0.15,
             "width": 0.7
         },

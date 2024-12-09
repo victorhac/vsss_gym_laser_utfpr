@@ -12,20 +12,20 @@ from lib.domain.enums.position_enum import PositionEnum
 from lib.environment.base_environment import BaseEnvironment
 from lib.utils.motion_utils import MotionUtils
 
-from lib.utils.configuration_utils import ConfigurationUtils
+from configuration.configuration import Configuration
 from lib.utils.rsoccer_utils import RSoccerUtils
 
-TRAINING_EPISODE_DURATION = ConfigurationUtils.get_rsoccer_training_episode_duration()
+TRAINING_EPISODE_DURATION = Configuration.get_rsoccer_training_episode_duration()
 
-NUMBER_ROBOTS_BLUE = ConfigurationUtils.get_rsoccer_team_blue_number_robots()
-NUMBER_ROBOTS_YELLOW = ConfigurationUtils.get_rsoccer_team_yellow_number_robots()
+NUMBER_ROBOTS_BLUE = Configuration.get_rsoccer_team_blue_number_robots()
+NUMBER_ROBOTS_YELLOW = Configuration.get_rsoccer_team_yellow_number_robots()
 
-V_WHEEL_DEADZONE = ConfigurationUtils.get_rsoccer_robot_speed_dead_zone_meters_seconds()
+V_WHEEL_DEADZONE = Configuration.get_rsoccer_robot_speed_dead_zone_meters_seconds()
 
-TIME_STEP = ConfigurationUtils.get_rsoccer_training_time_step_seconds()
+TIME_STEP = Configuration.get_rsoccer_training_time_step_seconds()
 
 # addapt this for your robot
-MAX_MOTOR_SPEED = ConfigurationUtils.get_firasim_robot_speed_max_radians_seconds()
+MAX_MOTOR_SPEED = Configuration.get_firasim_robot_speed_max_radians_seconds()
 
 class BaseCurriculumEnvironment(BaseEnvironment):
     def __init__(
@@ -156,14 +156,28 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         if self._is_inside_own_goal_area((ball.x, ball.y), is_yellow):
             position = (ball.x, ball.y)
-        else:
-            max_y = self.get_penalty_width() / 2
-            position = robot.x, np.clip(ball.y, -max_y, max_y)
 
-        left_speed, right_speed = self._go_to_point_v_wheels(
-            robot_id,
-            is_yellow,
-            position)
+            left_speed, right_speed = self._go_to_point_v_wheels(
+                robot_id,
+                is_yellow,
+                position)
+        else:
+            max_y = self.get_goal_area_width() / 2
+            x = self.get_field_length() / 2 - self.get_goal_area_length() / 2
+
+            x = x if is_yellow else -x
+            y = np.clip(ball.y, -max_y, max_y)
+
+            position = x, y
+
+            if self._get_robot_is_close_to_position(robot, position):
+                left_speed, right_speed = 0, 0
+            else:
+                left_speed, right_speed = self._go_to_point_v_wheels(
+                    robot_id,
+                    is_yellow,
+                    position)
+        
 
         velocity_alpha = behavior.get_velocity_alpha()
 

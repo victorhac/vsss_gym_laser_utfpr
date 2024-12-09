@@ -35,7 +35,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             dtype=np.float32)
 
         self.defensive_line_x = 0
-        self.last_robot_touched_ball = None
+        self.last_robot_touched_ball_defensive_area = None
         self.threshold_ball = .07
         self.is_yellow_team = False
 
@@ -45,14 +45,13 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         seed=None,
         options=None
     ):
-        self.last_robot_touched_ball = None
+        self.last_robot_touched_ball_defensive_area = None
         return super().reset(seed=seed, options=options)
 
     def _is_done(self):
-        if self._is_ball_inside_goal_area():
+        if self._any_team_scored_goal():
             return True
-        elif not self._is_ball_inside_defensive_area() and\
-                self._is_last_robot_touched_ball():
+        elif self._is_ball_cleared_from_defense_area():
             return True
         elif self._has_episode_time_exceeded():
             return True
@@ -197,7 +196,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         return np.clip(move_reward / 0.4, -5.0, 5.0)
 
     def _calculate_reward_and_done(self):
-        self._try_set_last_robot_touched_ball()
+        self._try_set_last_robot_touched_ball_defensive_area()
 
         reward = 0
 
@@ -206,15 +205,34 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         if not is_done:
             reward = self._get_reward_when_is_not_done()
         else:
-            if self._is_ball_inside_goal_area():
+            if self._any_team_scored_goal() and self._has_received_goal():
                 reward = -10
-            elif not self._is_ball_inside_defensive_area() and\
-                    self._is_last_robot_touched_ball():
+            elif self._is_ball_cleared_from_defense_area():
                 reward = 10
 
         return reward, is_done
+    
+    def _get_two_team_robots_are_inside_goal_area_with_ball(self):
+        number_robots_inside_goal_area = 0
+
+        if not self._is_ball_inside_goal_area():
+            return False
+
+        for item in self.frame.robots_blue:
+            robot = self.frame.robots_blue[item]
+
+            if self._is_inside_own_goal_area(
+                (robot.x, robot.y),
+                self.is_yellow_team
+            ):
+                number_robots_inside_goal_area += 1
+
+        return number_robots_inside_goal_area >= 2
 
     def _get_reward_when_is_not_done(self):
+        if self._get_two_team_robots_are_inside_goal_area_with_ball():
+            return -10
+        
         w_move = 0.2
         w_ball_gradient = 0.8
         w_energy = 2e-4
@@ -223,6 +241,14 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         ball = self.get_ball()
 
         energy_penalty = self._energy_penalty()
+
+        def weighted_energy_penalty():
+            robot_is_behind_ball = robot.x < ball.x
+
+            if self._get_is_close_to_ball() and robot_is_behind_ball:
+                return 0
+
+            return w_energy * energy_penalty
 
         if self._is_ball_inside_defensive_area():
             gradient_ball_potential, ball_gradient = \
@@ -234,25 +260,25 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             if self._is_agent_inside_defensive_area():
                 reward = w_move * move_reward + \
                     w_ball_gradient * gradient_ball_potential + \
-                    w_energy * energy_penalty
+                    weighted_energy_penalty()
             else:
-                base_penalty = 3.001
+                base_penalty = -3.001
 
                 reward = w_move * move_reward + \
                     w_ball_gradient * gradient_ball_potential + \
-                    w_energy * energy_penalty - \
+                    weighted_energy_penalty() + \
                     base_penalty
         else:
             move_reward = self._move_reward((robot.x, ball.y))
 
             if self._is_agent_inside_defensive_area():
                 reward = w_move * move_reward + \
-                    w_energy * energy_penalty
+                    weighted_energy_penalty()
             else:
                 base_penalty = -1
 
                 reward = w_move * move_reward + \
-                    w_energy * energy_penalty - \
+                    weighted_energy_penalty() + \
                     base_penalty
 
         return reward
@@ -267,14 +293,18 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             own_goal_position,
             defensive_line_position)
 
-    def _is_last_robot_touched_ball(self):
-        last_robot_touched_ball = self.last_robot_touched_ball
+    def _is_last_robot_touched_ball_defensive_area(self):
+        last_robot_touched_ball = self.last_robot_touched_ball_defensive_area
 
         if last_robot_touched_ball is not None:
             return not last_robot_touched_ball.yellow and\
                 last_robot_touched_ball.id == self.robot_id
 
         return False
+    
+    def _is_ball_cleared_from_defense_area(self):
+        return not self._is_ball_inside_defensive_area() and\
+            self._is_last_robot_touched_ball_defensive_area()
 
     def _is_ball_inside_defensive_area(self):
         return self.get_ball().x <= self.defensive_line_x
@@ -288,7 +318,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
     def _is_agent_inside_defensive_area(self):
         return self._get_agent().x <= self.defensive_line_x
 
-    def _try_set_last_robot_touched_ball(self):
+    def _try_set_last_robot_touched_ball_defensive_area(self):
         ball = self.get_ball()
         minimum_distance = None
 
@@ -296,6 +326,9 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             return GeometryUtils.distance(
                 (robot.x, robot.y),
                 (ball.x, ball.y))
+        
+        if not self._is_ball_inside_defensive_area():
+            return
 
         for item in self.task.behaviors:
             robot = self._get_robot_by_id(item.robot_id, item.is_yellow)
@@ -303,6 +336,6 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
 
             if distance < self.threshold_ball and\
                     (minimum_distance is None or distance < minimum_distance):
-                self.last_robot_touched_ball = robot
+                self.last_robot_touched_ball_defensive_area = robot
                 minimum_distance = distance
                 

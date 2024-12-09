@@ -13,19 +13,19 @@ from lib.utils.rsoccer_utils import RSoccerUtils
 
 from lib.environment.base_environment import BaseEnvironment
 from lib.utils.field_utils import FieldUtils
-from lib.utils.configuration_utils import ConfigurationUtils
+from configuration.configuration import Configuration
 
-TRAINING_EPISODE_DURATION = ConfigurationUtils.get_rsoccer_training_episode_duration()
+TRAINING_EPISODE_DURATION = Configuration.get_rsoccer_training_episode_duration()
 
-NUMBER_ROBOTS_BLUE = ConfigurationUtils.get_rsoccer_team_blue_number_robots()
-NUMBER_ROBOTS_YELLOW = ConfigurationUtils.get_rsoccer_team_yellow_number_robots()
+NUMBER_ROBOTS_BLUE = Configuration.get_rsoccer_team_blue_number_robots()
+NUMBER_ROBOTS_YELLOW = Configuration.get_rsoccer_team_yellow_number_robots()
 
-V_WHEEL_DEADZONE = ConfigurationUtils.get_rsoccer_robot_speed_dead_zone_meters_seconds()
+V_WHEEL_DEADZONE = Configuration.get_rsoccer_robot_speed_dead_zone_meters_seconds()
 
-TIME_STEP = ConfigurationUtils.get_rsoccer_training_time_step_seconds()
+TIME_STEP = Configuration.get_rsoccer_training_time_step_seconds()
 
 # addapt this for your robot
-MAX_MOTOR_SPEED = ConfigurationUtils.get_firasim_robot_speed_max_radians_seconds()
+MAX_MOTOR_SPEED = Configuration.get_firasim_robot_speed_max_radians_seconds()
 
 class GoalkeeperEnvironment(BaseEnvironment):
     def __init__(self, render_mode="rgb_array"):
@@ -303,19 +303,19 @@ class GoalkeeperEnvironment(BaseEnvironment):
             self.get_field_length(),
             self.get_field_width())
     
-    def _get_random_position_inside_own_penalty_area(self):
-        return FieldUtils.get_random_position_inside_own_penalty_area(
+    def _get_random_position_inside_own_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             True,
             self.get_robot_radius())
     
-    def _get_random_position_inside_opponent_penalty_area(self):
-        return FieldUtils.get_random_position_inside_own_penalty_area(
+    def _get_random_position_inside_opponent_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             False,
             self.get_robot_radius())
     
@@ -356,7 +356,7 @@ class GoalkeeperEnvironment(BaseEnvironment):
 
             return pos
 
-        pos = get_position(self._get_random_position_inside_own_penalty_area)
+        pos = get_position(self._get_random_position_inside_own_goal_area)
         frame.robots_blue[0] = Robot(x=pos[0], y=pos[1], theta=theta())
 
         pos = get_position(self._get_random_position_inside_own_area)

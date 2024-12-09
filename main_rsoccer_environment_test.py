@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from lib.utils.behavior.defender_behavior_utils import DefenderBehaviorUtils
 from lib.utils.environment.attacker_environment_utils import AttackerEnvironmentUtils
 
+from configuration.configuration import Configuration
+
 render_mode = "human"
 
 def plot_reward(reward_per_step: list):
@@ -16,11 +18,20 @@ def plot_reward(reward_per_step: list):
     plt.grid()
     plt.savefig('temp/plot.png')
 
-task = DefenderBehaviorUtils.get_task_1(1)
+update_count = 1
+updates_per_task = 2
+games_count = 100
+default_threshold = .8
+
+task = DefenderBehaviorUtils.get_task_3(
+    update_count,
+    updates_per_task,
+    games_count,
+    default_threshold)
 
 env = DefenderEnvironment(task, render_mode)
 
-model = PPO.load("models/attacker/PPO/2024_9_24_14_48_13/PPO_model_task_6_update_117_13999986_steps.zip")
+model = PPO.load(Configuration.get_model_attacker_path())
 
 reward_per_step = []
 

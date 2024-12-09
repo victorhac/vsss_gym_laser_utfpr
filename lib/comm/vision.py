@@ -1,6 +1,6 @@
 import logging
 
-from lib.utils.configuration_utils import ConfigurationUtils
+from configuration.configuration import Configuration
 from lib.utils.firasim_utils import FIRASimUtils
 
 from lib.domain.field_data import FieldData
@@ -96,7 +96,7 @@ class ProtoVision(Receiver):
 
 
     def _field_data_from_dict(self, field_data: FieldData, raw_data_dict):
-        isLeftTeam = ConfigurationUtils.get_firasim_is_left_team()
+        isLeftTeam = Configuration.get_firasim_is_left_team()
 
         rotate_field = isLeftTeam
         

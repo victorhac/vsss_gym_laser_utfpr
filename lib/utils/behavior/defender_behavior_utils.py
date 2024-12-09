@@ -2,7 +2,7 @@ from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehavi
 from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.curriculum_task import CurriculumTask
 from lib.domain.enums.position_enum import PositionEnum
-from lib.utils.configuration_utils import ConfigurationUtils
+from configuration.configuration import Configuration
 
 class DefenderBehaviorUtils:
     @staticmethod
@@ -144,7 +144,7 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OWN_GOAL,
+            PositionEnum.GOAL_AREA,
             updates_per_task,
             distance_range=(1.3, .2)
         )
@@ -199,12 +199,13 @@ class DefenderBehaviorUtils:
             updates_per_task
         )
 
-        model_path = ConfigurationUtils.get_model_attacker_path()
+        model_path = Configuration.get_model_attacker_path()
 
         return builder\
             .set_from_fixed_model_behavior(model_path)\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
+            .set_velocity_alpha_range((0, .5))\
             .build()
     
     @staticmethod
@@ -223,6 +224,7 @@ class DefenderBehaviorUtils:
             .set_ball_following_behavior()\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
+            .set_velocity_alpha_range((0, .5))\
             .build()
     
     @staticmethod
@@ -241,6 +243,7 @@ class DefenderBehaviorUtils:
             .set_ball_following_behavior()\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
+            .set_velocity_alpha_range((0, .5))\
             .build()
     
     @staticmethod

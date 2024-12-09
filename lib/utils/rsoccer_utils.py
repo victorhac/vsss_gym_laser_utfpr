@@ -1,4 +1,4 @@
-from .configuration_utils import ConfigurationUtils
+from configuration.configuration import Configuration
 from lib.domain.field_data import FieldData
 from lib.domain.robot import Robot
 from lib.domain.ball import Ball
@@ -10,13 +10,13 @@ from rsoccer_gym.Entities.Frame import Frame
 import numpy as np
 
 class RSoccerUtils:
-    GOAL_DEPTH = ConfigurationUtils.get_field_goal_depth()
-    FIELD_WIDTH = ConfigurationUtils.get_field_width()
-    FIELD_LENGTH = ConfigurationUtils.get_field_length()
+    GOAL_DEPTH = Configuration.get_field_goal_depth()
+    FIELD_WIDTH = Configuration.get_field_width()
+    FIELD_LENGTH = Configuration.get_field_length()
 
-    ROBOT_WHEEL_RADIUS = ConfigurationUtils.get_rsoccer_robot_wheel_radius()
-    ROBOT_MAX_RPM = ConfigurationUtils.get_rsoccer_robot_motor_max_rpm()
-    V_WHEEL_DEADZONE = ConfigurationUtils.get_rsoccer_robot_speed_dead_zone_meters_seconds()
+    ROBOT_WHEEL_RADIUS = Configuration.get_rsoccer_robot_wheel_radius()
+    ROBOT_MAX_RPM = Configuration.get_rsoccer_robot_motor_max_rpm()
+    V_WHEEL_DEADZONE = Configuration.get_rsoccer_robot_speed_dead_zone_meters_seconds()
     MAX_V = (ROBOT_MAX_RPM / 60) * 2 * np.pi * ROBOT_WHEEL_RADIUS
 
     @staticmethod
