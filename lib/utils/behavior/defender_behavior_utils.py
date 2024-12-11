@@ -10,7 +10,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .8
+        default_threshold: float = .95
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(

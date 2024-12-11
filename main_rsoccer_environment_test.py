@@ -18,12 +18,12 @@ def plot_reward(reward_per_step: list):
     plt.grid()
     plt.savefig('temp/plot.png')
 
-update_count = 1
-updates_per_task = 2
+update_count = 0
+updates_per_task = 3
 games_count = 100
 default_threshold = .8
 
-task = DefenderBehaviorUtils.get_task_4(
+task = DefenderBehaviorUtils.get_task_2(
     update_count,
     updates_per_task,
     games_count,
@@ -46,7 +46,7 @@ while True:
         env.render()
 
         reward_per_step.append(reward)
-        action, _ = model.predict(AttackerEnvironmentUtils.get_observation(env, env.robot_id, False, False))
+        action, _ = model.predict(AttackerEnvironmentUtils.get_observation(env, env.robot_id, False, True))
 
     plot_reward(reward_per_step)
 

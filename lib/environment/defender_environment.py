@@ -197,21 +197,20 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
     def _calculate_reward_and_done(self):
         self._try_set_last_robot_touched_ball_defensive_area()
 
-        reward = 0
-
+        reward = self._get_reward()
         is_done = self._is_done()
 
-        if not is_done:
-            reward = self._get_reward_when_is_not_done()
-        else:
+        if is_done:
             if self._any_team_scored_goal() and self._has_received_goal():
                 reward = -10
             elif self._is_ball_cleared_from_defense_area():
                 reward = 10
+            elif self._is_ball_inside_defensive_area():
+                reward = -5
 
         return reward, is_done
     
-    def _get_two_team_robots_are_inside_goal_area_with_ball(self):
+    def _are_two_team_robots_inside_goal_area_with_ball(self):
         number_robots_inside_goal_area = 0
 
         if not self._is_ball_inside_goal_area():
@@ -228,8 +227,8 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
 
         return number_robots_inside_goal_area >= 2
 
-    def _get_reward_when_is_not_done(self):
-        if self._get_two_team_robots_are_inside_goal_area_with_ball():
+    def _get_reward(self):
+        if self._are_two_team_robots_inside_goal_area_with_ball():
             return -10
         
         w_move = 0.2
