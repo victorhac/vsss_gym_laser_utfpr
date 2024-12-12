@@ -3,6 +3,7 @@ from typing import List
 import gymnasium as gym
 import numpy as np
 import pygame
+import random
 
 from rsoccer_gym.Entities import Frame, Robot
 from rsoccer_gym.Render import COLORS, Ball, VSSRenderField, VSSRobot
@@ -235,6 +236,9 @@ class BaseEnvironment(gym.Env):
 
     def get_goal_depth(self):
         return self.field.goal_depth
+    
+    def get_goal_width(self):
+        return self.field.goal_width
 
     def get_inside_own_goal_position(self, is_yellow_team: bool):
         return FieldUtils.get_inside_own_goal_position(
@@ -455,6 +459,54 @@ class BaseEnvironment(gym.Env):
         position: 'tuple[float, float]'
     ):
         return lambda: self._get_random_position_at_distance(distance, position)
+    
+    def _get_position_close_to_wall_relative_to_goal_function(
+        self,
+        is_yellow: bool,
+        distance: float,
+        distance_to_wall: float,
+    ):
+        if not is_yellow:
+            return self._get_position_close_to_wall_relative_to_own_goal_function(distance, distance_to_wall)
+        
+        return self._get_position_close_to_wall_relative_to_opponent_goal_function(distance, distance_to_wall)
+    
+    def _get_position_close_to_wall_relative_to_own_goal_function(
+        self,
+        distance: float,
+        distance_to_wall: float,
+    ):
+        return lambda: self._get_position_close_to_wall_relative_to_goal(
+            distance,
+            distance_to_wall,
+            True)
+    
+    def _get_position_close_to_wall_relative_to_opponent_goal_function(
+        self,
+        distance: float,
+        distance_to_wall: float,
+    ):
+        return lambda: self._get_position_close_to_wall_relative_to_goal(
+            distance,
+            distance_to_wall,
+            False)
+    
+    def _get_position_close_to_wall_relative_to_goal(
+        self,
+        distance: float,
+        distance_to_wall: float,
+        is_left_team: bool
+    ):
+        upper = random.choice([True, False])
+
+        return FieldUtils.get_position_close_to_wall_relative_to_own_goal(
+            self.get_field_length(),
+            self.get_field_width(),
+            self.get_goal_width(),
+            distance,
+            distance_to_wall,
+            is_left_team,
+            upper)
     
     def _get_is_close_to_ball(
         self,
