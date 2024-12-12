@@ -270,7 +270,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         if position_enum == PositionEnum.OWN_AREA:
             return self._get_own_area_position_function(is_yellow)
-        elif position_enum == PositionEnum.GOAL_AREA:
+        elif position_enum == PositionEnum.OWN_GOAL_AREA:
             return self._get_goal_area_position_function(is_yellow)
         elif position_enum == PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA:
             return self._get_own_area_except_goal_area_position_function(is_yellow)

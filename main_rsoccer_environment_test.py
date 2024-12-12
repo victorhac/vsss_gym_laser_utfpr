@@ -6,8 +6,19 @@ from lib.utils.behavior.defender_behavior_utils import DefenderBehaviorUtils
 from lib.utils.environment.attacker_environment_utils import AttackerEnvironmentUtils
 
 from configuration.configuration import Configuration
+from lib.utils.file_utils import FileUtils
 
 render_mode = "human"
+plot_file = "temp/plot.png"
+
+tasks = [
+    DefenderBehaviorUtils.get_task_1,
+    DefenderBehaviorUtils.get_task_2,
+    DefenderBehaviorUtils.get_task_3,
+    DefenderBehaviorUtils.get_task_4
+]
+
+FileUtils.remove_file_if_exists(plot_file)
 
 def plot_reward(reward_per_step: list):
     plt.plot(reward_per_step)
@@ -16,14 +27,35 @@ def plot_reward(reward_per_step: list):
     plt.title("Step Rewards over Time")
     plt.legend()
     plt.grid()
-    plt.savefig('temp/plot.png')
+    plt.savefig(plot_file)
+
+def get_task(
+    id: int,
+    update_count: int,
+    updates_per_task: int,
+    games_count: int,
+    default_threshold: float
+):
+    return tasks[id](
+        update_count,
+        updates_per_task,
+        games_count,
+        default_threshold
+    )
+
+is_left_team = True
+is_yellow = False
+robot_id = 0
 
 update_count = 0
 updates_per_task = 3
 games_count = 100
 default_threshold = .8
 
-task = DefenderBehaviorUtils.get_task_2(
+task_id = 1
+
+task = get_task(
+    task_id,
     update_count,
     updates_per_task,
     games_count,
@@ -46,7 +78,13 @@ while True:
         env.render()
 
         reward_per_step.append(reward)
-        action, _ = model.predict(AttackerEnvironmentUtils.get_observation(env, env.robot_id, False, True))
+        action, _ = model.predict(
+            AttackerEnvironmentUtils.get_observation(
+                env,
+                robot_id,
+                is_yellow,
+                is_left_team
+            ))
 
     plot_reward(reward_per_step)
 

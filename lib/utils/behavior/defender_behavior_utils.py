@@ -55,7 +55,7 @@ class DefenderBehaviorUtils:
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             PositionEnum.RELATIVE_TO_OWN_GOAL,
             updates_per_task,
-            distance_range=(1.3, .2)
+            distance_range=(1, .2)
         )
 
         return CurriculumTask(
@@ -79,9 +79,8 @@ class DefenderBehaviorUtils:
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
-            DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
+            DefenderBehaviorUtils.get_own_team_goalkeeper_ball_following_behavior(
                 2,
-                False,
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
@@ -97,7 +96,7 @@ class DefenderBehaviorUtils:
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             PositionEnum.RELATIVE_TO_OWN_GOAL,
             updates_per_task,
-            distance_range=(1.3, .2)
+            distance_range=(1, .2)
         )
 
         return CurriculumTask(
@@ -125,9 +124,8 @@ class DefenderBehaviorUtils:
                 1,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
-            DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
+            DefenderBehaviorUtils.get_own_team_goalkeeper_ball_following_behavior(
                 2,
-                False,
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
@@ -137,16 +135,15 @@ class DefenderBehaviorUtils:
                 1,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
-            DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
+            DefenderBehaviorUtils.get_opponent_team_goalkeeper_ball_following_behavior(
                 2,
-                True,
                 updates_per_task)
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.GOAL_AREA,
+            PositionEnum.OWN_GOAL_AREA,
             updates_per_task,
-            distance_range=(1.3, .2)
+            distance_range=(1, .2)
         )
 
         return CurriculumTask(
@@ -260,5 +257,27 @@ class DefenderBehaviorUtils:
 
         return builder\
             .set_goalkeeper_ball_following_behavior()\
-            .set_position_enum(PositionEnum.GOAL_AREA)\
+            .set_position_enum(PositionEnum.OWN_GOAL_AREA)\
             .build()
+    
+    @staticmethod
+    def get_own_team_goalkeeper_ball_following_behavior(
+        robot_id: int,
+        updates_per_task: int
+    ):
+        return DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
+            robot_id,
+            False,
+            updates_per_task
+        )
+    
+    @staticmethod
+    def get_opponent_team_goalkeeper_ball_following_behavior(
+        robot_id: int,
+        updates_per_task: int
+    ):
+        return DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
+            robot_id,
+            True,
+            updates_per_task
+        )

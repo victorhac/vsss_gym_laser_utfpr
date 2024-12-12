@@ -223,3 +223,49 @@ class FieldUtils:
             if x_min <= new_x <= x_max and y_min <= new_y <= y_max:
                 return new_x, new_y
             
+    @staticmethod
+    def get_position_close_to_wall_relative_to_own_goal(
+        field_length: float,
+        field_width: float,
+        goal_width: float,
+        distance: float,
+        distance_to_wall: float,
+        is_left_team: bool,
+        upper: bool
+    ):
+        half_field_width = field_width / 2
+        half_goal_width = goal_width / 2
+        vertical_wall_size = (field_width - goal_width) / 2
+        horizontal_wall_size = field_length
+
+        max_distance = horizontal_wall_size + 2 * vertical_wall_size
+        corrected_distance = distance % max_distance
+
+        goal_position = FieldUtils.get_own_goal_position(
+            field_length,
+            True
+        )
+
+        if 0 <= corrected_distance < vertical_wall_size:
+            x = goal_position[0] + distance_to_wall
+            y = distance + half_goal_width
+        elif corrected_distance == vertical_wall_size:
+            x = goal_position[0] + distance_to_wall
+            y = half_field_width - distance_to_wall
+        elif vertical_wall_size < corrected_distance < horizontal_wall_size:
+            x = goal_position[0] + (corrected_distance - vertical_wall_size)
+            y = half_field_width - distance_to_wall
+        elif corrected_distance == horizontal_wall_size:
+            x = -(goal_position[0] + distance_to_wall)
+            y = half_field_width - distance_to_wall
+        else:
+            x = -(goal_position[0] + distance_to_wall)
+            y = half_goal_width + (max_distance - corrected_distance)
+
+        if not upper:
+            y = -y
+
+        if is_left_team:
+            return x, y
+        
+        return -x, -y

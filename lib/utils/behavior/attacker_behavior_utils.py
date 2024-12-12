@@ -162,7 +162,7 @@ class AttackerBehaviorUtils:
             AttackerBehaviorUtils.get_stopped_behavior(
                 2,
                 False,
-                PositionEnum.GOAL_AREA,
+                PositionEnum.OWN_GOAL_AREA,
                 updates_per_task),
             AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
@@ -175,7 +175,7 @@ class AttackerBehaviorUtils:
             AttackerBehaviorUtils.get_stopped_behavior(
                 2,
                 True,
-                PositionEnum.GOAL_AREA,
+                PositionEnum.OWN_GOAL_AREA,
                 updates_per_task)
         ]
     
@@ -217,7 +217,7 @@ class AttackerBehaviorUtils:
             AttackerBehaviorUtils.get_stopped_behavior(
                 2,
                 False,
-                PositionEnum.GOAL_AREA,
+                PositionEnum.OWN_GOAL_AREA,
                 updates_per_task),
             AttackerBehaviorUtils.get_opponent_team_from_previous_model_behavior(
                 0,
@@ -231,7 +231,7 @@ class AttackerBehaviorUtils:
             AttackerBehaviorUtils.get_stopped_behavior(
                 2,
                 True,
-                PositionEnum.GOAL_AREA,
+                PositionEnum.OWN_GOAL_AREA,
                 updates_per_task),
         ]
     
@@ -365,7 +365,7 @@ class AttackerBehaviorUtils:
         )
 
         return builder\
-            .set_position_enum(PositionEnum.GOAL_AREA)\
+            .set_position_enum(PositionEnum.OWN_GOAL_AREA)\
             .set_velocity_alpha_range((.2, .2))\
             .build()
     
