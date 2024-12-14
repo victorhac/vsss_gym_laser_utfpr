@@ -6,11 +6,13 @@ class BallCurriculumBehavior:
         self,
         position_enum: PositionEnum,
         updates_per_task: int = 10,
-        distance_range: 'tuple[float, float] | None' = None
+        distance_range: 'tuple[float, float] | None' = None,
+        distance_to_wall: 'float | None' = None
     ):
         self.position_enum = position_enum
         self.updates_per_task = updates_per_task
         self.distance_range = distance_range
+        self.distance_to_wall = distance_to_wall
 
         self.updates = 0
         

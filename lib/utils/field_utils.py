@@ -246,16 +246,21 @@ class FieldUtils:
             True
         )
 
-        if 0 <= corrected_distance < vertical_wall_size:
+        corner_1_first_distance = vertical_wall_size - distance_to_wall
+        corner_1_second_distance = vertical_wall_size + distance_to_wall
+        corner_2_first_distance = vertical_wall_size + horizontal_wall_size - distance_to_wall
+        corner_2_second_distance = vertical_wall_size + horizontal_wall_size + distance_to_wall
+
+        if 0 <= corrected_distance < corner_1_first_distance:
             x = goal_position[0] + distance_to_wall
             y = distance + half_goal_width
-        elif corrected_distance == vertical_wall_size:
+        elif corner_1_first_distance <= corrected_distance <= corner_1_second_distance:
             x = goal_position[0] + distance_to_wall
             y = half_field_width - distance_to_wall
-        elif vertical_wall_size < corrected_distance < horizontal_wall_size:
+        elif corrected_distance < corner_2_first_distance:
             x = goal_position[0] + (corrected_distance - vertical_wall_size)
             y = half_field_width - distance_to_wall
-        elif corrected_distance == horizontal_wall_size:
+        elif corner_2_first_distance <= corrected_distance <= corner_2_second_distance:
             x = -(goal_position[0] + distance_to_wall)
             y = half_field_width - distance_to_wall
         else:

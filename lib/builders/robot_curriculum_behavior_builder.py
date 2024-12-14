@@ -15,6 +15,7 @@ class RobotCurriculumBehaviorBuilder:
 
         self.position_enum = None
         self.distance_range = None
+        self.distance_to_wall = None
         self.velocity_alpha_range = None
         self.model_path = None
 
@@ -45,6 +46,22 @@ class RobotCurriculumBehaviorBuilder:
         position_enum: PositionEnum
     ):
         self.position_enum = position_enum
+        return self
+    
+    def set_own_goal_relative_to_wall_position_enum(
+        self,
+        distance_to_wall: float
+    ):
+        self.distance_to_wall = distance_to_wall
+        self.position_enum = PositionEnum.OWN_GOAL_RELATIVE_TO_WALL
+        return self
+    
+    def set_opponent_goal_relative_to_wall_position_enum(
+        self,
+        distance_to_wall: float
+    ):
+        self.distance_to_wall = distance_to_wall
+        self.position_enum = PositionEnum.OPPONENT_GOAL_RELATIVE_TO_WALL
         return self
     
     def set_distance_range(
@@ -88,6 +105,11 @@ class RobotCurriculumBehaviorBuilder:
         robot_curriculum_behavior: RobotCurriculumBehavior
     ):
         robot_curriculum_behavior.position_enum = self.position_enum
+
+        if self.position_enum == PositionEnum.OWN_GOAL_RELATIVE_TO_WALL or\
+                self.position_enum == PositionEnum.OPPONENT_GOAL_RELATIVE_TO_WALL:
+            robot_curriculum_behavior.set_distance_to_wall(
+                self.distance_to_wall)
     
     def _set_distance_range(
         self,

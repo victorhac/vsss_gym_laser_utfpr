@@ -21,12 +21,19 @@ class RobotCurriculumBehavior:
         self.distance = None
         self.distance_range = None
         self.distance_beta = None
+        self.distance_to_wall = None
 
         self.velocity_alpha = None
         self.velocity_alpha_range = None
         self.velocity_beta = None
 
         self.model_path = None
+
+    def set_distance_to_wall(
+        self,
+        distance_to_wall: float
+    ):
+        self.distance_to_wall = distance_to_wall
 
     def set_distance_range(
         self,

@@ -1,1 +1,1 @@
-# vsss_gym_laser_utfpr
+python3 -m unittest tests/<test_file_relative_path>

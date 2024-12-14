@@ -5,15 +5,14 @@ from lib.utils.field_utils import FieldUtils
 
 class TestFieldUtils(unittest.TestCase):
     def test_get_position_close_to_wall_relative_to_own_goal(self):
+        distance = 2.03
+        distance_to_wall = .07
+        is_left_team = True
+        upper = True
+
         field_length = Configuration.get_field_length()
         field_width = Configuration.get_field_width()
         field_goal_width = Configuration.get_field_goal_width()
-        goal_position = FieldUtils.get_own_goal_position(field_length, False)
-
-        distance = 2.05
-        distance_to_wall = .2
-        is_left_team = False
-        is_yellow = True
 
         value = FieldUtils.get_position_close_to_wall_relative_to_own_goal(
             field_length,
@@ -22,11 +21,14 @@ class TestFieldUtils(unittest.TestCase):
             distance,
             distance_to_wall,
             is_left_team,
-            is_yellow
+            upper
         )
 
-        self.assertEqual(value[0], -(goal_position[0] - distance_to_wall))
-        self.assertEqual(value[1], -0.55)
+        expected_x = 0.75 - distance_to_wall
+        expected_y = 0.37 + field_goal_width / 2
+
+        self.assertEqual(value[0], expected_x)
+        self.assertEqual(value[1], expected_y)
 
 if __name__ == "__main__":
-    pass
+    unittest.main()

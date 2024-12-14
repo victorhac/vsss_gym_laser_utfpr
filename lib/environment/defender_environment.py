@@ -243,7 +243,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         def weighted_energy_penalty():
             robot_is_behind_ball = robot.x < ball.x
 
-            if self._get_is_close_to_ball() and robot_is_behind_ball:
+            if self._is_close_to_ball() and robot_is_behind_ball:
                 return 0
 
             return w_energy * energy_penalty

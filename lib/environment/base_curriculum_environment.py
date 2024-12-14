@@ -170,7 +170,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
             position = x, y
 
-            if self._get_robot_is_close_to_position(robot, position):
+            if self._is_close_to_position(robot, position):
                 left_speed, right_speed = 0, 0
             else:
                 left_speed, right_speed = self._go_to_point_v_wheels(
@@ -294,6 +294,16 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 behavior.distance)
         elif position_enum == PositionEnum.FIELD:
             return self._get_random_position_inside_field
+        elif position_enum == PositionEnum.OWN_GOAL_RELATIVE_TO_WALL:
+            return self._get_position_close_to_wall_relative_to_own_goal_function(
+                behavior.distance,
+                behavior.distance_to_wall,
+                is_yellow)
+        elif position_enum == PositionEnum.OPPONENT_GOAL_RELATIVE_TO_WALL:
+            return self._get_position_close_to_wall_relative_to_opponent_goal_function(
+                behavior.distance,
+                behavior.distance_to_wall,
+                is_yellow)
 
         return self._get_random_position_inside_field
 

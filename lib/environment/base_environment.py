@@ -460,36 +460,39 @@ class BaseEnvironment(gym.Env):
     ):
         return lambda: self._get_random_position_at_distance(distance, position)
     
-    def _get_position_close_to_wall_relative_to_goal_function(
-        self,
-        is_yellow: bool,
-        distance: float,
-        distance_to_wall: float,
-    ):
-        if not is_yellow:
-            return self._get_position_close_to_wall_relative_to_own_goal_function(distance, distance_to_wall)
-        
-        return self._get_position_close_to_wall_relative_to_opponent_goal_function(distance, distance_to_wall)
-    
     def _get_position_close_to_wall_relative_to_own_goal_function(
         self,
         distance: float,
         distance_to_wall: float,
+        is_yellow_team: bool
     ):
+        if not is_yellow_team:
+            return lambda: self._get_position_close_to_wall_relative_to_goal(
+                distance,
+                distance_to_wall,
+                True)
+        
         return lambda: self._get_position_close_to_wall_relative_to_goal(
             distance,
             distance_to_wall,
-            True)
+            False)
     
     def _get_position_close_to_wall_relative_to_opponent_goal_function(
         self,
         distance: float,
         distance_to_wall: float,
+        is_yellow_team: bool
     ):
+        if not is_yellow_team:
+            return lambda: self._get_position_close_to_wall_relative_to_goal(
+                distance,
+                distance_to_wall,
+                False)
+        
         return lambda: self._get_position_close_to_wall_relative_to_goal(
             distance,
             distance_to_wall,
-            False)
+            True)
     
     def _get_position_close_to_wall_relative_to_goal(
         self,
@@ -508,7 +511,7 @@ class BaseEnvironment(gym.Env):
             is_left_team,
             upper)
     
-    def _get_is_close_to_ball(
+    def _is_close_to_ball(
         self,
         tolerance: float = 0.1
     ):
@@ -520,7 +523,7 @@ class BaseEnvironment(gym.Env):
             (ball.x, ball.y),
             tolerance)
     
-    def _get_robot_is_close_to_position(
+    def _is_close_to_position(
         self,
         robot: Robot,
         position: 'tuple[float, float]',
@@ -530,3 +533,9 @@ class BaseEnvironment(gym.Env):
             (robot.x, robot.y),
             position,
             tolerance)
+    
+    def _is_outside_field(
+        self,
+        position: 'tuple[float, float]'
+    ):
+        return not self._is_inside_field(position)
