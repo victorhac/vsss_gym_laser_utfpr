@@ -1,4 +1,3 @@
-from stable_baselines3 import PPO
 from lib.environment.defender_environment import DefenderEnvironment
 import matplotlib.pyplot as plt
 
@@ -15,10 +14,15 @@ tasks = [
     DefenderBehaviorUtils.get_task_1,
     DefenderBehaviorUtils.get_task_2,
     DefenderBehaviorUtils.get_task_3,
-    DefenderBehaviorUtils.get_task_4
+    DefenderBehaviorUtils.get_task_4,
+    DefenderBehaviorUtils.get_task_5
 ]
 
 FileUtils.remove_file_if_exists(plot_file)
+
+def load_model():
+    from stable_baselines3 import PPO
+    return PPO.load(Configuration.get_model_attacker_path())
 
 def plot_reward(reward_per_step: list):
     plt.plot(reward_per_step)
@@ -30,13 +34,13 @@ def plot_reward(reward_per_step: list):
     plt.savefig(plot_file)
 
 def get_task(
-    id: int,
+    index: int,
     update_count: int,
     updates_per_task: int,
     games_count: int,
     default_threshold: float
 ):
-    return tasks[id](
+    return tasks[index](
         update_count,
         updates_per_task,
         games_count,
@@ -47,15 +51,15 @@ is_left_team = True
 is_yellow = False
 robot_id = 0
 
-update_count = 0
+update_count = 3
 updates_per_task = 3
 games_count = 100
 default_threshold = .8
 
-task_id = 1
+task_index = 4
 
 task = get_task(
-    task_id,
+    task_index,
     update_count,
     updates_per_task,
     games_count,
@@ -63,7 +67,7 @@ task = get_task(
 
 env = DefenderEnvironment(task, render_mode)
 
-model = PPO.load(Configuration.get_model_attacker_path())
+model = load_model()
 
 reward_per_step = []
 
