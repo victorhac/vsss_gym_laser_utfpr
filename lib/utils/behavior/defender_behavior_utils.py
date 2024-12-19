@@ -74,10 +74,11 @@ class DefenderBehaviorUtils:
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
-            DefenderBehaviorUtils.get_opponent_team_ball_following_behavior(
+            DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
-                updates_per_task)
+                updates_per_task,
+                (0, .5))
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
@@ -107,16 +108,17 @@ class DefenderBehaviorUtils:
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
-            DefenderBehaviorUtils.get_own_team_goalkeeper_ball_following_behavior(
+            DefenderBehaviorUtils.get_own_team_goalkeeper_stopped_behavior(
                 2,
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
-                updates_per_task),
-            DefenderBehaviorUtils.get_opponent_team_ball_following_behavior(
+                updates_per_task,
+                (0, .5)),
+            DefenderBehaviorUtils.get_opponent_team_stopped_behavior(
                 1,
-                PositionEnum.RELATIVE_TO_BALL,
+                PositionEnum.OPPONENT_AREA_EXCEPT_GOAL_AREA,
                 updates_per_task
             )
         ]
@@ -148,20 +150,21 @@ class DefenderBehaviorUtils:
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
                 updates_per_task),
-            DefenderBehaviorUtils.get_own_team_ball_following_behavior(
+            DefenderBehaviorUtils.get_own_team_stopped_behavior(
                 1,
-                PositionEnum.RELATIVE_TO_BALL,
+                PositionEnum.FIELD,
                 updates_per_task),
-            DefenderBehaviorUtils.get_own_team_goalkeeper_ball_following_behavior(
+            DefenderBehaviorUtils.get_own_team_goalkeeper_stopped_behavior(
                 2,
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
                 PositionEnum.RELATIVE_TO_BALL,
-                updates_per_task),
-            DefenderBehaviorUtils.get_opponent_team_ball_following_behavior(
+                updates_per_task,
+                (0, .5)),
+            DefenderBehaviorUtils.get_opponent_team_stopped_behavior(
                 1,
-                PositionEnum.RELATIVE_TO_BALL,
+                PositionEnum.FIELD,
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_goalkeeper_ball_following_behavior(
                 2,
@@ -171,7 +174,7 @@ class DefenderBehaviorUtils:
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             PositionEnum.OWN_GOAL_AREA,
             updates_per_task,
-            distance_range=(1, .2)
+            distance_range=(1.1, .4)
         )
 
         return CurriculumTask(
@@ -226,7 +229,8 @@ class DefenderBehaviorUtils:
     def get_opponent_team_from_fixed_model_behavior(
         robot_id: int,
         position_enum: PositionEnum,
-        updates_per_task: int
+        updates_per_task: int,
+        velocity_alpha_range: 'tuple[float, float]'
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
@@ -240,7 +244,7 @@ class DefenderBehaviorUtils:
             .set_from_fixed_model_behavior(model_path)\
             .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
-            .set_velocity_alpha_range((0, .5))\
+            .set_velocity_alpha_range(velocity_alpha_range)\
             .build()
     
     @staticmethod
@@ -263,7 +267,46 @@ class DefenderBehaviorUtils:
             .build()
     
     @staticmethod
+    def get_own_team_stopped_behavior(
+        robot_id: int,
+        position_enum: PositionEnum,
+        updates_per_task: int
+    ):
+        builder = RobotCurriculumBehaviorBuilder(
+            robot_id,
+            False,
+            updates_per_task
+        )
+
+        return builder\
+            .set_ball_following_behavior()\
+            .set_position_enum(position_enum)\
+            .set_distance_range((.5, .2))\
+            .set_velocity_alpha_range((0, 0))\
+            .build()
+    
+    @staticmethod
     def get_opponent_team_ball_following_behavior(
+        robot_id: int,
+        position_enum: PositionEnum,
+        updates_per_task: int,
+        velocity_alpha_range: 'tuple[float, float]'
+    ):
+        builder = RobotCurriculumBehaviorBuilder(
+            robot_id,
+            True,
+            updates_per_task
+        )
+
+        return builder\
+            .set_ball_following_behavior()\
+            .set_position_enum(position_enum)\
+            .set_distance_range((.8, .4))\
+            .set_velocity_alpha_range(velocity_alpha_range)\
+            .build()
+    
+    @staticmethod
+    def get_opponent_team_stopped_behavior(
         robot_id: int,
         position_enum: PositionEnum,
         updates_per_task: int
@@ -278,11 +321,11 @@ class DefenderBehaviorUtils:
             .set_ball_following_behavior()\
             .set_position_enum(position_enum)\
             .set_distance_range((.8, .4))\
-            .set_velocity_alpha_range((0, .5))\
+            .set_velocity_alpha_range((0, 0))\
             .build()
     
     @staticmethod
-    def get_goalkeeper_ball_following_behavior(
+    def get_goalkeeper_stopped_behavior(
         robot_id: int,
         is_yellow: bool,
         updates_per_task: int
@@ -294,16 +337,17 @@ class DefenderBehaviorUtils:
         )
 
         return builder\
-            .set_goalkeeper_ball_following_behavior()\
+            .set_ball_following_behavior()\
+            .set_velocity_alpha_range((0,0))\
             .set_position_enum(PositionEnum.OWN_GOAL_AREA)\
             .build()
     
     @staticmethod
-    def get_own_team_goalkeeper_ball_following_behavior(
+    def get_own_team_goalkeeper_stopped_behavior(
         robot_id: int,
         updates_per_task: int
     ):
-        return DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
+        return DefenderBehaviorUtils.get_goalkeeper_stopped_behavior(
             robot_id,
             False,
             updates_per_task
@@ -314,7 +358,7 @@ class DefenderBehaviorUtils:
         robot_id: int,
         updates_per_task: int
     ):
-        return DefenderBehaviorUtils.get_goalkeeper_ball_following_behavior(
+        return DefenderBehaviorUtils.get_goalkeeper_stopped_behavior(
             robot_id,
             True,
             updates_per_task

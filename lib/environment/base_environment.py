@@ -71,7 +71,7 @@ class BaseEnvironment(gym.Env):
         self.sent_commands = commands
 
         self.last_frame = self.frame
-        self.frame = self.rsim.get_frame()
+        self.frame = self._get_rsim_frame()
 
         observation = self._frame_to_observations()
         reward, done = self._calculate_reward_and_done()
@@ -90,13 +90,24 @@ class BaseEnvironment(gym.Env):
         initial_pos_frame: Frame = self._get_initial_positions_frame()
         self.rsim.reset(initial_pos_frame)
 
-        self.frame = self.rsim.get_frame()
+        self.frame = self._get_rsim_frame()
         obs = self._frame_to_observations()
 
         if self.render_mode == "human":
             self.render()
 
         return obs, {}
+    
+    def _get_rsim_frame(self):
+        frame = self.rsim.get_frame()
+
+        for item in frame.robots_blue:
+            frame.robots_blue[item].yellow = False
+
+        for item in frame.robots_yellow:
+            frame.robots_yellow[item].yellow = True
+
+        return frame
 
     def _render(self):
         def pos_transform(pos_x, pos_y):

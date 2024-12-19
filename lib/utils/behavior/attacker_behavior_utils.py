@@ -266,7 +266,7 @@ class AttackerBehaviorUtils:
         return builder\
             .set_ball_following_behavior()\
             .set_position_enum(position_enum)\
-            .set_velocity_alpha_range([0, 0])\
+            .set_velocity_alpha_range((0, 0))\
             .build()
     
     @staticmethod

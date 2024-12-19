@@ -58,15 +58,15 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
     def _set_error_dictionaries(self):
         self.own_team_error_dictionary = {
-            0: 0,
-            1: 0,
-            2: 0,
+            0: .0,
+            1: .0,
+            2: .0,
         }
 
         self.opponent_error_dictionary = {
-            0: 0,
-            1: 0,
-            2: 0
+            0: .0,
+            1: .0,
+            2: .0
         }
 
     def _set_model_dictionaries(self):
@@ -111,10 +111,10 @@ class BaseCurriculumEnvironment(BaseEnvironment):
     ):
         if is_yellow:
             robot = RSoccerUtils.to_robot(self.frame.robots_yellow[robot_id])
-            error = self.opponent_error_dictionary[robot_id]
         else:
             robot = RSoccerUtils.to_robot(self.frame.robots_blue[robot_id])
-            error = self.own_team_error_dictionary[robot_id]
+
+        error = self._get_error(robot_id, is_yellow)
 
         left_speed, right_speed, current_error = MotionUtils.go_to_point(
             robot,
@@ -122,12 +122,30 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             error,
             self.max_motor_speed)
 
-        if is_yellow:
-            self.opponent_error_dictionary[robot_id] = current_error
-        else:
-            self.own_team_error_dictionary[robot_id] = current_error
+        self._set_error(robot_id, is_yellow, current_error)
 
         return left_speed, right_speed
+    
+    def _get_error(
+        self,
+        robot_id: int,
+        is_yellow: bool 
+    ):
+        if is_yellow:
+            return self.opponent_error_dictionary[robot_id]
+        
+        return self.own_team_error_dictionary[robot_id]
+    
+    def _set_error(
+        self,
+        robot_id: int,
+        is_yellow: bool,
+        error: float
+    ):
+        if is_yellow:
+            self.opponent_error_dictionary[robot_id] = error
+        else:
+            self.own_team_error_dictionary[robot_id] = error
     
     def _create_ball_following_robot_command(self, behavior: RobotCurriculumBehavior):
         ball = self._get_ball()

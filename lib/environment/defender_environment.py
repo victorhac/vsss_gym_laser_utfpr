@@ -35,7 +35,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             dtype=np.float32)
 
         self.defensive_line_x = 0
-        self.last_robot_touched_ball_defensive_area = None
+        self.distance_when_last_robot_touched_ball_defensive_area = None
         self.threshold_ball = .07
         self.is_yellow_team = False
 
@@ -45,7 +45,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         seed=None,
         options=None
     ):
-        self.last_robot_touched_ball_defensive_area = None
+        self.distance_when_last_robot_touched_ball_defensive_area = None
         return super().reset(seed=seed, options=options)
 
     def _is_done(self):
@@ -178,6 +178,10 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
     def _move_towards_ball_reward(self):
         ball = self._get_ball()
         return self._move_reward((ball.x, ball.y))
+    
+    def _get_max_distance_to_defensive_line(self):
+        goal_position = self._get_own_goal_position()
+        return abs(goal_position[0] - self.defensive_line_x)
 
     def _move_reward(
         self,
@@ -195,7 +199,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         return np.clip(move_reward / 0.4, -5.0, 5.0)
 
     def _calculate_reward_and_done(self):
-        self._try_set_last_robot_touched_ball_defensive_area()
+        self._try_set_distance_when_last_robot_touched_ball_defensive_area()
 
         reward = self._get_reward()
         is_done = self._is_done()
@@ -204,7 +208,10 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             if self._any_team_scored_goal() and self._has_received_goal():
                 reward = -10
             elif self._is_ball_cleared_from_defense_area():
-                reward = 10
+                factor = self.distance_when_last_robot_touched_ball_defensive_area /\
+                    self._get_max_distance_to_defensive_line()
+                
+                reward = 10 * factor
             elif self._is_ball_inside_defensive_area():
                 reward = -5
 
@@ -290,19 +297,10 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             self.previous_ball_potential,
             own_goal_position,
             defensive_line_position)
-
-    def _is_last_robot_touched_ball_defensive_area(self):
-        last_robot_touched_ball = self.last_robot_touched_ball_defensive_area
-
-        if last_robot_touched_ball is not None:
-            return not last_robot_touched_ball.yellow and\
-                last_robot_touched_ball.id == self.robot_id
-
-        return False
     
     def _is_ball_cleared_from_defense_area(self):
         return not self._is_ball_inside_defensive_area() and\
-            self._is_last_robot_touched_ball_defensive_area()
+            self.distance_when_last_robot_touched_ball_defensive_area is not None
 
     def _is_ball_inside_defensive_area(self):
         return self._get_ball().x <= self.defensive_line_x
@@ -316,24 +314,45 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
     def _is_agent_inside_defensive_area(self):
         return self._get_agent().x <= self.defensive_line_x
 
-    def _try_set_last_robot_touched_ball_defensive_area(self):
+    def _try_set_distance_when_last_robot_touched_ball_defensive_area(self):
+        if not self._is_ball_inside_defensive_area():
+            return
+
+        robot_touched_ball_defensive_area = self._get_robot_touched_ball()
+
+        if robot_touched_ball_defensive_area is None:
+            return
+        
         ball = self._get_ball()
+        robot = self._get_agent()
+
+        if robot_touched_ball_defensive_area.id == robot.id and\
+                robot_touched_ball_defensive_area.yellow == robot.yellow:
+            if self.distance_when_last_robot_touched_ball_defensive_area is None:
+                self.distance_when_last_robot_touched_ball_defensive_area =\
+                    abs(self.defensive_line_x - ball.x)
+        else:
+            self.distance_when_last_robot_touched_ball_defensive_area = None
+
+    def _get_robot_touched_ball(self):
+        ball = self._get_ball()
+
         minimum_distance = None
+        robot_touched_ball_defensive_area = None
 
         def distance_to_ball(robot: Robot):
             return GeometryUtils.distance(
                 (robot.x, robot.y),
                 (ball.x, ball.y))
         
-        if not self._is_ball_inside_defensive_area():
-            return
-
         for item in self.task.behaviors:
             robot = self._get_robot_by_id(item.robot_id, item.is_yellow)
             distance = distance_to_ball(robot)
 
             if distance < self.threshold_ball and\
                     (minimum_distance is None or distance < minimum_distance):
-                self.last_robot_touched_ball_defensive_area = robot
+                robot_touched_ball_defensive_area = robot
                 minimum_distance = distance
-                
+
+        return robot_touched_ball_defensive_area
+    
