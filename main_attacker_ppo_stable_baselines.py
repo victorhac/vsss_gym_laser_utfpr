@@ -71,9 +71,7 @@ def main():
     get_first_task = lambda: AttackerBehaviorUtils.get_task_6(starting_update)
 
     tasks = [
-        get_first_task(),
-        AttackerBehaviorUtils.get_task_7(),
-        AttackerBehaviorUtils.get_task_8()
+        get_first_task()
     ]
 
     save_path = get_task_models_path()
