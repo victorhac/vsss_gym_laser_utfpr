@@ -1,13 +1,13 @@
 import random
 import math
 
-from ..geometry.geometry_utils import GeometryUtils
+from lib.utils.geometry_utils import GeometryUtils
 
 class FieldUtils:
     @staticmethod
     def is_left_team(is_yellow_yeam: bool, is_yellow_left_team: bool):
         return is_yellow_left_team == is_yellow_yeam
-    
+
     @staticmethod
     def is_inside_field(
         x: float,
@@ -16,7 +16,7 @@ class FieldUtils:
         field_height: float
     ):
         return abs(x) < field_width / 2 and abs(y) < field_height / 2
-    
+
     @staticmethod
     def get_opponent_goal_position(
         field_length: float,
@@ -24,9 +24,9 @@ class FieldUtils:
     ):
         if is_left_team:
             return (field_length / 2, 0)
-        else:
-            return (-field_length / 2, 0)
-    
+
+        return (-field_length / 2, 0)
+
     @staticmethod
     def get_own_goal_position(
         field_length: float,
@@ -36,7 +36,7 @@ class FieldUtils:
             return (-field_length / 2, 0)
         else:
             return (field_length / 2, 0)
-        
+
     @staticmethod
     def get_inside_own_goal_position(
         field_length: float,
@@ -46,27 +46,27 @@ class FieldUtils:
         x, y = FieldUtils.get_own_goal_position(
             field_length,
             is_left_team)
-        
+
         if x > 0:
             return x + goal_depth, y
         else:
             return x - goal_depth, y
-    
+
     @staticmethod
     def is_inside_own_goal_area(
         position: 'tuple[float, float]',
         field_length: float,
-        penalty_length: float,
-        penalty_width: float,
+        goal_area_length: float,
+        goal_area_width: float,
         is_left_team: bool
     ):
         x, y = position
 
         if is_left_team:
-            return x < -field_length / 2 + penalty_length and abs(y) < penalty_width / 2
-        else:
-            return x > field_length / 2 - penalty_length and abs(y) < penalty_width / 2
-        
+            return x < -field_length / 2 + goal_area_length and abs(y) < goal_area_width / 2
+
+        return x > field_length / 2 - goal_area_length and abs(y) < goal_area_width / 2
+
     @staticmethod
     def is_inside_opponent_area(
         position: 'tuple[float, float]',
@@ -76,9 +76,9 @@ class FieldUtils:
 
         if is_left_team:
             return x > 0
-        else:
-            return x < 0
-        
+
+        return x < 0
+
     @staticmethod
     def is_touching(
         position1: 'tuple[float, float]',
@@ -93,7 +93,7 @@ class FieldUtils:
             position2,
             radius2 + threshold
         )
-    
+
     @staticmethod
     def get_random_position_inside_field(
         field_length: float,
@@ -106,7 +106,7 @@ class FieldUtils:
         return \
             random.uniform(-max_x + margin, max_x - margin), \
             random.uniform(-max_y + margin, max_y - margin)
-    
+
     @staticmethod
     def get_random_position_inside_own_area(
         field_length: float,
@@ -123,7 +123,55 @@ class FieldUtils:
             return random.uniform(-max_x + margin, 0), y
         else:
             return random.uniform(0, max_x - margin), y
-        
+
+    @staticmethod
+    def get_random_position_inside_own_area_except_goal_area(
+        field_length: float,
+        field_width: float,
+        goal_area_length: float,
+        goal_area_width: float,
+        is_left_team: bool,
+        margin = 0.15
+    ):
+        def get_random_position_inside_own_area():
+            return FieldUtils.get_random_position_inside_own_area(
+                field_length,
+                field_width,
+                is_left_team,
+                margin
+            )
+
+        position = get_random_position_inside_own_area()
+
+        while FieldUtils.is_inside_own_goal_area(
+            position,
+            field_length,
+            goal_area_length,
+            goal_area_width,
+            is_left_team
+        ):
+            position = get_random_position_inside_own_area()
+
+        return position
+
+    @staticmethod
+    def get_random_position_inside_opponent_area_except_goal_area(
+        field_length: float,
+        field_width: float,
+        goal_area_length: float,
+        goal_area_width: float,
+        is_left_team: bool,
+        margin = 0.15
+    ):
+        return FieldUtils.get_random_position_inside_own_area_except_goal_area(
+            field_length,
+            field_width,
+            goal_area_length,
+            goal_area_width,
+            not is_left_team,
+            margin
+        )
+
     @staticmethod
     def get_random_position_inside_opponent_area(
         field_length: float,
@@ -134,28 +182,24 @@ class FieldUtils:
             field_length,
             field_width,
             not is_left_team)
-    
+
     @staticmethod
-    def get_random_position_inside_own_penalty_area(
+    def get_random_position_inside_own_goal_area(
         field_length: float,
-        penalty_length: float,
-        penalty_width: float,
-        is_left_team: bool,
-        robot_radius: float
+        goal_area_length: float,
+        goal_area_width: float,
+        is_left_team: bool
     ):
-        secure_robot_radius = robot_radius + 0.05
-
-        penalty_x = random.uniform(secure_robot_radius, penalty_length)
-
         max_x = field_length / 2
-        max_y = penalty_width / 2
+        max_y = goal_area_width / 2
 
-        y = random.uniform(-max_y + secure_robot_radius, max_y - secure_robot_radius)
+        x = max_x - random.uniform(0, goal_area_length)
+        y = random.uniform(-max_y, max_y)
 
         if is_left_team:
-            return -max_x + penalty_x, y
+            return -x, y
         else:
-            return max_x - penalty_x, y
+            return x, y
 
     @staticmethod  
     def get_random_position_at_distance(
@@ -175,6 +219,58 @@ class FieldUtils:
 
             new_x = x + distance * math.cos(angle)
             new_y = y + distance * math.sin(angle)
-            
+
             if x_min <= new_x <= x_max and y_min <= new_y <= y_max:
                 return new_x, new_y
+            
+    @staticmethod
+    def get_position_close_to_wall_relative_to_own_goal(
+        field_length: float,
+        field_width: float,
+        goal_width: float,
+        distance: float,
+        distance_to_wall: float,
+        is_left_team: bool,
+        upper: bool
+    ):
+        half_field_width = field_width / 2
+        half_goal_width = goal_width / 2
+        vertical_wall_size = (field_width - goal_width) / 2
+        horizontal_wall_size = field_length
+
+        max_distance = horizontal_wall_size + 2 * vertical_wall_size
+        corrected_distance = distance % max_distance
+
+        goal_position = FieldUtils.get_own_goal_position(
+            field_length,
+            True
+        )
+
+        corner_1_first_distance = vertical_wall_size - distance_to_wall
+        corner_1_second_distance = vertical_wall_size + distance_to_wall
+        corner_2_first_distance = vertical_wall_size + horizontal_wall_size - distance_to_wall
+        corner_2_second_distance = vertical_wall_size + horizontal_wall_size + distance_to_wall
+
+        if 0 <= corrected_distance < corner_1_first_distance:
+            x = goal_position[0] + distance_to_wall
+            y = distance + half_goal_width
+        elif corner_1_first_distance <= corrected_distance <= corner_1_second_distance:
+            x = goal_position[0] + distance_to_wall
+            y = half_field_width - distance_to_wall
+        elif corrected_distance < corner_2_first_distance:
+            x = goal_position[0] + (corrected_distance - vertical_wall_size)
+            y = half_field_width - distance_to_wall
+        elif corner_2_first_distance <= corrected_distance <= corner_2_second_distance:
+            x = -(goal_position[0] + distance_to_wall)
+            y = half_field_width - distance_to_wall
+        else:
+            x = -(goal_position[0] + distance_to_wall)
+            y = half_goal_width + (max_distance - corrected_distance)
+
+        if not upper:
+            y = -y
+
+        if is_left_team:
+            return x, y
+        
+        return -x, -y

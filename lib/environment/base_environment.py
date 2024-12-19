@@ -3,14 +3,14 @@ from typing import List
 import gymnasium as gym
 import numpy as np
 import pygame
+import random
 
 from rsoccer_gym.Entities import Frame, Robot
 from rsoccer_gym.Render import COLORS, Ball, VSSRenderField, VSSRobot
 from rsoccer_gym.Simulators.rsim import RSimVSS
 from rsoccer_gym.Utils import KDTree
 
-from lib.enums.position_enum import PositionEnum
-from lib.geometry.geometry_utils import GeometryUtils
+from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.field_utils import FieldUtils
 
 class BaseEnvironment(gym.Env):
@@ -71,7 +71,7 @@ class BaseEnvironment(gym.Env):
         self.sent_commands = commands
 
         self.last_frame = self.frame
-        self.frame = self.rsim.get_frame()
+        self.frame = self._get_rsim_frame()
 
         observation = self._frame_to_observations()
         reward, done = self._calculate_reward_and_done()
@@ -90,13 +90,24 @@ class BaseEnvironment(gym.Env):
         initial_pos_frame: Frame = self._get_initial_positions_frame()
         self.rsim.reset(initial_pos_frame)
 
-        self.frame = self.rsim.get_frame()
+        self.frame = self._get_rsim_frame()
         obs = self._frame_to_observations()
 
         if self.render_mode == "human":
             self.render()
 
         return obs, {}
+    
+    def _get_rsim_frame(self):
+        frame = self.rsim.get_frame()
+
+        for item in frame.robots_blue:
+            frame.robots_blue[item].yellow = False
+
+        for item in frame.robots_yellow:
+            frame.robots_yellow[item].yellow = True
+
+        return frame
 
     def _render(self):
         def pos_transform(pos_x, pos_y):
@@ -209,52 +220,55 @@ class BaseEnvironment(gym.Env):
 
     def norm_w(self, w):
         return np.clip(w / self.max_w, -1, 1)
-    
+
     def norm_x(self, x):
         return np.clip(x / self.get_max_x(), -1, 1)
-    
+
     def norm_y(self, y):
         return np.clip(y / self.get_max_y(), -1, 1)
-    
+
     def get_max_x(self):
         return self.get_field_length() / 2 + self.get_goal_depth()
-    
+
     def get_max_y(self):
         return self.get_field_width() / 2
 
     def get_field_length(self):
         return self.field.length
-    
+
     def get_field_width(self):
         return self.field.width
-    
-    def get_penalty_length(self):
+
+    def get_goal_area_length(self):
         return self.field.penalty_length
-    
-    def get_penalty_width(self):
+
+    def get_goal_area_width(self):
         return self.field.penalty_width
-    
+
     def get_goal_depth(self):
         return self.field.goal_depth
     
+    def get_goal_width(self):
+        return self.field.goal_width
+
     def get_inside_own_goal_position(self, is_yellow_team: bool):
         return FieldUtils.get_inside_own_goal_position(
             self.get_field_length(),
             self.get_goal_depth(),
             not is_yellow_team)
-    
-    def get_ball(self):
+
+    def _get_ball(self):
         return self.frame.ball
-    
+
     def get_ball_radius(self):
         return self.field.ball_radius
-    
+
     def get_robot_radius(self):
         return self.field.rbt_radius
-    
+
     def get_frame(self):
         return self.frame
-    
+
     @staticmethod
     def get_position(places: KDTree, min_distance, get_position_fn):
         position = get_position_fn()
@@ -265,50 +279,48 @@ class BaseEnvironment(gym.Env):
         places.insert(position)
 
         return position
-    
+
     def _get_random_position_inside_field(self):
         return FieldUtils.get_random_position_inside_field(
             self.get_field_length(),
             self.get_field_width())
-    
-    def _get_random_position_inside_own_penalty_area(self):
-        return FieldUtils.get_random_position_inside_own_penalty_area(
+
+    def _get_random_position_inside_own_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
-            True,
-            self.get_robot_radius())
-    
-    def _get_random_position_inside_opponent_penalty_area(self):
-        return FieldUtils.get_random_position_inside_own_penalty_area(
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
+            True)
+
+    def _get_random_position_inside_opponent_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
-            False,
-            self.get_robot_radius())
-    
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
+            False)
+
     def _get_random_position_inside_own_area(self):
         return FieldUtils.get_random_position_inside_own_area(
             self.get_field_length(),
             self.get_field_width(),
             True)
-    
+
     def _get_random_position_inside_opponent_area(self):
         return FieldUtils.get_random_position_inside_own_area(
             self.get_field_length(),
             self.get_field_width(),
             False)
-    
+
     def _get_own_goal_position(self):
         return FieldUtils.get_own_goal_position(
             self.get_field_length(),
             True)
-    
+
     def _get_opponent_goal_position(self):
         return FieldUtils.get_own_goal_position(
             self.get_field_length(),
             False)
-    
+
     def _get_random_position_at_distance(
         self,
         distance: float,
@@ -319,7 +331,23 @@ class BaseEnvironment(gym.Env):
             self.get_field_width(),
             position,
             distance)
-    
+
+    def _get_random_position_inside_own_area_except_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_area_except_goal_area(
+            self.get_field_length(),
+            self.get_field_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
+            True)
+
+    def _get_random_position_inside_opponent_area_except_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_area_except_goal_area(
+            self.get_field_length(),
+            self.get_field_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
+            False)
+
     def _is_inside_field(
         self,
         position: 'tuple[float, float]'
@@ -329,7 +357,7 @@ class BaseEnvironment(gym.Env):
             position[1],
             self.get_field_length(),
             self.get_field_width())
-    
+
     def _is_inside_own_goal_area(
         self,
         position: 'tuple[float, float]',
@@ -338,10 +366,10 @@ class BaseEnvironment(gym.Env):
         return FieldUtils.is_inside_own_goal_area(
             position,
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             not is_yellow_team)
-    
+
     def _get_max_distance(self):
         max_x = self.get_max_x() - self.get_goal_depth()
         max_y = self.get_max_y()
@@ -349,29 +377,29 @@ class BaseEnvironment(gym.Env):
         return GeometryUtils.distance(
             (-max_x, max_y),
             (max_x, -max_y))
-    
+
     def _energy_penalty(self):
         en_penalty_1 = abs(self.sent_commands[0].v_wheel0)
         en_penalty_2 = abs(self.sent_commands[0].v_wheel1)
         return - (en_penalty_1 + en_penalty_2)
-    
+
     def _any_team_scored_goal(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         return abs(ball.x) > (self.get_field_length() / 2)
-    
+
     def _has_received_goal(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         return ball.x < -self.get_field_length() / 2
 
     def _has_scored_goal(self):
         if not self._any_team_scored_goal():
             return None
         return not self._has_received_goal()
-    
+
     def _get_agent(self):
         return self.frame.robots_blue[self.robot_id]
-    
-    def _create_robot(
+
+    def _create_robot_command(
         self,
         id: int,
         is_yellow_robot: bool,
@@ -383,15 +411,142 @@ class BaseEnvironment(gym.Env):
             id=id,
             v_wheel0=v_wheel_0,
             v_wheel1=v_wheel_1)
-    
+
     def _get_yellow_robot_by_id(self, id: int):
         return self.frame.robots_yellow[id]
-    
+
     def _get_blue_robot_by_id(self, id: int):
         return self.frame.robots_blue[id]
-    
+
     def _get_robot_by_id(self, id: int, is_yellow: bool):
         if is_yellow:
             return self._get_yellow_robot_by_id(id)
-        else:
-            return self._get_blue_robot_by_id(id)
+
+        return self._get_blue_robot_by_id(id)
+    
+    def _get_own_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_area
+
+        return self._get_random_position_inside_own_area
+
+    def _get_opponent_area_position_function(self, is_yellow: bool):
+        return self._get_own_area_position_function(not is_yellow)
+
+    def _get_goal_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_goal_area
+
+        return self._get_random_position_inside_own_goal_area
+
+    def _get_opponent_goal_area_position_function(self, is_yellow: bool):
+        return self._get_goal_area_position_function(not is_yellow)
+
+    def _get_own_area_except_goal_area_position_function(self, is_yellow: bool):
+        if is_yellow:
+            return self._get_random_position_inside_opponent_area_except_goal_area
+
+        return self._get_random_position_inside_own_area_except_goal_area
+
+    def _get_opponent_area_except_goal_area_position_function(self, is_yellow: bool):
+        return self._get_own_area_except_goal_area_position_function(not is_yellow)
+
+    def _get_relative_to_own_goal_position_function(self, is_yellow: bool, distance: float):
+        if not is_yellow:
+            return lambda: self._get_random_position_at_distance(
+                distance,
+                self._get_own_goal_position())
+
+        return lambda: self._get_random_position_at_distance(
+            distance,
+            self._get_opponent_goal_position())
+
+    def _get_relative_to_opponent_goal_position_function(self, is_yellow: bool, distance: float):
+        return self._get_relative_to_own_goal_position_function(not is_yellow, distance)
+
+    def _get_random_position_at_distance_position_function(
+        self,
+        distance: float,
+        position: 'tuple[float, float]'
+    ):
+        return lambda: self._get_random_position_at_distance(distance, position)
+    
+    def _get_position_close_to_wall_relative_to_own_goal_function(
+        self,
+        distance: float,
+        distance_to_wall: float,
+        is_yellow_team: bool
+    ):
+        if not is_yellow_team:
+            return lambda: self._get_position_close_to_wall_relative_to_goal(
+                distance,
+                distance_to_wall,
+                True)
+        
+        return lambda: self._get_position_close_to_wall_relative_to_goal(
+            distance,
+            distance_to_wall,
+            False)
+    
+    def _get_position_close_to_wall_relative_to_opponent_goal_function(
+        self,
+        distance: float,
+        distance_to_wall: float,
+        is_yellow_team: bool
+    ):
+        if not is_yellow_team:
+            return lambda: self._get_position_close_to_wall_relative_to_goal(
+                distance,
+                distance_to_wall,
+                False)
+        
+        return lambda: self._get_position_close_to_wall_relative_to_goal(
+            distance,
+            distance_to_wall,
+            True)
+    
+    def _get_position_close_to_wall_relative_to_goal(
+        self,
+        distance: float,
+        distance_to_wall: float,
+        is_left_team: bool
+    ):
+        upper = random.choice([True, False])
+
+        return FieldUtils.get_position_close_to_wall_relative_to_own_goal(
+            self.get_field_length(),
+            self.get_field_width(),
+            self.get_goal_width(),
+            distance,
+            distance_to_wall,
+            is_left_team,
+            upper)
+    
+    def _is_close_to_ball(
+        self,
+        tolerance: float = 0.1
+    ):
+        ball = self._get_ball()
+        robot = self._get_agent()
+
+        return GeometryUtils.is_close(
+            (robot.x, robot.y),
+            (ball.x, ball.y),
+            tolerance)
+    
+    def _is_close_to_position(
+        self,
+        robot: Robot,
+        position: 'tuple[float, float]',
+        tolerance: float = 0.1
+    ):
+        return GeometryUtils.is_close(
+            (robot.x, robot.y),
+            position,
+            tolerance)
+    
+    def _is_outside_field(
+        self,
+        position: 'tuple[float, float]'
+    ):
+        return not self._is_inside_field(position)

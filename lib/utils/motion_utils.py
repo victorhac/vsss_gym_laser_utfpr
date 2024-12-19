@@ -1,18 +1,12 @@
-from ..domain.robot import Robot
-from ..geometry.geometry_utils import GeometryUtils
-from ..utils.configuration_utils import ConfigurationUtils
-from ..utils.robot_utils import RobotUtils
+from lib.domain.robot import Robot
+from lib.utils.geometry_utils import GeometryUtils
+from configuration.configuration import Configuration
+from lib.utils.robot_utils import RobotUtils
 
 import math
 
-ROBOT_LENGTH = ConfigurationUtils.get_firasim_robot_length()
-ROBOT_WIDTH = ConfigurationUtils.get_firasim_robot_width()
-
-FIELD_WIDTH = ConfigurationUtils.get_field_width()
-FIELD_LENGTH = ConfigurationUtils.get_field_length()
-
-KP = ConfigurationUtils.get_motion_pid_constants_kp()
-KD = ConfigurationUtils.get_motion_pid_constants_kd()
+KP = Configuration.get_motion_pid_constants_kp()
+KD = Configuration.get_motion_pid_constants_kd()
 
 class MotionUtils:
     @staticmethod
@@ -45,7 +39,7 @@ class MotionUtils:
         leftMotorSpeed, rightMotorSpeed = MotionUtils._get_speeds(motorSpeed, base_speed, reversed)
 
         return leftMotorSpeed, rightMotorSpeed, error
-    
+
     @staticmethod
     def _get_speeds(
         motor_speed: float,
@@ -70,8 +64,8 @@ class MotionUtils:
         return left_motor_speed, right_motor_speed
     
     @staticmethod
-    def spin(clockwise: bool, spinPower: float):
+    def spin(clockwise: bool, spin_power: float):
         if clockwise:
-            return spinPower, -spinPower
+            return spin_power, -spin_power
         
-        return -spinPower, spinPower
+        return -spin_power, spin_power

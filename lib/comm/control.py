@@ -3,7 +3,7 @@ import logging
 from .transmitter import Transmitter
 from .protocols import packet_pb2
 from .protocols import command_pb2
-from ..command.team_command import TeamCommand
+from lib.command.team_command import TeamCommand
 
 from .thread_job import Job
 

@@ -1,12 +1,11 @@
 import logging
 
-from ..utils.field_utils import FieldUtils
-from ..utils.configuration_utils import ConfigurationUtils
-from ..utils.firasim_utils import FIRASimUtils
+from configuration.configuration import Configuration
+from lib.utils.firasim_utils import FIRASimUtils
 
-from ..domain.field_data import FieldData
-from ..domain.robot import Robot
-from ..domain.ball import Ball
+from lib.domain.field_data import FieldData
+from lib.domain.robot import Robot
+from lib.domain.ball import Ball
 
 from .receiver import Receiver
 from .protocols import packet_pb2
@@ -56,7 +55,6 @@ class ProtoVision(Receiver):
 
         return rcv_field_data
 
-
     def update(self):
         """
         Update the field_data passed in the constructor
@@ -98,7 +96,7 @@ class ProtoVision(Receiver):
 
 
     def _field_data_from_dict(self, field_data: FieldData, raw_data_dict):
-        isLeftTeam = ConfigurationUtils.get_firasim_is_left_team()
+        isLeftTeam = Configuration.get_firasim_is_left_team()
 
         rotate_field = isLeftTeam
         
@@ -126,10 +124,8 @@ class ProtoVision(Receiver):
 
         return angle
 
-
 class ProtoVisionThread(Job):
     def __init__(self, team_color_yellow: bool, field_data: FieldData = None, vision_ip='224.0.0.1', vision_port=10002):
         self.vision = ProtoVision(team_color_yellow, field_data, vision_ip, vision_port)
 
         super(ProtoVisionThread, self).__init__(self.vision.update)
-

@@ -11,23 +11,23 @@ from stable_baselines3 import PPO
 
 from lib.utils.rsoccer_utils import RSoccerUtils
 
-from ...environment.base_environment import BaseEnvironment
-from ...utils.field_utils import FieldUtils
-from ...utils.configuration_utils import ConfigurationUtils
+from lib.environment.base_environment import BaseEnvironment
+from lib.utils.field_utils import FieldUtils
+from configuration.configuration import Configuration
 
-TRAINING_EPISODE_DURATION = ConfigurationUtils.get_rsoccer_training_episode_duration()
+TRAINING_EPISODE_DURATION = Configuration.get_rsoccer_training_episode_duration()
 
-NUMBER_ROBOTS_BLUE = ConfigurationUtils.get_rsoccer_team_blue_number_robots()
-NUMBER_ROBOTS_YELLOW = ConfigurationUtils.get_rsoccer_team_yellow_number_robots()
+NUMBER_ROBOTS_BLUE = Configuration.get_rsoccer_team_blue_number_robots()
+NUMBER_ROBOTS_YELLOW = Configuration.get_rsoccer_team_yellow_number_robots()
 
-V_WHEEL_DEADZONE = ConfigurationUtils.get_rsoccer_robot_speed_dead_zone_meters_seconds()
+V_WHEEL_DEADZONE = Configuration.get_rsoccer_robot_speed_dead_zone_meters_seconds()
 
-TIME_STEP = ConfigurationUtils.get_rsoccer_training_time_step_seconds()
+TIME_STEP = Configuration.get_rsoccer_training_time_step_seconds()
 
 # addapt this for your robot
-MAX_MOTOR_SPEED = ConfigurationUtils.get_firasim_robot_speed_max_radians_seconds()
+MAX_MOTOR_SPEED = Configuration.get_firasim_robot_speed_max_radians_seconds()
 
-class Environment(BaseEnvironment):
+class GoalkeeperEnvironment(BaseEnvironment):
     def __init__(self, render_mode="rgb_array"):
         super().__init__(
             field_type=0,
@@ -65,7 +65,7 @@ class Environment(BaseEnvironment):
             return True
         return False
     
-    def _create_robot(
+    def _create_robot_command(
         self,
         id: int,
         is_yellow_robot: bool,
@@ -81,7 +81,7 @@ class Environment(BaseEnvironment):
     def _frame_to_attacker_observations(self):
         observation = []
 
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         observation.extend([
             self.norm_x(-ball.x),
@@ -127,7 +127,7 @@ class Environment(BaseEnvironment):
     def _frame_to_observations(self):
         observation = []
 
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         observation.extend([
             self.norm_x(ball.x),
@@ -156,7 +156,7 @@ class Environment(BaseEnvironment):
 
         v_wheel0, v_wheel1 = self._actions_to_v_wheels(actions, True)
 
-        robot = self._create_robot(0, False, v_wheel0, v_wheel1)
+        robot = self._create_robot_command(0, False, v_wheel0, v_wheel1)
         
         commands.append(robot)
             
@@ -164,7 +164,7 @@ class Environment(BaseEnvironment):
 
         v_wheel0, v_wheel1 = self._actions_to_v_wheels(attacker_actions, False)
 
-        robot = self._create_robot(0, True, v_wheel0, v_wheel1)
+        robot = self._create_robot_command(0, True, v_wheel0, v_wheel1)
 
         commands.append(robot)
 
@@ -208,7 +208,7 @@ class Environment(BaseEnvironment):
     ):
         field_length = self.get_field_length()
         goal_depth = self.get_goal_depth()
-        ball = self.get_ball()
+        ball = self._get_ball()
 
         convert_m_to_cm = lambda x: x * 100
 
@@ -236,7 +236,7 @@ class Environment(BaseEnvironment):
         return reward, ball_potential
         
     def _move_reward(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         robot = self._get_agent()
 
         ball_position = np.array([ball.x, ball.y])
@@ -256,11 +256,11 @@ class Environment(BaseEnvironment):
         return - (en_penalty_1 + en_penalty_2)
     
     def _any_team_scored_goal(self):
-        ball = self.get_ball()
+        ball = self._get_ball()
         return abs(ball.x) > (self.get_field_length() / 2)
     
     def _has_received_goal(self):        
-        ball = self.get_ball()
+        ball = self._get_ball()
         return ball.x < -self.get_field_length() / 2
 
     def _has_scored_goal(self):
@@ -303,21 +303,20 @@ class Environment(BaseEnvironment):
             self.get_field_length(),
             self.get_field_width())
     
-    def _get_random_position_inside_own_penalty_area(self):
-        return FieldUtils.get_random_position_inside_own_penalty_area(
+    def _get_random_position_inside_own_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
             True,
             self.get_robot_radius())
     
-    def _get_random_position_inside_opponent_penalty_area(self):
-        return FieldUtils.get_random_position_inside_own_penalty_area(
+    def _get_random_position_inside_opponent_goal_area(self):
+        return FieldUtils.get_random_position_inside_own_goal_area(
             self.get_field_length(),
-            self.get_penalty_length(),
-            self.get_penalty_width(),
-            False,
-            self.get_robot_radius())
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
+            False)
     
     def _get_random_position_inside_own_area(self):
         return FieldUtils.get_random_position_inside_own_area(
@@ -356,7 +355,7 @@ class Environment(BaseEnvironment):
 
             return pos
 
-        pos = get_position(self._get_random_position_inside_own_penalty_area)
+        pos = get_position(self._get_random_position_inside_own_goal_area)
         frame.robots_blue[0] = Robot(x=pos[0], y=pos[1], theta=theta())
 
         pos = get_position(self._get_random_position_inside_own_area)
