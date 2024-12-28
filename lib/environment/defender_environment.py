@@ -286,7 +286,7 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
                     weighted_energy_penalty() + \
                     base_penalty
 
-        return reward
+        return np.clip(reward, -10, 10)
 
     def _get_ball_gradient_towards_defensive_line_reward(self):
         ball = self._get_ball()

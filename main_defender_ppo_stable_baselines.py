@@ -72,10 +72,10 @@ def main():
 
     tasks = [
         get_first_task(),
-        DefenderBehaviorUtils.get_task_2(starting_update),
-        DefenderBehaviorUtils.get_task_3(starting_update),
-        DefenderBehaviorUtils.get_task_4(starting_update),
-        DefenderBehaviorUtils.get_task_5(starting_update)
+        DefenderBehaviorUtils.get_task_2(),
+        DefenderBehaviorUtils.get_task_3(),
+        DefenderBehaviorUtils.get_task_4(),
+        DefenderBehaviorUtils.get_task_5()
     ]
 
     save_path = get_task_models_path()

@@ -10,7 +10,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .95
+        default_threshold: float = 9.5
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -39,7 +39,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .95
+        default_threshold: float = 9.5
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -67,7 +67,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .7
+        default_threshold: float = 7.0
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -101,7 +101,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .7
+        default_threshold: float = 7.0
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -143,7 +143,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .7
+        default_threshold: float = 7.0
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(

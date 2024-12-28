@@ -97,13 +97,14 @@ class BehaviorCallback(BaseCallback):
 
     def _try_update_scores(self):
         dones = self.locals["dones"]
-        last_games_scores = self.training_env.get_attr("last_game_score")
+        # last_game_scores for attacker environment
+        rewards = self.locals["rewards"]
 
         scores = []
 
         for i in range(len(dones)):
             if dones[i]:
-                last_score = last_games_scores[i]
+                last_score = rewards[i]
 
                 if last_score is not None:
                     scores.append(last_score)
