@@ -477,16 +477,10 @@ class BaseEnvironment(gym.Env):
         distance_to_wall: float,
         is_yellow_team: bool
     ):
-        if not is_yellow_team:
-            return lambda: self._get_position_close_to_wall_relative_to_goal(
-                distance,
-                distance_to_wall,
-                True)
-        
         return lambda: self._get_position_close_to_wall_relative_to_goal(
             distance,
             distance_to_wall,
-            False)
+            not is_yellow_team)
     
     def _get_position_close_to_wall_relative_to_opponent_goal_function(
         self,
@@ -494,16 +488,10 @@ class BaseEnvironment(gym.Env):
         distance_to_wall: float,
         is_yellow_team: bool
     ):
-        if not is_yellow_team:
-            return lambda: self._get_position_close_to_wall_relative_to_goal(
-                distance,
-                distance_to_wall,
-                False)
-        
         return lambda: self._get_position_close_to_wall_relative_to_goal(
             distance,
             distance_to_wall,
-            True)
+            is_yellow_team)
     
     def _get_position_close_to_wall_relative_to_goal(
         self,
@@ -521,6 +509,36 @@ class BaseEnvironment(gym.Env):
             distance_to_wall,
             is_left_team,
             upper)
+    
+    def _get_random_position_relative_to_own_goal_area_front_line(
+        self,
+        distance: float,
+        is_left_team: bool
+    ):
+        return FieldUtils.get_random_position_at_distance_to_front_line_goal_area(
+            self.get_field_length(),
+            self.get_goal_area_length(),
+            self.get_goal_area_width(),
+            distance,
+            is_left_team)
+    
+    def _get_random_position_relative_to_own_goal_area_front_line_function(
+        self,
+        distance: float,
+        is_yellow_team: bool
+    ):
+        return lambda: self._get_random_position_relative_to_own_goal_area_front_line(
+            distance,
+            not is_yellow_team)
+    
+    def _get_random_position_relative_to_opponent_goal_area_front_line_function(
+        self,
+        distance: float,
+        is_yellow_team: bool
+    ):
+        return lambda: self._get_random_position_relative_to_own_goal_area_front_line(
+            distance,
+            is_yellow_team)
     
     def _is_close_to_ball(
         self,

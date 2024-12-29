@@ -113,9 +113,9 @@ class GeometryUtils:
         point: 'tuple[float, float]',
         line_equation: 'tuple[float, float, float]'
     ):
-        px, py = point
+        x, y = point
         a, b, c = line_equation
-        return abs(a * px + b * py - c) / math.sqrt(a ** 2 + b ** 2)
+        return abs(a * x + b * y - c) / math.sqrt(a ** 2 + b ** 2)
 
     @staticmethod
     def is_between(
@@ -144,39 +144,6 @@ class GeometryUtils:
             return False
         
         return True
-
-    @staticmethod
-    def point_to_point_distance(
-        point1: 'tuple[float, float]',
-        point2: 'tuple[float, float]'
-    ):
-        x1, y1 = point1
-        x2, y2 = point2
-        return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-
-    @staticmethod
-    def distance_point_to_line_segment(
-        point: 'tuple[float, float]',
-        endpoint1: 'tuple[float, float]',
-        endpoint2: 'tuple[float, float]'
-    ):
-        x1, y1 = endpoint1
-        x2, y2 = endpoint2
-        
-        a = y2 - y1
-        b = x1 - x2
-        c = a * x1 + b * y1
-
-        line_equation = (a, b, c)
-
-        perp_distance = GeometryUtils.point_to_line_distance(point, line_equation)
-
-        if GeometryUtils.is_between(point, endpoint1, endpoint2):
-            return perp_distance
-        else:
-            dist_to_end1 = GeometryUtils.point_to_point_distance(point, endpoint1)
-            dist_to_end2 = GeometryUtils.point_to_point_distance(point, endpoint2)
-            return min(dist_to_end1, dist_to_end2)
         
     @staticmethod
     def find_y(

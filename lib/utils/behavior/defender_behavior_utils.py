@@ -10,7 +10,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = 9.5
+        default_threshold: float = .9
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -20,9 +20,9 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OWN_GOAL,
+            PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
-            distance_range=(.7, .2)
+            distance_range=(.6, 0)
         )
 
         return CurriculumTask(
@@ -39,7 +39,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = 9.5
+        default_threshold: float = .9
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -67,7 +67,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = 7.0
+        default_threshold: float = .7
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -82,9 +82,9 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OWN_GOAL,
+            PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
-            distance_range=(1, .2)
+            distance_range=(.6, 0)
         )
 
         return CurriculumTask(
@@ -101,7 +101,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = 7.0
+        default_threshold: float = .7
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -124,9 +124,9 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OWN_GOAL,
+            PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
-            distance_range=(1, .2)
+            distance_range=(.6, .1)
         )
 
         return CurriculumTask(
@@ -143,7 +143,7 @@ class DefenderBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = 7.0
+        default_threshold: float = .7
     ):
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
@@ -172,9 +172,9 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.OWN_GOAL_AREA,
+            PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
-            distance_range=(1.1, .4)
+            distance_range=(.6, .1)
         )
 
         return CurriculumTask(
@@ -204,7 +204,7 @@ class DefenderBehaviorUtils:
         return BallCurriculumBehavior(
             position_enum=PositionEnum.OWN_GOAL_RELATIVE_TO_WALL,
             updates_per_task=updates_per_task,
-            distance_range=[1.2, 0],
+            distance_range=(1.2, 0),
             distance_to_wall=.07)
     
     @staticmethod

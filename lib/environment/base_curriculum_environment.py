@@ -322,6 +322,14 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 behavior.distance,
                 behavior.distance_to_wall,
                 is_yellow)
+        elif position_enum == PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE:
+            return self._get_random_position_relative_to_own_goal_area_front_line_function(
+                behavior.distance,
+                is_yellow)
+        elif position_enum == PositionEnum.RELATIVE_TO_OPPONENT_GOAL_AREA_FRONT_LINE:
+            return self._get_random_position_relative_to_opponent_goal_area_front_line_function(
+                behavior.distance,
+                is_yellow)
 
         return self._get_random_position_inside_field
 

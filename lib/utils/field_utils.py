@@ -274,3 +274,26 @@ class FieldUtils:
             return x, y
         
         return -x, -y
+
+    @staticmethod
+    def get_random_position_at_distance_to_front_line_goal_area(
+        field_length: float,
+        goal_area_length: float,
+        goal_area_width: float,
+        distance: float,
+        is_left_team: float
+    ):
+        delta = random.uniform(-1, 1)
+
+        goal_position = FieldUtils.get_own_goal_position(
+            field_length,
+            True
+        )
+
+        x = goal_position[0] + goal_area_length + distance
+        y = (goal_area_width / 2) * delta
+
+        if is_left_team:
+            return x, y
+
+        return -x, -y

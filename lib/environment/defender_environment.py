@@ -207,13 +207,18 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         if is_done:
             if self._any_team_scored_goal() and self._has_received_goal():
                 reward = -10
+                self.last_game_score = -1
             elif self._is_ball_cleared_from_defense_area():
                 factor = self.distance_when_last_robot_touched_ball_defensive_area /\
                     self._get_max_distance_to_defensive_line()
                 
                 reward = 10 * factor
+                self.last_game_score = 1
             elif self._is_ball_inside_defensive_area():
                 reward = -5
+                self.last_game_score = -.5
+            else:
+                self.last_game_score = 0
 
         return reward, is_done
     
@@ -355,4 +360,3 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
                 minimum_distance = distance
 
         return robot_touched_ball_defensive_area
-    
