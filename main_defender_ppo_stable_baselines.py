@@ -113,12 +113,16 @@ def main():
         number_robot_blue=number_robot_blue,
         number_robot_yellow=number_robot_yellow,
         tasks=tasks)
-
-    model.learn(
-        total_timesteps=total_timesteps,
-        log_interval=log_interval,
-        callback=checkpoint_callback,
-        progress_bar=True)
+    
+    try:
+        model.learn(
+            total_timesteps=total_timesteps,
+            log_interval=log_interval,
+            callback=checkpoint_callback,
+            progress_bar=True)
+    except:
+        if int(input("Save current model: 1 - Yes, 2 - No")) == 1:
+            model.save(f"{save_path}/interrupted_model")
     
 if __name__ == '__main__':
     main()
