@@ -9,6 +9,7 @@ from lib.utils.file_utils import FileUtils
 
 render_mode = "human"
 plot_file = "temp/plot.png"
+model_path = "models/defender/PPO/2024_12_29_20_33_56/interrupted_model"
 
 tasks = [
     DefenderBehaviorUtils.get_task_1,
@@ -22,7 +23,7 @@ FileUtils.remove_file_if_exists(plot_file)
 
 def load_model():
     from stable_baselines3 import PPO
-    return PPO.load(Configuration.get_model_attacker_path())
+    return PPO.load(model_path)
 
 def plot_reward(reward_per_step: list):
     plt.plot(reward_per_step)
@@ -51,12 +52,12 @@ is_left_team = True
 is_yellow = False
 robot_id = 0
 
-update_count = 3
+update_count = 0
 updates_per_task = 3
 games_count = 100
 default_threshold = .8
 
-task_index = 4
+task_index = 0
 
 task = get_task(
     task_index,
