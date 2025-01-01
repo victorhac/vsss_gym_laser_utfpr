@@ -219,5 +219,30 @@ class GeometryUtils:
         return math.sqrt(sum(a**2 for a in vector))
     
     @staticmethod
-    def get_random_uniform(minValue: float, maxValue: float):
-        return random.uniform(minValue, maxValue)
+    def get_random_uniform(min_value: float, max_value: float):
+        return random.uniform(min_value, max_value)
+
+    @staticmethod
+    def closest_point_on_line_segment(
+        point: 'tuple[float, float]',
+        endpoint1: 'tuple[float, float]',
+        endpoint2: 'tuple[float, float]'
+    ):
+        px, py = point
+        x1, y1 = endpoint1
+        x2, y2 = endpoint2
+
+        if (x1, y1) == (x2, y2):
+            return endpoint1
+
+        dx = x2 - x1
+        dy = y2 - y1
+
+        t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)
+
+        t = max(0, min(1, t))
+
+        closest_x = x1 + t * dx
+        closest_y = y1 + t * dy
+
+        return closest_x, closest_y

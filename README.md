@@ -1,1 +1,1 @@
-python3 -m unittest tests/<test_file_relative_path>
+python3 -m unittest <test_file_relative_path>

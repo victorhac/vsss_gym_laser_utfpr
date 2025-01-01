@@ -22,7 +22,7 @@ class DefenderBehaviorUtils:
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
-            distance_range=(.6, 0)
+            distance_range=(.55, 0)
         )
 
         return CurriculumTask(
@@ -84,7 +84,7 @@ class DefenderBehaviorUtils:
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
-            distance_range=(.6, 0)
+            distance_range=(.55, 0)
         )
 
         return CurriculumTask(
@@ -126,7 +126,7 @@ class DefenderBehaviorUtils:
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
-            distance_range=(.6, .1)
+            distance_range=(.55, .1)
         )
 
         return CurriculumTask(
@@ -174,7 +174,7 @@ class DefenderBehaviorUtils:
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
-            distance_range=(.6, .1)
+            distance_range=(.55, .1)
         )
 
         return CurriculumTask(
