@@ -30,13 +30,6 @@ class TestFieldUtils(unittest.TestCase):
         self.assertEqual(value[0], expected_x)
         self.assertEqual(value[1], expected_y)
 
-    # position_enum=PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE,
-    #         updates_per_task=updates_per_task,
-    #         distance_range=distance_range,
-    #         x_line=-.6,
-    #         y_range=(-.35, .35),
-    #         left_to_line=False)
-
     def test_get_random_position_at_distance_to_vertical_line(self):
         x_line = -.6
         y_range = (-.35, .35)
