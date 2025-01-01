@@ -9,7 +9,7 @@ from lib.utils.file_utils import FileUtils
 
 render_mode = "human"
 plot_file = "temp/plot.png"
-model_path = "models/defender/PPO/2024_12_29_20_33_56/interrupted_model"
+model_path = "models/defender/PPO/2025_1_1_0_54_31/PPO_model_task_5_update_100_57353436_steps.zip"
 
 tasks = [
     DefenderBehaviorUtils.get_task_1,
@@ -52,12 +52,12 @@ is_left_team = True
 is_yellow = False
 robot_id = 0
 
-update_count = 0
+update_count = 3
 updates_per_task = 3
 games_count = 100
 default_threshold = .8
 
-task_index = 0
+task_index = 4
 
 task = get_task(
     task_index,
@@ -83,16 +83,10 @@ while True:
         env.render()
 
         reward_per_step.append(reward)
-        action, _ = model.predict(
-            AttackerEnvironmentUtils.get_observation(
-                env,
-                robot_id,
-                is_yellow,
-                is_left_team
-            ))
+        action, _ = model.predict(next_state)
 
     plot_reward(reward_per_step)
 
-    input("Continue...")
+    #input("Continue...")
 
     reward_per_step.clear()

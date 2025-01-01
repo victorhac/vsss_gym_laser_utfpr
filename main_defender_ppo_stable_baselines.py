@@ -27,8 +27,8 @@ batch_size = 128
 
 device = "cpu"
 
-load_model = False
-loaded_model_path = ""
+load_model = True
+loaded_model_path = "models/defender/PPO/2024_12_31_22_20_17/PPO_model_task_1_update_100_3180800_steps"
 
 check_count = 100
 starting_update = 0
