@@ -30,23 +30,29 @@ class TestFieldUtils(unittest.TestCase):
         self.assertEqual(value[0], expected_x)
         self.assertEqual(value[1], expected_y)
 
-    def test_get_random_position_at_distance_to_front_line_goal_area(self):
+    # position_enum=PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE,
+    #         updates_per_task=updates_per_task,
+    #         distance_range=distance_range,
+    #         x_line=-.6,
+    #         y_range=(-.35, .35),
+    #         left_to_line=False)
+
+    def test_get_random_position_at_distance_to_vertical_line(self):
+        x_line = -.6
+        y_range = (-.35, .35)
+        left_to_line = False
+        is_left_team = True
         distance = .2
 
-        field_length = Configuration.get_field_length()
-        field_goal_area_length = Configuration.get_field_goal_area_length()
-        field_goal_area_width = Configuration.get_field_goal_area_width()
-        is_left_team = True
-
-        value = FieldUtils.get_random_position_at_distance_to_front_line_goal_area(
-            field_length,
-            field_goal_area_length,
-            field_goal_area_width,
+        position = FieldUtils.get_random_position_at_distance_to_vertical_line(
             distance,
+            x_line,
+            y_range,
+            left_to_line,
             is_left_team
         )
 
-        print(value)
+        print(position)
 
 if __name__ == "__main__":
     unittest.main()

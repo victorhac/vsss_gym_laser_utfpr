@@ -27,6 +27,10 @@ class RobotCurriculumBehavior:
         self.velocity_alpha_range = None
         self.velocity_beta = None
 
+        self.x_line = None
+        self.y_range = None
+        self.left_to_line = None
+
         self.model_path = None
 
     def set_distance_to_wall(
@@ -51,6 +55,16 @@ class RobotCurriculumBehavior:
 
     def set_model_path(self, model_path: str):
         self.model_path = model_path
+
+    def set_relative_to_vertical_line_position_enum_values(
+        self,
+        x_line: float,
+        y_range: 'tuple[float, float]',
+        left_to_line: bool
+    ):
+        self.x_line = x_line
+        self.y_range = y_range
+        self.left_to_line = left_to_line
 
     def _try_set_distance(self):
         if self.distance_range is not None:

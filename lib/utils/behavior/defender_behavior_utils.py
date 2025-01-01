@@ -20,7 +20,6 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
             distance_range=(.55, 0)
         )
@@ -82,7 +81,6 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
             distance_range=(.55, 0)
         )
@@ -124,7 +122,6 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
             distance_range=(.55, .1)
         )
@@ -172,7 +169,6 @@ class DefenderBehaviorUtils:
         ]
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OWN_GOAL_AREA_FRONT_LINE,
             updates_per_task,
             distance_range=(.55, .1)
         )
@@ -187,15 +183,45 @@ class DefenderBehaviorUtils:
             default_threshold=default_threshold)
     
     @staticmethod
+    def get_task_6(
+        update_count: int = 0,
+        updates_per_task: int = 100,
+        games_count: int = 100,
+        default_threshold: float = .7
+    ):
+        behaviors = [
+            DefenderBehaviorUtils.get_own_team_from_model_behavior(
+                0,
+                PositionEnum.RELATIVE_TO_BALL,
+                updates_per_task)
+        ]
+
+        ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
+            updates_per_task,
+            distance_range=(.6, 1)
+        )
+
+        return CurriculumTask(
+            "6",
+            behaviors,
+            ball_behavior,
+            update_count=update_count,
+            updates_per_task=updates_per_task,
+            games_count=games_count,
+            default_threshold=default_threshold)
+    
+    @staticmethod
     def get_ball_behavior(
-        position_enum: PositionEnum,
         updates_per_task: int,
         distance_range: 'tuple[float, float] | None' = None
     ):
         return BallCurriculumBehavior(
-            position_enum=position_enum,
+            position_enum=PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE,
             updates_per_task=updates_per_task,
-            distance_range=distance_range)
+            distance_range=distance_range,
+            x_line=-.6,
+            y_range=(-.35, .35),
+            left_to_line=False)
     
     @staticmethod
     def get_close_to_own_goal_ball_behavior(

@@ -64,6 +64,30 @@ class RobotCurriculumBehaviorBuilder:
         self.position_enum = PositionEnum.OPPONENT_GOAL_RELATIVE_TO_WALL
         return self
     
+    def set_relative_to_own_vertical_line_position_enum(
+        self,
+        x_line: float,
+        y_range: 'tuple[float, float]',
+        left_to_line: bool
+    ):
+        self.x_line = x_line
+        self.y_range = y_range
+        self.left_to_line = left_to_line
+        self.position_enum = PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE
+        return self
+    
+    def set_relative_to_opponent_vertical_line_position_enum(
+        self,
+        x_line: float,
+        y_range: 'tuple[float, float]',
+        left_to_line: bool
+    ):
+        self.x_line = x_line
+        self.y_range = y_range
+        self.left_to_line = left_to_line
+        self.position_enum = PositionEnum.RELATIVE_TO_OPPONENT_VERTICAL_LINE
+        return self
+    
     def set_distance_range(
         self,
         distance_range: 'tuple[float, float]'
@@ -108,8 +132,13 @@ class RobotCurriculumBehaviorBuilder:
 
         if self.position_enum == PositionEnum.OWN_GOAL_RELATIVE_TO_WALL or\
                 self.position_enum == PositionEnum.OPPONENT_GOAL_RELATIVE_TO_WALL:
-            robot_curriculum_behavior.set_distance_to_wall(
-                self.distance_to_wall)
+            robot_curriculum_behavior.set_distance_to_wall(self.distance_to_wall)
+        elif self.position_enum == PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE or\
+                self.position_enum == PositionEnum.RELATIVE_TO_OPPONENT_VERTICAL_LINE:
+            robot_curriculum_behavior.set_relative_to_vertical_line_position_enum_values(
+                self.x_line,
+                self.y_range,
+                self.left_to_line)
     
     def _set_distance_range(
         self,
