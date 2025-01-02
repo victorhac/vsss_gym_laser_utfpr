@@ -16,7 +16,9 @@ tasks = [
     DefenderBehaviorUtils.get_task_2,
     DefenderBehaviorUtils.get_task_3,
     DefenderBehaviorUtils.get_task_4,
-    DefenderBehaviorUtils.get_task_5
+    DefenderBehaviorUtils.get_task_5,
+    DefenderBehaviorUtils.get_task_6,
+    DefenderBehaviorUtils.get_task_7
 ]
 
 FileUtils.remove_file_if_exists(plot_file)
@@ -35,13 +37,13 @@ def plot_reward(reward_per_step: list):
     plt.savefig(plot_file)
 
 def get_task(
-    index: int,
+    id: int,
     update_count: int,
     updates_per_task: int,
     games_count: int,
     default_threshold: float
 ):
-    return tasks[index](
+    return tasks[id - 1](
         update_count,
         updates_per_task,
         games_count,
@@ -52,15 +54,15 @@ is_left_team = True
 is_yellow = False
 robot_id = 0
 
-update_count = 3
+update_count = 0
 updates_per_task = 3
 games_count = 100
 default_threshold = .8
 
-task_index = 4
+task_id = 7
 
 task = get_task(
-    task_index,
+    task_id,
     update_count,
     updates_per_task,
     games_count,
