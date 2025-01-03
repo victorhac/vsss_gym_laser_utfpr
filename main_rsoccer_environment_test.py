@@ -1,24 +1,17 @@
-from lib.environment.defender_environment import DefenderEnvironment
+from lib.environment.goalkeeper_environment import GoalkeeperEnvironment
 import matplotlib.pyplot as plt
 
-from lib.utils.behavior.defender_behavior_utils import DefenderBehaviorUtils
-from lib.utils.environment.attacker_environment_utils import AttackerEnvironmentUtils
+from lib.utils.behavior.goalkeeper_behavior_utils import GoalkeeperBehaviorUtils
 
-from configuration.configuration import Configuration
 from lib.utils.file_utils import FileUtils
 
 render_mode = "human"
 plot_file = "temp/plot.png"
-model_path = "models/defender/PPO/2025_1_1_0_54_31/PPO_model_task_5_update_100_57353436_steps.zip"
+should_load_model = False
+model_path = ""
 
 tasks = [
-    DefenderBehaviorUtils.get_task_1,
-    DefenderBehaviorUtils.get_task_2,
-    DefenderBehaviorUtils.get_task_3,
-    DefenderBehaviorUtils.get_task_4,
-    DefenderBehaviorUtils.get_task_5,
-    DefenderBehaviorUtils.get_task_6,
-    DefenderBehaviorUtils.get_task_7
+    GoalkeeperBehaviorUtils.get_task_1
 ]
 
 FileUtils.remove_file_if_exists(plot_file)
@@ -59,7 +52,7 @@ updates_per_task = 3
 games_count = 100
 default_threshold = .8
 
-task_id = 6
+task_id = 0
 
 task = get_task(
     task_id,
@@ -68,9 +61,15 @@ task = get_task(
     games_count,
     default_threshold)
 
-env = DefenderEnvironment(task, render_mode)
+env = GoalkeeperEnvironment(task, render_mode)
 
-model = load_model()
+model = load_model() if should_load_model else None
+
+def get_action(next_state):
+    if should_load_model:
+        action, _ = model.predict(next_state)
+        return action
+    return 0, 0
 
 reward_per_step = []
 
@@ -85,7 +84,7 @@ while True:
         env.render()
 
         reward_per_step.append(reward)
-        action, _ = model.predict(next_state)
+        action = get_action(next_state)
 
     plot_reward(reward_per_step)
 

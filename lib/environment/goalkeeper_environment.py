@@ -1,42 +1,26 @@
-import math
-import random
-import time
 import numpy as np
 
 from gymnasium.spaces import Box
+from rsoccer_gym.Entities import Robot
 
-from rsoccer_gym.Entities import Frame, Robot, Ball
-from rsoccer_gym.Utils import KDTree
-from stable_baselines3 import PPO
-
+from lib.domain.curriculum_task import CurriculumTask
+from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
+from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
+from lib.utils.environment.attacker_environment_utils import AttackerEnvironmentUtils
+from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.rsoccer_utils import RSoccerUtils
 
-from lib.environment.base_environment import BaseEnvironment
-from lib.utils.field_utils import FieldUtils
-from configuration.configuration import Configuration
-
-TRAINING_EPISODE_DURATION = Configuration.get_rsoccer_training_episode_duration()
-
-NUMBER_ROBOTS_BLUE = Configuration.get_rsoccer_team_blue_number_robots()
-NUMBER_ROBOTS_YELLOW = Configuration.get_rsoccer_team_yellow_number_robots()
-
-V_WHEEL_DEADZONE = Configuration.get_rsoccer_robot_speed_dead_zone_meters_seconds()
-
-TIME_STEP = Configuration.get_rsoccer_training_time_step_seconds()
-
-# addapt this for your robot
-MAX_MOTOR_SPEED = Configuration.get_firasim_robot_speed_max_radians_seconds()
-
-class GoalkeeperEnvironment(BaseEnvironment):
-    def __init__(self, render_mode="rgb_array"):
+class GoalkeeperEnvironment(BaseCurriculumEnvironment):
+    def __init__(
+        self,
+        task: CurriculumTask,
+        render_mode="rgb_array"
+    ):
         super().__init__(
-            field_type=0,
-            n_robots_blue=NUMBER_ROBOTS_BLUE,
-            n_robots_yellow=NUMBER_ROBOTS_YELLOW,
-            time_step=TIME_STEP,
-            render_mode=render_mode)
-        
-        self.max_motor_speed = MAX_MOTOR_SPEED
+            task=task,
+            render_mode=render_mode,
+            robot_id=0)
 
         self.action_space = Box(
             low=-1,
@@ -50,317 +34,188 @@ class GoalkeeperEnvironment(BaseEnvironment):
             shape=(34,),
             dtype=np.float32)
 
-        self.previous_ball_potential = None
-        self.episode_initial_time = 0
+        self.is_yellow_team = False
 
-        self.training_episode_duration = TRAINING_EPISODE_DURATION
-        self.v_wheel_deadzone = V_WHEEL_DEADZONE
-
-        self.attacker_model = PPO.load("models/attacker/PPO/2024_6_1_0_39_1/PPO_model")
-    
     def _is_done(self):
-        if self._any_team_scored_goal():
-            return True
-        elif time.time() - self.episode_initial_time > self.training_episode_duration:
+        if self._has_episode_time_exceeded():
             return True
         return False
-    
-    def _create_robot_command(
-        self,
-        id: int,
-        is_yellow_robot: bool,
-        v_wheel_0: float,
-        v_wheel_1: float
-    ):
-        return Robot(
-            yellow=is_yellow_robot,
-            id=id,
-            v_wheel0=v_wheel_0,
-            v_wheel1=v_wheel_1)
-    
-    def _frame_to_attacker_observations(self):
-        observation = []
 
-        ball = self._get_ball()
-
-        observation.extend([
-            self.norm_x(-ball.x),
-            self.norm_y(ball.y),
-            self.norm_v(-ball.v_x),
-            self.norm_v(ball.v_y)
-        ])
-
-        def get_norm_theta(robot: Robot):
-            theta = -RSoccerUtils.get_corrected_angle(robot.theta)
-
-            if theta < 0:
-                theta += np.pi
-            elif theta > 0:
-                theta -= np.pi
-
-            return theta / np.pi
-
-        frame = self.frame
-
-        robot = frame.robots_yellow[0]
-
-        observation.extend([
-            self.norm_x(-robot.x),
-            self.norm_y(robot.y),
-            get_norm_theta(robot),
-            self.norm_v(-robot.v_x),
-            self.norm_v(robot.v_y)
-        ])
-
-        robot = frame.robots_blue[0]
-
-        observation.extend([
-            self.norm_x(-robot.x),
-            self.norm_y(robot.y),
-            get_norm_theta(robot),
-            self.norm_v(-robot.v_x),
-            self.norm_v(robot.v_y)
-        ])
-
-        return np.array(observation, dtype=np.float32)
-    
     def _frame_to_observations(self):
         observation = []
 
+        current_robot = self._get_robot_by_id(self.robot_id, self.is_yellow_team)
         ball = self._get_ball()
 
-        observation.extend([
-            self.norm_x(ball.x),
-            self.norm_y(-ball.y),
-            self.norm_v(ball.v_x),
-            self.norm_v(-ball.v_y)
-        ])
+        def extend_observation_by_ball():
+            observation.extend([
+                self.norm_x(ball.x),
+                self.norm_y(-ball.y),
+                self.norm_v(ball.v_x),
+                self.norm_v(-ball.v_y)
+            ])
+
+        def extend_observation_by_robot(robot: Robot):
+            theta = -RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
+
+            if self._is_inside_field((robot.x, robot.y)): 
+                observation.extend([
+                    self.norm_x(robot.x),
+                    self.norm_y(-robot.y),
+                    theta,
+                    self.norm_v(robot.v_x),
+                    self.norm_v(-robot.v_y)
+                ])
+            else:
+                observation.extend([0, 0, 0, 0, 0])
+
+        extend_observation_by_ball()
 
         frame = self.frame
 
-        robot = frame.robots_blue[0]
-        theta = -RSoccerUtils.get_corrected_angle(robot.theta)
+        for i in range(self.n_robots_blue):
+            extend_observation_by_robot(frame.robots_blue[i])
 
-        observation.extend([
-            self.norm_x(robot.x),
-            self.norm_y(-robot.y),
-            theta / np.pi,
-            self.norm_v(robot.v_x),
-            self.norm_v(-robot.v_y)
-        ])
+        for i in range(self.n_robots_yellow):
+            extend_observation_by_robot(frame.robots_yellow[i])
 
         return np.array(observation, dtype=np.float32)
-        
-    def _get_commands(self, actions):
-        commands = []
 
-        v_wheel0, v_wheel1 = self._actions_to_v_wheels(actions, True)
-
-        robot = self._create_robot_command(0, False, v_wheel0, v_wheel1)
-        
-        commands.append(robot)
-            
-        attacker_actions, _ = self.attacker_model.predict(self._frame_to_attacker_observations())
-
-        v_wheel0, v_wheel1 = self._actions_to_v_wheels(attacker_actions, False)
-
-        robot = self._create_robot_command(0, True, v_wheel0, v_wheel1)
-
-        commands.append(robot)
-
-        return commands
-
-    def _actions_to_v_wheels(
-        self,
-        actions: np.ndarray,
-        is_own_team: bool
-    ):
-        left_wheel_speed = actions[0] * self.max_v
-        right_wheel_speed = actions[1] * self.max_v
-
-        left_wheel_speed, right_wheel_speed = np.clip(
-            (left_wheel_speed, right_wheel_speed),
-            -self.max_v,
-            self.max_v)
-        
-        if is_own_team:
-            factor = self.max_motor_speed / (self.max_v / self.field.rbt_wheel_radius)
-        else:
-            factor = 1
-
-        left_wheel_speed *= factor
-        right_wheel_speed *= factor
-
-        if abs(left_wheel_speed) < self.v_wheel_deadzone:
-            left_wheel_speed = 0
-
-        if abs(right_wheel_speed) < self.v_wheel_deadzone:
-            right_wheel_speed = 0
-
-        left_wheel_speed /= self.field.rbt_wheel_radius
-        right_wheel_speed /= self.field.rbt_wheel_radius
-
-        return left_wheel_speed, right_wheel_speed
+    def _frame_to_opponent_attacker_observations(self, robot_id: int):
+        return AttackerEnvironmentUtils.get_observation(
+            self,
+            robot_id,
+            True,
+            False)
     
-    def __ball_gradient_reward(
+    def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
+        is_yellow = behavior.is_yellow
+        robot_id = behavior.robot_id
+
+        actions = self._get_from_model_actions(behavior)
+
+        left_speed, right_speed = self._actions_to_v_wheels(actions)
+        velocity_alpha = behavior.get_velocity_alpha()
+
+        return self._create_robot_command(
+            robot_id,
+            is_yellow,
+            left_speed * velocity_alpha,
+            right_speed * velocity_alpha)
+    
+    def _create_robot_command_by_behavior(self, behavior: RobotCurriculumBehavior):
+        robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
+
+        if robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.BALL_FOLLOWING:
+            return self._create_ball_following_robot_command(behavior)
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING:
+            return self._create_goalkeeper_ball_following_robot_command(behavior)
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL or\
+            robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL:
+            return self._create_from_model_robot_command(behavior)
+
+        return self._create_robot_command(
+            behavior.robot_id,
+            behavior.is_yellow,
+            0,
+            0)
+
+    def _get_from_model_actions(self, behavior: RobotCurriculumBehavior):
+        model = self._update_model(
+            behavior.robot_id,
+            behavior.is_yellow,
+            behavior.model_path)
+
+        if model is None:
+            return (0, 0)
+
+        return model.predict(
+            self._frame_to_opponent_attacker_observations(behavior.robot_id)
+        )[0]
+
+    def _ball_gradient_reward_by_positions(
         self,
-        previous_ball_potential: float
+        previous_ball_potential: 'float | None',
+        desired_position: float,
+        undesired_position: float
     ):
         field_length = self.get_field_length()
-        goal_depth = self.get_goal_depth()
         ball = self._get_ball()
 
-        convert_m_to_cm = lambda x: x * 100
+        distance_to_desired = GeometryUtils.distance(
+            (ball.x, ball.y),
+            desired_position)
+            
+        distance_to_undesired = GeometryUtils.distance(
+            (ball.x, ball.y),
+            undesired_position)
 
-        length_cm = convert_m_to_cm(field_length)
-        half_length = (field_length / 2) + goal_depth
-
-        dx_d = convert_m_to_cm((half_length + ball.x))
-        dx_a = convert_m_to_cm((half_length - ball.x))
-        dy = convert_m_to_cm(ball.y)
-
-        dist_1 = math.sqrt(dx_a ** 2 + 2 * dy ** 2)
-        dist_2 = math.sqrt(dx_d ** 2 + 2 * dy ** 2)
-
-        ball_potential = ((-dist_1 + dist_2) / length_cm - 1) / 2
+        ball_potential = ((distance_to_desired - distance_to_undesired) / field_length - 1) / 2
 
         if previous_ball_potential is not None:
-            diff = ball_potential - previous_ball_potential
+            ball_potential_difference = ball_potential - previous_ball_potential
             reward = np.clip(
-                diff * 3 / self.time_step,
+                ball_potential_difference * 3 / self.time_step,
                 -5.0,
                 5.0)
         else:
             reward = 0
-        
-        return reward, ball_potential
-        
-    def _move_reward(self):
-        ball = self._get_ball()
-        robot = self._get_agent()
 
-        ball_position = np.array([ball.x, ball.y])
+        return reward, ball_potential
+
+    def _move_towards_ball_reward(self):
+        ball = self._get_ball()
+        return self._move_reward((ball.x, ball.y))
+
+    def _move_reward(
+        self,
+        position: 'tuple[float, float]'
+    ):
+        robot = self._get_agent()
         robot_position = np.array([robot.x, robot.y])
-        
+
         robot_velocities = np.array([robot.v_x, robot.v_y])
-        robot_ball_vector = ball_position - robot_position
+        robot_ball_vector = np.array(position) - robot_position
         robot_ball_vector = robot_ball_vector / np.linalg.norm(robot_ball_vector)
 
         move_reward = np.dot(robot_ball_vector, robot_velocities)
 
         return np.clip(move_reward / 0.4, -5.0, 5.0)
-    
-    def _energy_penalty(self):
-        en_penalty_1 = abs(self.sent_commands[0].v_wheel0)
-        en_penalty_2 = abs(self.sent_commands[0].v_wheel1)
-        return - (en_penalty_1 + en_penalty_2)
-    
-    def _any_team_scored_goal(self):
-        ball = self._get_ball()
-        return abs(ball.x) > (self.get_field_length() / 2)
-    
-    def _has_received_goal(self):        
-        ball = self._get_ball()
-        return ball.x < -self.get_field_length() / 2
 
-    def _has_scored_goal(self):
-        if not self._any_team_scored_goal():
+    def _calculate_reward_and_done(self):
+        reward = self._get_reward()
+        is_done = self._is_done()
+
+        if is_done:
+            pass
+
+        return reward, is_done
+
+    def _get_reward(self):
+        alignment = self.get_alignment()
+        print(alignment)
+        return 0
+
+    def _is_ball_inside_goal_area(self):
+        ball = self._get_ball()
+        return self._is_inside_own_goal_area(
+            (ball.x, ball.y),
+            self.is_yellow_team)
+    
+    def get_alignment(self):
+        ball = self._get_ball()
+        robot = self._get_agent()
+        goal_line_x = -self.get_field_length() / 2
+        goal_y_max = self.get_goal_width() / 2
+        goal_y_min = -goal_y_max
+
+        if ball.v_x >= 0:
             return None
 
-        return not self._has_received_goal()
-    
-    def _get_agent(self):
-        return self.frame.robots_blue[0]
-    
-    def _calculate_reward_and_done(self):
-        reward = 0
-        w_move = 0.2
-        w_ball_grad = 0.8
-        w_energy = 2e-4
+        t = (goal_line_x - ball.x) / ball.v_x
+        intersection_y = ball.y + t * ball.v_y
 
-        if self._any_team_scored_goal():
-            if self._has_scored_goal():
-                reward = 10
-            else:
-                reward = -10
-        else:
-            grad_ball_potential, ball_gradient = \
-                self.__ball_gradient_reward(self.previous_ball_potential)
-            
-            self.previous_ball_potential = ball_gradient
-
-            move_reward = self._move_reward()
-            energy_penalty = self._energy_penalty()
-
-            reward = w_move * move_reward + \
-                w_ball_grad * grad_ball_potential + \
-                w_energy * energy_penalty
-
-        return reward, self._is_done()
-    
-    def _get_random_position_inside_field(self):
-        return FieldUtils.get_random_position_inside_field(
-            self.get_field_length(),
-            self.get_field_width())
-    
-    def _get_random_position_inside_own_goal_area(self):
-        return FieldUtils.get_random_position_inside_own_goal_area(
-            self.get_field_length(),
-            self.get_goal_area_length(),
-            self.get_goal_area_width(),
-            True,
-            self.get_robot_radius())
-    
-    def _get_random_position_inside_opponent_goal_area(self):
-        return FieldUtils.get_random_position_inside_own_goal_area(
-            self.get_field_length(),
-            self.get_goal_area_length(),
-            self.get_goal_area_width(),
-            False)
-    
-    def _get_random_position_inside_own_area(self):
-        return FieldUtils.get_random_position_inside_own_area(
-            self.get_field_length(),
-            self.get_field_width(),
-            True)
-    
-    def _get_random_position_inside_opponent_area(self):
-        return FieldUtils.get_random_position_inside_own_area(
-            self.get_field_length(),
-            self.get_field_width(),
-            False)
-
-    def _get_initial_positions_frame(self):
-        def theta(): return random.uniform(0, 360)
-
-        frame: Frame = Frame()
-
-        ball_position = self._get_random_position_inside_field()
-
-        frame.ball = Ball(x=ball_position[0], y=ball_position[1])
-
-        min_dist = 0.15
-
-        places = KDTree()
-
-        places.insert(ball_position)
-            
-        def get_position(get_position_fn):
-            pos = get_position_fn()
-
-            while places.get_nearest(pos)[1] < min_dist:
-                pos = get_position_fn()
-
-            places.insert(pos)
-
-            return pos
-
-        pos = get_position(self._get_random_position_inside_own_goal_area)
-        frame.robots_blue[0] = Robot(x=pos[0], y=pos[1], theta=theta())
-
-        pos = get_position(self._get_random_position_inside_own_area)
-        frame.robots_yellow[0] = Robot(x=pos[0], y=pos[1], theta=theta())
-
-        self.episode_initial_time = time.time()
-
-        return frame
+        if not (goal_y_min <= intersection_y <= goal_y_max):
+            return None
+        
+        return np.abs(robot.y - intersection_y)
