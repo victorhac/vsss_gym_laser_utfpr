@@ -555,6 +555,31 @@ class BaseEnvironment(gym.Env):
             left_to_line,
             is_yellow_team)
     
+    def _get_position_behind_position_function(
+        self,
+        position: 'tuple[float, float]',
+        distance: float,
+        is_yellow_team: bool
+    ):
+        return lambda: self._get_position_behind_position(
+            position,
+            distance,
+            not is_yellow_team)
+    
+    def _get_position_behind_position(
+        self,
+        position: 'tuple[float, float]',
+        distance: float,
+        is_left_team: bool
+    ):
+        if not is_left_team:
+            distance = -distance
+
+        x = position[0] - distance
+        y = position[1]
+        
+        return x, y
+    
     def _is_close_to_ball(
         self,
         tolerance: float = 0.1

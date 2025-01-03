@@ -336,6 +336,11 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 behavior.y_range,
                 behavior.left_to_line,
                 is_yellow)
+        elif position_enum == PositionEnum.BEHIND_BALL:
+            return self._get_position_behind_position_function(
+                relative_position,
+                behavior.distance,
+                is_yellow)
 
         return self._get_random_position_inside_field
 

@@ -200,7 +200,7 @@ class DefenderBehaviorUtils:
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             updates_per_task,
-            distance_range=(.6, 1.1)
+            distance_range=(.65, .9)
         )
 
         return CurriculumTask(
@@ -244,7 +244,7 @@ class DefenderBehaviorUtils:
 
         ball_behavior = DefenderBehaviorUtils.get_ball_behavior(
             updates_per_task,
-            distance_range=(.6, 1.1)
+            distance_range=(.65, .9)
         )
 
         return CurriculumTask(
@@ -266,7 +266,7 @@ class DefenderBehaviorUtils:
             updates_per_task=updates_per_task,
             distance_range=distance_range,
             x_line=-.6,
-            y_range=(-.35, .35),
+            y_range=(-.65, .65),
             left_to_line=False)
     
     @staticmethod
@@ -314,7 +314,7 @@ class DefenderBehaviorUtils:
                 0,
                 (-.65, .65),
                 True)\
-            .set_distance_range((.6, 0))\
+            .set_distance_range((.6, .05))\
             .build()
     
     @staticmethod
@@ -355,12 +355,9 @@ class DefenderBehaviorUtils:
 
         return builder\
             .set_from_fixed_model_behavior(model_path)\
-            .set_relative_to_own_vertical_line_position_enum(
-                0,
-                (-.65, .65),
-                True)\
-            .set_distance_range((.1, .6))\
-            .set_velocity_alpha_range((.2, .7))\
+            .set_position_enum(PositionEnum.BEHIND_BALL)\
+            .set_distance_range((.3, .3))\
+            .set_velocity_alpha_range((.4, .7))\
             .build()
     
     @staticmethod
