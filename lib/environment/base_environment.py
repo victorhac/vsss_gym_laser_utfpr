@@ -477,16 +477,10 @@ class BaseEnvironment(gym.Env):
         distance_to_wall: float,
         is_yellow_team: bool
     ):
-        if not is_yellow_team:
-            return lambda: self._get_position_close_to_wall_relative_to_goal(
-                distance,
-                distance_to_wall,
-                True)
-        
         return lambda: self._get_position_close_to_wall_relative_to_goal(
             distance,
             distance_to_wall,
-            False)
+            not is_yellow_team)
     
     def _get_position_close_to_wall_relative_to_opponent_goal_function(
         self,
@@ -494,16 +488,10 @@ class BaseEnvironment(gym.Env):
         distance_to_wall: float,
         is_yellow_team: bool
     ):
-        if not is_yellow_team:
-            return lambda: self._get_position_close_to_wall_relative_to_goal(
-                distance,
-                distance_to_wall,
-                False)
-        
         return lambda: self._get_position_close_to_wall_relative_to_goal(
             distance,
             distance_to_wall,
-            True)
+            is_yellow_team)
     
     def _get_position_close_to_wall_relative_to_goal(
         self,
@@ -521,6 +509,76 @@ class BaseEnvironment(gym.Env):
             distance_to_wall,
             is_left_team,
             upper)
+    
+    def _get_random_position_at_distance_to_vertical_line(
+        self,
+        distance: float,
+        x_line: float,
+        y_range: 'tuple[float, float]',
+        left_to_line: bool,
+        is_left_team: bool
+    ):
+        return FieldUtils.get_random_position_at_distance_to_vertical_line(
+            distance,
+            x_line,
+            y_range,
+            left_to_line,
+            is_left_team)
+    
+    def _get_random_position_at_distance_to_own_vertical_line_function(
+        self,
+        distance: float,
+        x_line: float,
+        y_range: 'tuple[float, float]',
+        left_to_line: bool,
+        is_yellow_team: bool
+    ):
+        return lambda: self._get_random_position_at_distance_to_vertical_line(
+            distance,
+            x_line,
+            y_range,
+            left_to_line,
+            not is_yellow_team)
+    
+    def _get_random_position_at_distance_to_opponent_vertical_line_function(
+        self,
+        distance: float,
+        x_line: float,
+        y_range: 'tuple[float, float]',
+        left_to_line: bool,
+        is_yellow_team: bool
+    ):
+        return lambda: self._get_random_position_at_distance_to_vertical_line(
+            distance,
+            x_line,
+            y_range,
+            left_to_line,
+            is_yellow_team)
+    
+    def _get_position_behind_position_function(
+        self,
+        position: 'tuple[float, float]',
+        distance: float,
+        is_yellow_team: bool
+    ):
+        return lambda: self._get_position_behind_position(
+            position,
+            distance,
+            not is_yellow_team)
+    
+    def _get_position_behind_position(
+        self,
+        position: 'tuple[float, float]',
+        distance: float,
+        is_left_team: bool
+    ):
+        if not is_left_team:
+            distance = -distance
+
+        x = position[0] - distance
+        y = position[1]
+        
+        return x, y
     
     def _is_close_to_ball(
         self,

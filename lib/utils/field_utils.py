@@ -222,7 +222,7 @@ class FieldUtils:
 
             if x_min <= new_x <= x_max and y_min <= new_y <= y_max:
                 return new_x, new_y
-            
+
     @staticmethod
     def get_position_close_to_wall_relative_to_own_goal(
         field_length: float,
@@ -273,4 +273,24 @@ class FieldUtils:
         if is_left_team:
             return x, y
         
+        return -x, -y
+    
+    @staticmethod
+    def get_random_position_at_distance_to_vertical_line(
+        distance: float,
+        x_line: float,
+        y_range: 'tuple[float, float]',
+        left_to_line: bool,
+        is_left_team: bool
+    ):
+        side_distance = -distance if left_to_line else distance
+        magnitude = y_range[1] - y_range[0]
+        t = random.uniform(0, 1)
+
+        x = x_line + side_distance
+        y = y_range[0] + t * magnitude
+
+        if is_left_team:
+            return x, y
+
         return -x, -y

@@ -207,13 +207,18 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         if is_done:
             if self._any_team_scored_goal() and self._has_received_goal():
                 reward = -10
+                self.last_game_score = -1
             elif self._is_ball_cleared_from_defense_area():
                 factor = self.distance_when_last_robot_touched_ball_defensive_area /\
                     self._get_max_distance_to_defensive_line()
                 
                 reward = 10 * factor
+                self.last_game_score = 1
             elif self._is_ball_inside_defensive_area():
                 reward = -5
+                self.last_game_score = -.5
+            else:
+                self.last_game_score = 0
 
         return reward, is_done
     
@@ -235,25 +240,11 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         return number_robots_inside_goal_area >= 2
 
     def _get_reward(self):
-        if self._are_two_team_robots_inside_goal_area_with_ball():
-            return -10
-        
         w_move = 0.2
         w_ball_gradient = 0.8
         w_energy = 2e-4
 
-        robot = self._get_agent()
-        ball = self._get_ball()
-
         energy_penalty = self._energy_penalty()
-
-        def weighted_energy_penalty():
-            robot_is_behind_ball = robot.x < ball.x
-
-            if self._is_close_to_ball() and robot_is_behind_ball:
-                return 0
-
-            return w_energy * energy_penalty
 
         if self._is_ball_inside_defensive_area():
             gradient_ball_potential, ball_gradient = \
@@ -262,29 +253,14 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
             self.previous_ball_potential = ball_gradient
             move_reward = self._move_towards_ball_reward()
 
-            if self._is_agent_inside_defensive_area():
-                reward = w_move * move_reward + \
-                    w_ball_gradient * gradient_ball_potential + \
-                    weighted_energy_penalty()
-            else:
-                base_penalty = -3.001
-
-                reward = w_move * move_reward + \
-                    w_ball_gradient * gradient_ball_potential + \
-                    weighted_energy_penalty() + \
-                    base_penalty
+            reward = w_move * move_reward + \
+                w_ball_gradient * gradient_ball_potential + \
+                w_energy * energy_penalty
         else:
-            move_reward = self._move_reward((robot.x, ball.y))
+            move_reward = self._get_positioning_move_reward()
 
-            if self._is_agent_inside_defensive_area():
-                reward = w_move * move_reward + \
-                    weighted_energy_penalty()
-            else:
-                base_penalty = -1
-
-                reward = w_move * move_reward + \
-                    weighted_energy_penalty() + \
-                    base_penalty
+            reward = w_move * move_reward + \
+                w_energy * energy_penalty
 
         return reward
 
@@ -355,4 +331,18 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
                 minimum_distance = distance
 
         return robot_touched_ball_defensive_area
-    
+
+    def _get_positioning_move_reward(self):
+        ball = self._get_ball()
+        robot = self._get_agent()
+        length = self.get_field_length()
+
+        position1 = (-length / 2, ball.y)
+        position2 = (0, ball.y)
+
+        position = GeometryUtils.closest_point_on_line_segment(
+            (robot.x, robot.y),
+            position1,
+            position2)
+
+        return self._move_reward(position)

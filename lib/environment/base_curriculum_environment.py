@@ -322,6 +322,25 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 behavior.distance,
                 behavior.distance_to_wall,
                 is_yellow)
+        elif position_enum == PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE:
+            return self._get_random_position_at_distance_to_own_vertical_line_function(
+                behavior.distance,
+                behavior.x_line,
+                behavior.y_range,
+                behavior.left_to_line,
+                is_yellow)
+        elif position_enum == PositionEnum.RELATIVE_TO_OPPONENT_VERTICAL_LINE:
+            return self._get_random_position_at_distance_to_opponent_vertical_line_function(
+                behavior.distance,
+                behavior.x_line,
+                behavior.y_range,
+                behavior.left_to_line,
+                is_yellow)
+        elif position_enum == PositionEnum.BEHIND_BALL:
+            return self._get_position_behind_position_function(
+                relative_position,
+                behavior.distance,
+                is_yellow)
 
         return self._get_random_position_inside_field
 
