@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 from gymnasium.spaces import Box
 from rsoccer_gym.Entities import Robot
@@ -31,7 +32,7 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         self.observation_space = Box(
             low=-1,
             high=1,
-            shape=(34,),
+            shape=(9,),
             dtype=np.float32)
 
         self.is_yellow_team = False
@@ -73,11 +74,7 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
 
         frame = self.frame
 
-        for i in range(self.n_robots_blue):
-            extend_observation_by_robot(frame.robots_blue[i])
-
-        for i in range(self.n_robots_yellow):
-            extend_observation_by_robot(frame.robots_yellow[i])
+        extend_observation_by_robot(frame.robots_blue[0])
 
         return np.array(observation, dtype=np.float32)
 
@@ -190,11 +187,49 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
             pass
 
         return reward, is_done
+    
+    def _get_ball_gradient_towards_center_line_reward(self):
+        ball = self._get_ball()
+        own_goal_position = self.get_inside_own_goal_position(self.is_yellow_team)
+        defensive_line_position = (0, ball.y)
+
+        return self._ball_gradient_reward_by_positions(
+            self.previous_ball_potential,
+            own_goal_position,
+            defensive_line_position)
 
     def _get_reward(self):
-        alignment = self.get_alignment()
-        print(alignment)
-        return 0
+        robot = self._get_agent()
+
+        if not self._is_inside_own_goal_area(
+            (robot.x, robot.y),
+            self.is_yellow_team
+        ):
+            #TODO: reward to return to the goal area
+            return -1
+        
+        w_move = 0.2
+        w_ball_gradient = 0.8
+        w_energy = 2e-4
+        w_alignment = 1
+
+        if self._is_ball_inside_goal_area():
+            grad_ball_potential, ball_gradient = \
+                self._get_ball_gradient_towards_center_line_reward(self.previous_ball_potential)
+
+            self.previous_ball_potential = ball_gradient
+
+            move_reward = self._move_reward()
+            energy_penalty = self._energy_penalty()
+
+            reward = w_move * move_reward + \
+                w_ball_gradient * grad_ball_potential + \
+                w_energy * energy_penalty
+        else:
+            reward = w_alignment * self._get_alignment_reward() + \
+                w_energy * self._energy_penalty()
+
+        return reward
 
     def _is_ball_inside_goal_area(self):
         ball = self._get_ball()
@@ -202,20 +237,41 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
             (ball.x, ball.y),
             self.is_yellow_team)
     
-    def get_alignment(self):
+    def _get_alignment_reward(self):
         ball = self._get_ball()
         robot = self._get_agent()
+
+        #robot_radius = self.get_robot_radius()
+        robot_radius = 0.035
+
+        field_width = self.get_field_width()
         goal_line_x = -self.get_field_length() / 2
         goal_y_max = self.get_goal_width() / 2
         goal_y_min = -goal_y_max
 
+        y_target = 0
+
+        def get_y_target():
+            if ball.y > goal_y_max:
+                return goal_y_max - robot_radius
+            elif ball.y < goal_y_min:
+                return goal_y_min + robot_radius
+            else:
+                return ball.y
+
         if ball.v_x >= 0:
-            return None
+            y_target = get_y_target()
+        else:
+            t = (goal_line_x - ball.x) / ball.v_x
+            intersection_y = ball.y + t * ball.v_y
 
-        t = (goal_line_x - ball.x) / ball.v_x
-        intersection_y = ball.y + t * ball.v_y
+            if not (goal_y_min <= intersection_y <= goal_y_max):
+                y_target = get_y_target()
+            else:
+                y_target = intersection_y
 
-        if not (goal_y_min <= intersection_y <= goal_y_max):
-            return None
+        max_distance = abs(field_width / 2 - goal_y_min + robot_radius)
         
-        return np.abs(robot.y - intersection_y)
+        distance_to_target = np.abs(robot.y - y_target)
+
+        return (1 - distance_to_target / max_distance) * 2 - 1
