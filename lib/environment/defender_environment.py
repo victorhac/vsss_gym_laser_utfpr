@@ -155,21 +155,6 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         goal_position = self._get_own_goal_position()
         return abs(goal_position[0] - self.defensive_line_x)
 
-    def _move_reward(
-        self,
-        position: 'tuple[float, float]'
-    ):
-        robot = self._get_agent()
-        robot_position = np.array([robot.x, robot.y])
-
-        robot_velocities = np.array([robot.v_x, robot.v_y])
-        robot_ball_vector = np.array(position) - robot_position
-        robot_ball_vector = robot_ball_vector / np.linalg.norm(robot_ball_vector)
-
-        move_reward = np.dot(robot_ball_vector, robot_velocities)
-
-        return np.clip(move_reward / 0.4, -5.0, 5.0)
-
     def _calculate_reward_and_done(self):
         self._try_set_distance_when_last_robot_touched_ball_defensive_area()
 

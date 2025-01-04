@@ -296,6 +296,23 @@ class BaseEnvironment(gym.Env):
             reward = 0
 
         return reward, ball_potential
+    
+    def _move_reward(
+        self,
+        position: 'tuple[float, float]',
+        min_value: float = -5.0,
+        max_value: float = 5.0
+    ):
+        robot = self._get_agent()
+        robot_position = np.array([robot.x, robot.y])
+
+        robot_velocities = np.array([robot.v_x, robot.v_y])
+        robot_target_vector = np.array(position) - robot_position
+        robot_target_vector = robot_target_vector / np.linalg.norm(robot_target_vector)
+
+        move_reward = np.dot(robot_target_vector, robot_velocities)
+
+        return np.clip(move_reward / 0.4, min_value, max_value)
 
     @staticmethod
     def get_position(places: KDTree, min_distance, get_position_fn):

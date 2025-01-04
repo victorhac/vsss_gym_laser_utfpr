@@ -9,7 +9,7 @@ class GoalkeeperBehaviorUtils:
     def get_task_1(
         update_count: int = 0,
         updates_per_task: int = 100,
-        games_count: int = 100,
+        games_count: int = 200,
         default_threshold: float = .98
     ):
         behaviors = [
@@ -27,7 +27,7 @@ class GoalkeeperBehaviorUtils:
 
         ball_behavior = GoalkeeperBehaviorUtils.get_ball_behavior(
             updates_per_task,
-            distance_range=(.8, .1)
+            distance_range=(1, .3)
         )
 
         return CurriculumTask(
@@ -49,7 +49,7 @@ class GoalkeeperBehaviorUtils:
             updates_per_task=updates_per_task,
             distance_range=distance_range,
             x_line=-.6,
-            y_range=(-.2, .2),
+            y_range=(-.35, .35),
             left_to_line=False)
     
     @staticmethod

@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 from gymnasium.spaces import Box
 from rsoccer_gym.Entities import Robot
@@ -36,16 +35,38 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
             dtype=np.float32)
 
         self.is_yellow_team = False
+        self.ball_entered_goal_area = False
+
+    def reset(
+        self,
+        *,
+        seed=None,
+        options=None
+    ):
+        self.ball_entered_goal_area = False
+        return super().reset(seed=seed, options=options)
 
     def _is_done(self):
-        if self._has_episode_time_exceeded():
+        if self._any_team_scored_goal():
+            return True
+        elif self._is_ball_cleared_from_goal_area():
+            return True
+        elif self._has_episode_time_exceeded():
+            return True
+        return False
+    
+    def _is_ball_cleared_from_goal_area(self):
+        if self.ball_entered_goal_area and not self._is_ball_inside_goal_area():
             return True
         return False
 
     def _frame_to_observations(self):
         observation = []
 
-        current_robot = self._get_robot_by_id(self.robot_id, self.is_yellow_team)
+        current_robot = self._get_robot_by_id(
+            self.robot_id,
+            self.is_yellow_team
+        )
         ball = self._get_ball()
 
         def extend_observation_by_ball():
@@ -164,27 +185,22 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         ball = self._get_ball()
         return self._move_reward((ball.x, ball.y))
 
-    def _move_reward(
-        self,
-        position: 'tuple[float, float]'
-    ):
-        robot = self._get_agent()
-        robot_position = np.array([robot.x, robot.y])
-
-        robot_velocities = np.array([robot.v_x, robot.v_y])
-        robot_ball_vector = np.array(position) - robot_position
-        robot_ball_vector = robot_ball_vector / np.linalg.norm(robot_ball_vector)
-
-        move_reward = np.dot(robot_ball_vector, robot_velocities)
-
-        return np.clip(move_reward / 0.4, -5.0, 5.0)
-
     def _calculate_reward_and_done(self):
         reward = self._get_reward()
         is_done = self._is_done()
 
         if is_done:
-            pass
+            if self._any_team_scored_goal() and self._has_received_goal():
+                reward = -10
+                self.last_game_score = -1
+            elif self._is_ball_cleared_from_goal_area():
+                reward = 10
+                self.last_game_score = 1
+            elif self._is_ball_inside_goal_area():
+                reward = -5
+                self.last_game_score = -.5
+            else:
+                self.last_game_score = None
 
         return reward, is_done
     
@@ -201,25 +217,30 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
     def _get_reward(self):
         robot = self._get_agent()
 
-        if not self._is_inside_own_goal_area(
-            (robot.x, robot.y),
-            self.is_yellow_team
-        ):
-            #TODO: reward to return to the goal area
-            return -1
-        
         w_move = 0.2
         w_ball_gradient = 0.8
         w_energy = 2e-4
         w_alignment = 1
 
+        if not self._is_inside_own_goal_area(
+            (robot.x, robot.y),
+            self.is_yellow_team
+        ):
+            goal_position = self.get_inside_own_goal_position(self.is_yellow_team)
+            x, y = goal_position[0], -goal_position[1]
+            return -1 + w_move * self._move_reward((x, y), 5, 5)
+
         if self._is_ball_inside_goal_area():
+            self.ball_entered_goal_area = True
+
+            ball = self._get_ball()
+
             grad_ball_potential, ball_gradient = \
-                self._get_ball_gradient_towards_center_line_reward(self.previous_ball_potential)
+                self._get_ball_gradient_towards_center_line_reward()
 
             self.previous_ball_potential = ball_gradient
 
-            move_reward = self._move_reward()
+            move_reward = self._move_reward((ball.x, ball.y))
             energy_penalty = self._energy_penalty()
 
             reward = w_move * move_reward + \
@@ -241,8 +262,11 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         ball = self._get_ball()
         robot = self._get_agent()
 
-        #robot_radius = self.get_robot_radius()
-        robot_radius = 0.035
+        robot_y = -robot.y
+        ball_x, ball_y = ball.x, -ball.y
+        ball_v_x, ball_v_y = ball.v_x, -ball.v_y
+
+        robot_radius = self.get_robot_radius()
 
         field_width = self.get_field_width()
         goal_line_x = -self.get_field_length() / 2
@@ -252,18 +276,18 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         y_target = 0
 
         def get_y_target():
-            if ball.y > goal_y_max:
+            if ball_y > goal_y_max:
                 return goal_y_max - robot_radius
-            elif ball.y < goal_y_min:
+            elif ball_y < goal_y_min:
                 return goal_y_min + robot_radius
             else:
-                return ball.y
+                return ball_y
 
         if ball.v_x >= 0:
             y_target = get_y_target()
         else:
-            t = (goal_line_x - ball.x) / ball.v_x
-            intersection_y = ball.y + t * ball.v_y
+            t = (goal_line_x - ball_x) / ball_v_x
+            intersection_y = ball_y + t * ball_v_y
 
             if not (goal_y_min <= intersection_y <= goal_y_max):
                 y_target = get_y_target()
@@ -271,7 +295,6 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
                 y_target = intersection_y
 
         max_distance = abs(field_width / 2 - goal_y_min + robot_radius)
-        
-        distance_to_target = np.abs(robot.y - y_target)
+        distance_to_target = abs(robot_y - y_target)
 
         return (1 - distance_to_target / max_distance) * 2 - 1

@@ -52,7 +52,7 @@ updates_per_task = 3
 games_count = 100
 default_threshold = .8
 
-task_id = 0
+task_id = 1
 
 task = get_task(
     task_id,
