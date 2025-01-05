@@ -147,34 +147,6 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
 
         return model.predict(self._frame_to_opponent_attacker_observations(behavior.robot_id))[0]
 
-    def _ball_gradient_reward_by_positions(
-        self,
-        previous_ball_potential: 'float | None',
-        desired_position: float,
-        undesired_position: float
-    ):
-        field_length = self.get_field_length()
-        ball = self._get_ball()
-
-        distance_to_desired = GeometryUtils.distance(
-            (ball.x, ball.y),
-            desired_position)
-            
-        distance_to_undesired = GeometryUtils.distance((ball.x, ball.y), undesired_position)
-
-        ball_potential = ((distance_to_desired - distance_to_undesired) / field_length - 1) / 2
-
-        if previous_ball_potential is not None:
-            ball_potential_difference = ball_potential - previous_ball_potential
-            reward = np.clip(
-                ball_potential_difference * 3 / self.time_step,
-                -5.0,
-                5.0)
-        else:
-            reward = 0
-
-        return reward, ball_potential
-
     def _move_towards_ball_reward(self):
         ball = self._get_ball()
         return self._move_reward((ball.x, ball.y))
@@ -182,21 +154,6 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
     def _get_max_distance_to_defensive_line(self):
         goal_position = self._get_own_goal_position()
         return abs(goal_position[0] - self.defensive_line_x)
-
-    def _move_reward(
-        self,
-        position: 'tuple[float, float]'
-    ):
-        robot = self._get_agent()
-        robot_position = np.array([robot.x, robot.y])
-
-        robot_velocities = np.array([robot.v_x, robot.v_y])
-        robot_ball_vector = np.array(position) - robot_position
-        robot_ball_vector = robot_ball_vector / np.linalg.norm(robot_ball_vector)
-
-        move_reward = np.dot(robot_ball_vector, robot_velocities)
-
-        return np.clip(move_reward / 0.4, -5.0, 5.0)
 
     def _calculate_reward_and_done(self):
         self._try_set_distance_when_last_robot_touched_ball_defensive_area()

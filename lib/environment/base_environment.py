@@ -268,6 +268,51 @@ class BaseEnvironment(gym.Env):
 
     def get_frame(self):
         return self.frame
+    
+    def _ball_gradient_reward_by_positions(
+        self,
+        previous_ball_potential: 'float | None',
+        desired_position: float,
+        undesired_position: float
+    ):
+        field_length = self.get_field_length()
+        ball = self._get_ball()
+
+        distance_to_desired = GeometryUtils.distance(
+            (ball.x, ball.y),
+            desired_position)
+            
+        distance_to_undesired = GeometryUtils.distance((ball.x, ball.y), undesired_position)
+
+        ball_potential = ((distance_to_desired - distance_to_undesired) / field_length - 1) / 2
+
+        if previous_ball_potential is not None:
+            ball_potential_difference = ball_potential - previous_ball_potential
+            reward = np.clip(
+                ball_potential_difference * 3 / self.time_step,
+                -5.0,
+                5.0)
+        else:
+            reward = 0
+
+        return reward, ball_potential
+    
+    def _move_reward(
+        self,
+        position: 'tuple[float, float]',
+        min_value: float = -5.0,
+        max_value: float = 5.0
+    ):
+        robot = self._get_agent()
+        robot_position = np.array([robot.x, robot.y])
+
+        robot_velocities = np.array([robot.v_x, robot.v_y])
+        robot_target_vector = np.array(position) - robot_position
+        robot_target_vector = robot_target_vector / np.linalg.norm(robot_target_vector)
+
+        move_reward = np.dot(robot_target_vector, robot_velocities)
+
+        return np.clip(move_reward / 0.4, min_value, max_value)
 
     @staticmethod
     def get_position(places: KDTree, min_distance, get_position_fn):
