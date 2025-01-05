@@ -9,8 +9,8 @@ class GoalkeeperBehaviorUtils:
     def get_task_1(
         update_count: int = 0,
         updates_per_task: int = 100,
-        games_count: int = 200,
-        default_threshold: float = .98
+        games_count: int = 100,
+        default_threshold: float = .7
     ):
         behaviors = [
             GoalkeeperBehaviorUtils.get_own_team_from_model_behavior(
