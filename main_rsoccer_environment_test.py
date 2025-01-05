@@ -7,8 +7,19 @@ from lib.utils.file_utils import FileUtils
 
 render_mode = "human"
 plot_file = "temp/plot.png"
-should_load_model = False
-model_path = ""
+should_load_model = True
+model_path = "models/goalkeeper/PPO/2025_1_4_18_57_50/PPO_model_task_1_update_100_102286296_steps.zip"
+
+is_left_team = True
+is_yellow = False
+robot_id = 0
+
+update_count = 100
+updates_per_task = 100
+games_count = 100
+default_threshold = .8
+
+task_id = 1
 
 tasks = [
     GoalkeeperBehaviorUtils.get_task_1
@@ -29,13 +40,7 @@ def plot_reward(reward_per_step: list):
     plt.grid()
     plt.savefig(plot_file)
 
-def get_task(
-    id: int,
-    update_count: int,
-    updates_per_task: int,
-    games_count: int,
-    default_threshold: float
-):
+def get_task(id: int):
     return tasks[id - 1](
         update_count,
         updates_per_task,
@@ -43,23 +48,7 @@ def get_task(
         default_threshold
     )
 
-is_left_team = True
-is_yellow = False
-robot_id = 0
-
-update_count = 0
-updates_per_task = 3
-games_count = 100
-default_threshold = .8
-
-task_id = 1
-
-task = get_task(
-    task_id,
-    update_count,
-    updates_per_task,
-    games_count,
-    default_threshold)
+task = get_task(task_id)
 
 env = GoalkeeperEnvironment(task, render_mode)
 
