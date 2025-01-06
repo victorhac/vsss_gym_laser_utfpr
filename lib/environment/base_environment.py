@@ -28,6 +28,7 @@ class BaseEnvironment(gym.Env):
         n_robots_yellow: int,
         time_step: float,
         robot_id: int,
+        training_episode_duration: int,
         render_mode="human",
     ):
         # Initialize Simulator
@@ -35,6 +36,7 @@ class BaseEnvironment(gym.Env):
         self.render_mode = render_mode
         self.time_step = time_step
         self.robot_id = robot_id
+        self.training_episode_duration = training_episode_duration
 
         self.rsim = RSimVSS(
             field_type=field_type,
@@ -214,6 +216,14 @@ class BaseEnvironment(gym.Env):
     def _get_initial_positions_frame(self) -> Frame:
         """returns frame with robots initial positions"""
         raise NotImplementedError
+    
+    def _has_episode_time_exceeded(self):
+        elapsed_time = int(self.steps * self.time_step)
+
+        if elapsed_time == 0:
+            return False
+
+        return elapsed_time % self.training_episode_duration == 0
 
     def norm_v(self, v):
         return np.clip(v / self.max_v, -1, 1)

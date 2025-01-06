@@ -40,11 +40,10 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             n_robots_yellow=NUMBER_ROBOTS_YELLOW,
             time_step=TIME_STEP,
             robot_id=robot_id,
+            training_episode_duration=TRAINING_EPISODE_DURATION,
             render_mode=render_mode)
 
         self.max_motor_speed = MAX_MOTOR_SPEED
-
-        self.training_episode_duration = TRAINING_EPISODE_DURATION
         self.v_wheel_deadzone = V_WHEEL_DEADZONE
 
         self.task = task
@@ -94,14 +93,6 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             1: None,
             2: None
         }
-
-    def _has_episode_time_exceeded(self):
-        elapsed_time = int(self.steps * self.time_step)
-
-        if elapsed_time == 0:
-            return False
-
-        return elapsed_time % self.training_episode_duration == 0
 
     def _go_to_point_v_wheels(
         self,

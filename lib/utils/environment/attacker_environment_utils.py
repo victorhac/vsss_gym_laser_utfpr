@@ -1,6 +1,7 @@
 from rsoccer_gym.Entities import Frame, Robot
 
 from lib.environment.base_environment import BaseEnvironment
+from lib.utils.environment.environment_utils import EnvironmentUtils
 from lib.utils.geometry_utils import GeometryUtils
 
 import numpy as np
@@ -18,22 +19,10 @@ class AttackerEnvironmentUtils:
         observation = []
 
         def get_norm_theta(robot: Robot):
-            if is_left_team:
-                return -RSoccerUtils.get_corrected_angle(robot.theta) / np.pi
-            
-            theta = -RSoccerUtils.get_corrected_angle(robot.theta)
-
-            if theta < 0:
-                theta += np.pi
-            elif theta > 0:
-                theta -= np.pi
-
-            return theta / np.pi
+            return EnvironmentUtils.get_norm_theta(robot, is_left_team)
         
         def get_x_and_y(x: float, y: float):
-            if is_left_team:
-                return x, -y
-            return -x, y
+            return EnvironmentUtils.get_x_and_y(x, y, is_left_team)
 
         def get_normalized_distance(distance: float):
             return distance / base_environment._get_max_distance()
@@ -92,10 +81,7 @@ class AttackerEnvironmentUtils:
         extend_observation_by_ball()
         extend_observation_by_current_robot()
 
-        frame = base_environment.frame
-
-        team = frame.robots_yellow if is_yellow else frame.robots_blue
-        foe_team = frame.robots_blue if is_yellow else frame.robots_yellow
+        team, foe_team = EnvironmentUtils.get_team_and_foe_team(base_environment, is_yellow)
 
         for i in range(3):
             if i != robot_id:
