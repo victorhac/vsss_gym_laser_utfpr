@@ -35,14 +35,16 @@ class GoalkeeperEnvironmentUtils:
 
         def extend_observation_by_robot(robot: Robot):
             theta = get_norm_theta(robot)
+            x, y = get_x_and_y(robot.x, robot.y)
+            v_x, v_y = get_x_and_y(robot.v_x, robot.v_y)
 
-            if base_environment._is_inside_field((robot.x, robot.y)): 
+            if base_environment._is_inside_field((x, y)): 
                 observation.extend([
-                    base_environment.norm_x(robot.x),
-                    base_environment.norm_y(-robot.y),
+                    base_environment.norm_x(x),
+                    base_environment.norm_y(y),
                     theta,
-                    base_environment.norm_v(robot.v_x),
-                    base_environment.norm_v(-robot.v_y)
+                    base_environment.norm_v(v_x),
+                    base_environment.norm_v(v_y)
                 ])
             else:
                 observation.extend([0, 0, 0, 0, 0])
