@@ -7,7 +7,7 @@ from configuration.configuration import Configuration
 from lib.utils.rsoccer_utils import RSoccerUtils
 from lib.utils.motion_utils import MotionUtils
 
-from lib.domain.field_data import FieldData
+from lib.domain.field import Field
 
 FIRASIM_CONTROL_IP = Configuration.get_firasim_control_ip()
 FIRASIM_CONTROL_PORT = Configuration.get_firasim_control_port()
@@ -20,7 +20,7 @@ IS_LEFT_TEAM = Configuration.get_firasim_is_left_team()
 attacker_model = PPO.load("models/attacker/PPO/2024_6_1_0_39_1/PPO_model")
 
 def getProtoVision(isYellowTeam: bool):
-    fieldData = FieldData()
+    fieldData = Field()
     return ProtoVision(
         team_color_yellow=isYellowTeam,
         field_data=fieldData,

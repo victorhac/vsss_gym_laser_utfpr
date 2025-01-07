@@ -3,7 +3,7 @@ import logging
 from configuration.configuration import Configuration
 from lib.utils.firasim_utils import FIRASimUtils
 
-from lib.domain.field_data import FieldData
+from lib.domain.field import Field
 from lib.domain.robot import Robot
 from lib.domain.ball import Ball
 
@@ -19,7 +19,7 @@ class ProtoVision(Receiver):
     def __init__(
         self,
         team_color_yellow: bool,
-        field_data: FieldData = None,
+        field_data: Field = None,
         vision_ip='224.0.0.1',
         vision_port=10002
     ):
@@ -47,10 +47,10 @@ class ProtoVision(Receiver):
         return vision_data
 
 
-    def receive_field_data(self) -> FieldData:
+    def receive_field_data(self) -> Field:
         vision_data_dict = self.receive_dict()
 
-        rcv_field_data = FieldData()
+        rcv_field_data = Field()
         self._field_data_from_dict(rcv_field_data, vision_data_dict)
 
         return rcv_field_data
@@ -70,7 +70,7 @@ class ProtoVision(Receiver):
         sum_to_angle = 0 if not isLeftTeam else np.pi
 
         entity_data.position.x, entity_data.position.y = \
-            FIRASimUtils.normalize_position(
+            FIRASimUtils.correct_position(
                 data_dict.get('x', 0), 
                 data_dict.get('y', 0),
                 isLeftTeam)
@@ -78,15 +78,15 @@ class ProtoVision(Receiver):
         # The ball dict does not contain 'orientation' so it will always be 0
         if not foes:
             entity_data.position.theta = \
-                FIRASimUtils.normalize_angle(
+                FIRASimUtils.correct_angle(
                     self._assert_angle(data_dict.get('orientation', 0) + sum_to_angle))
         else:
             entity_data.position.theta = \
-                FIRASimUtils.normalize_angle(
+                FIRASimUtils.correct_angle(
                     self._assert_angle(data_dict.get('orientation', 0)))
 
         entity_data.velocity.x, entity_data.velocity.y = \
-            FIRASimUtils.normalize_speed(
+            FIRASimUtils.correct_speed(
                 data_dict.get('vx', 0),
                 data_dict.get('vy', 0),
                 isLeftTeam)
@@ -95,7 +95,7 @@ class ProtoVision(Receiver):
         entity_data.velocity.theta = data_dict.get('vorientation', 0)
 
 
-    def _field_data_from_dict(self, field_data: FieldData, raw_data_dict):
+    def _field_data_from_dict(self, field_data: Field, raw_data_dict):
         isLeftTeam = Configuration.get_firasim_is_left_team()
 
         rotate_field = isLeftTeam
@@ -125,7 +125,7 @@ class ProtoVision(Receiver):
         return angle
 
 class ProtoVisionThread(Job):
-    def __init__(self, team_color_yellow: bool, field_data: FieldData = None, vision_ip='224.0.0.1', vision_port=10002):
+    def __init__(self, team_color_yellow: bool, field_data: Field = None, vision_ip='224.0.0.1', vision_port=10002):
         self.vision = ProtoVision(team_color_yellow, field_data, vision_ip, vision_port)
 
         super(ProtoVisionThread, self).__init__(self.vision.update)

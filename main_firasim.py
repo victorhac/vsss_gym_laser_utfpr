@@ -6,7 +6,7 @@ from lib.utils.motion_utils import MotionUtils
 from lib.utils.field_utils import FieldUtils
 from lib.utils.firasim_utils import FIRASimUtils
 
-from lib.domain.field_data import FieldData
+from lib.domain.field import Field
 
 IS_YELLOW_TEAM = Configuration.get_firasim_team_is_yellow_team()
 
@@ -24,7 +24,7 @@ FIRASIM_VISION_IP = Configuration.get_firasim_vision_ip()
 FIRASIM_VISION_PORT = Configuration.get_firasim_vision_port()
 
 def getProtoVision(isYellowTeam: bool):
-    fieldData = FieldData()
+    fieldData = Field()
     return ProtoVision(
         team_color_yellow=isYellowTeam,
         field_data=fieldData,
@@ -48,7 +48,7 @@ def main():
     
     teamControl = getProtoControl()
     
-    targetPosition = FIRASimUtils.normalize_position(x=0.6, y=0.6, is_left_team=IS_LEFT_TEAM)
+    targetPosition = FIRASimUtils.correct_position(x=0.6, y=0.6, is_left_team=IS_LEFT_TEAM)
 
     currentTargetPosition = targetPosition
     robot = fieldData.robots[0]
@@ -58,7 +58,7 @@ def main():
     updateVisions(vision, opponentVision)
     
     while True:
-        targetPosition = FIRASimUtils.normalize_position(ball.position.x, ball.position.y, IS_LEFT_TEAM)
+        targetPosition = FIRASimUtils.correct_position(ball.position.x, ball.position.y, IS_LEFT_TEAM)
 
         velocities = MotionUtils.go_to_point(robot, currentTargetPosition, error)
 

@@ -1,5 +1,5 @@
 from configuration.configuration import Configuration
-from lib.domain.field_data import FieldData
+from lib.domain.field import Field
 from lib.domain.robot import Robot
 from lib.domain.ball import Ball
 from lib.utils.geometry_utils import GeometryUtils
@@ -65,8 +65,8 @@ class RSoccerUtils:
 
     @staticmethod
     def get_field_datas(next_state, isYellowTeam: bool):
-        fieldData = FieldData()
-        opponentFieldData = FieldData()
+        fieldData = Field()
+        opponentFieldData = Field()
 
         ball = RSoccerUtils.to_ball(next_state[0])
 
@@ -101,7 +101,7 @@ class RSoccerUtils:
 
     @staticmethod
     def get_field_data(frame: Frame, is_yellow_team: bool):
-        field_data = FieldData()
+        field_data = Field()
 
         ball = RSoccerUtils.to_ball(frame.ball)
 
@@ -136,7 +136,7 @@ class RSoccerUtils:
 
     @staticmethod
     def get_attacker_observation(
-        field_data: FieldData,
+        field_data: Field,
         is_left_team: bool,
         robot_id: int
     ):
@@ -144,7 +144,7 @@ class RSoccerUtils:
 
     @staticmethod
     def get_defender_observation(
-        field_data: FieldData,
+        field_data: Field,
         is_left_team: bool,
         robot_id: int
     ):
@@ -173,7 +173,7 @@ class RSoccerUtils:
     
     @staticmethod
     def get_ball_observation(
-        field_data: FieldData,
+        field_data: Field,
         is_left_team: bool
     ):
         ball = field_data.ball
@@ -194,7 +194,7 @@ class RSoccerUtils:
 
     @staticmethod
     def get_default_observation(
-        field_data: FieldData,
+        field_data: Field,
         is_left_team: bool,
         robot_id: int
     ):
