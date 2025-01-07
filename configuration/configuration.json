@@ -45,7 +45,10 @@
         },
         "vision": {
             "ip": "224.0.0.1",
-            "port": 10002
+            "port": 10002,
+            "buffer": {
+                "size": 1024
+            }
         },
         "robot": {
             "wheel": {
@@ -67,6 +70,17 @@
                 "number-robots": 1
             }
         }
+    },
+    "referee": {
+        "ip": "224.5.23.2",
+        "port": 10003,
+        "buffer": {
+            "size": 1024
+        }
+    },
+    "replacer": {
+        "ip": "224.5.23.2",
+        "port": 10004
     },
     "field": {
         "length": 1.5,

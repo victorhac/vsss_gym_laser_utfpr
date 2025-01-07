@@ -19,7 +19,7 @@ class FirasimReceiver(SocketReceiver):
         super(FirasimReceiver, self).__init__(
             Configuration.get_firasim_vision_ip(),
             Configuration.get_firasim_vision_port(),
-            1024)
+            Configuration.get_firasim_vision_buffer_size())
 
         self.is_yellow_team = is_yellow_team
         self.field = field
@@ -57,7 +57,6 @@ class FirasimReceiver(SocketReceiver):
                 data_dict.get('vy', 0),
                 self.is_left_team)
 
-        # The ball dict does not contain 'vorientation' so it will always be 0
         entity.velocity.theta = data_dict.get('vorientation', 0)
 
     def _field_data_from_dict(

@@ -1,22 +1,27 @@
-import json
-from google.protobuf.json_format import MessageToJson
-
 from communication.protobuf.referee import vssref_command_pb2
 from communication.receiver.socket_receiver import SocketReceiver
+from configuration.configuration import Configuration
+from lib.domain.referee_message import RefereeMessage
+from lib.utils.referee_utils import RefereeUtils
 
-class RefereeComm(SocketReceiver):
-    def __init__(self, referee_ip='224.5.23.2', referee_port=10003):
-        super(RefereeComm, self).__init__(referee_ip, referee_port, 1024)
+class Referee(SocketReceiver):
+    def __init__(self):
+        super(Referee, self).__init__(
+            Configuration.get_referee_ip(),
+            Configuration.get_referee_port(),
+            Configuration.get_referee_buffer_size()
+        )
+
         self.receiver_socket.setblocking(False)
-        self.last_rcv_data = {}
+        self.last_rcv_data = RefereeMessage()
 
     def receive(self):
         try:
             data = super().receive()
             decoded_data = vssref_command_pb2.VSSRef_Command().FromString(data)
-            referee_data = json.loads(MessageToJson(decoded_data))
-            self.last_rcv_data = referee_data
+            referee_message = RefereeUtils.get_referee_message(decoded_data)
+            self.last_rcv_data = referee_message
         except BlockingIOError:
-            referee_data = self.last_rcv_data
+            referee_message = self.last_rcv_data
 
-        return referee_data
+        return referee_message

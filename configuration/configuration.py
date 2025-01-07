@@ -162,6 +162,11 @@ class Configuration:
         return configuration["vision"]["port"]
     
     @staticmethod
+    def get_firasim_vision_buffer_size():
+        configuration = Configuration._get_firasim_configuration()
+        return configuration["vision"]["buffer"]["size"]
+    
+    @staticmethod
     def get_firasim_robot_wheel_radius():
         configuration = Configuration._get_firasim_configuration()
         return configuration["robot"]["wheel"]["radius"]
@@ -205,6 +210,41 @@ class Configuration:
     def get_firasim_team_yellow_number_robots():
         configuration = Configuration._get_firasim_configuration()
         return configuration["team"]["yellow"]["number-robots"]
+    
+    @staticmethod
+    def _get_referee_configuration():
+        configuration = Configuration._get_configuration()
+        return configuration["referee"]
+    
+    @staticmethod
+    def get_referee_ip():
+        configuration = Configuration._get_referee_configuration()
+        return configuration["ip"]
+    
+    @staticmethod
+    def get_referee_port():
+        configuration = Configuration._get_referee_configuration()
+        return configuration["port"]
+    
+    @staticmethod
+    def get_referee_buffer_size():
+        configuration = Configuration._get_referee_configuration()
+        return configuration["buffer"]["size"]
+    
+    @staticmethod
+    def _get_replacer_configuration():
+        configuration = Configuration._get_configuration()
+        return configuration["replacer"]
+    
+    @staticmethod
+    def get_replacer_ip():
+        configuration = Configuration._get_replacer_configuration()
+        return configuration["ip"]
+    
+    @staticmethod
+    def get_replacer_port():
+        configuration = Configuration._get_replacer_configuration()
+        return configuration["port"]
     
     @staticmethod
     def get_field_length():
