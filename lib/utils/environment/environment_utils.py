@@ -11,15 +11,15 @@ class EnvironmentUtils:
         is_left_team: bool
     ):
         if is_left_team:
-            return x, -y
-        return -x, y
+            return x, y
+        return -x, -y
     
     @staticmethod
     def get_norm_theta(robot: Robot, is_left_team: bool):
         if is_left_team:
-            return -RSoccerUtils.get_corrected_angle(robot.theta) / np.pi
+            return RSoccerUtils.get_corrected_angle(robot.theta) / np.pi
         
-        theta = -RSoccerUtils.get_corrected_angle(robot.theta)
+        theta = RSoccerUtils.get_corrected_angle(robot.theta)
 
         if theta < 0:
             theta += np.pi

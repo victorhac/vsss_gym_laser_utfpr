@@ -66,21 +66,21 @@ class DefenderEnvironment(BaseCurriculumEnvironment):
         def extend_observation_by_ball():
             observation.extend([
                 self.norm_x(ball.x),
-                self.norm_y(-ball.y),
+                self.norm_y(ball.y),
                 self.norm_v(ball.v_x),
-                self.norm_v(-ball.v_y)
+                self.norm_v(ball.v_y)
             ])
 
         def extend_observation_by_robot(robot: Robot):
-            theta = -RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
+            theta = RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
 
             if self._is_inside_field((robot.x, robot.y)): 
                 observation.extend([
                     self.norm_x(robot.x),
-                    self.norm_y(-robot.y),
+                    self.norm_y(robot.y),
                     theta,
                     self.norm_v(robot.v_x),
-                    self.norm_v(-robot.v_y)
+                    self.norm_v(robot.v_y)
                 ])
             else:
                 observation.extend([0, 0, 0, 0, 0])

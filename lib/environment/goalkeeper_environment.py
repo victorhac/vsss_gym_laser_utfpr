@@ -72,21 +72,21 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         def extend_observation_by_ball():
             observation.extend([
                 self.norm_x(ball.x),
-                self.norm_y(-ball.y),
+                self.norm_y(ball.y),
                 self.norm_v(ball.v_x),
-                self.norm_v(-ball.v_y)
+                self.norm_v(ball.v_y)
             ])
 
         def extend_observation_by_robot(robot: Robot):
-            theta = -RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
+            theta = RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
 
             if self._is_inside_field((robot.x, robot.y)): 
                 observation.extend([
                     self.norm_x(robot.x),
-                    self.norm_y(-robot.y),
+                    self.norm_y(robot.y),
                     theta,
                     self.norm_v(robot.v_x),
-                    self.norm_v(-robot.v_y)
+                    self.norm_v(robot.v_y)
                 ])
             else:
                 observation.extend([0, 0, 0, 0, 0])
@@ -227,7 +227,7 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
             self.is_yellow_team
         ):
             goal_position = self.get_inside_own_goal_position(self.is_yellow_team)
-            x, y = goal_position[0], -goal_position[1]
+            x, y = goal_position[0], goal_position[1]
             return -1 + w_move * self._move_reward((x, y), 5, 5)
 
         if self._is_ball_inside_goal_area():
@@ -262,10 +262,6 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         ball = self._get_ball()
         robot = self._get_agent()
 
-        robot_y = -robot.y
-        ball_x, ball_y = ball.x, -ball.y
-        ball_v_x, ball_v_y = ball.v_x, -ball.v_y
-
         robot_radius = self.get_robot_radius()
 
         field_width = self.get_field_width()
@@ -276,18 +272,18 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         y_target = 0
 
         def get_y_target():
-            if ball_y > goal_y_max:
+            if ball.y > goal_y_max:
                 return goal_y_max - robot_radius
-            elif ball_y < goal_y_min:
+            elif ball.y < goal_y_min:
                 return goal_y_min + robot_radius
             else:
-                return ball_y
+                return ball.y
 
         if ball.v_x >= 0:
             y_target = get_y_target()
         else:
-            t = (goal_line_x - ball_x) / ball_v_x
-            intersection_y = ball_y + t * ball_v_y
+            t = (goal_line_x - ball.x) / ball.v_x
+            intersection_y = ball.y + t * ball.v_y
 
             if not (goal_y_min <= intersection_y <= goal_y_max):
                 y_target = get_y_target()
@@ -295,6 +291,6 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
                 y_target = intersection_y
 
         max_distance = abs(field_width / 2 - goal_y_min + robot_radius)
-        distance_to_target = abs(robot_y - y_target)
+        distance_to_target = abs(robot.y - y_target)
 
         return (1 - distance_to_target / max_distance) * 2 - 1

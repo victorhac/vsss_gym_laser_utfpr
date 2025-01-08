@@ -8,6 +8,7 @@ from lib.domain.curriculum_task import CurriculumTask
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
 from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
+from lib.utils.environment.attacker_environment_utils import AttackerEnvironmentUtils
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.rsoccer_utils import RSoccerUtils
 
@@ -51,8 +52,8 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
             return distance / self._get_max_distance()
 
         def extend_observation_by_ball():
-            current_robot_position = current_robot.x, -current_robot.y
-            ball_position = ball.x, -ball.y
+            current_robot_position = current_robot.x, current_robot.y
+            ball_position = ball.x, ball.y
 
             distance = GeometryUtils.distance(current_robot_position, ball_position)
             angle = GeometryUtils.angle_between_points(current_robot_position, ball_position)
@@ -61,26 +62,26 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
                 get_normalized_distance(distance),
                 angle / np.pi,
                 self.norm_v(ball.v_x),
-                self.norm_v(-ball.v_y)
+                self.norm_v(ball.v_y)
             ])
 
         def extend_observation_by_current_robot():
-            theta = -RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
+            theta = RSoccerUtils.get_corrected_angle(current_robot.theta) / np.pi
 
             observation.extend([
                 self.norm_x(current_robot.x),
-                self.norm_y(-current_robot.y),
+                self.norm_y(current_robot.y),
                 theta,
                 self.norm_v(current_robot.v_x),
-                self.norm_v(-current_robot.v_y)
+                self.norm_v(current_robot.v_y)
             ])
 
         def extend_observation_by_robot(robot: Robot):
             if self._is_inside_field((robot.x, robot.y)):
-                theta = -RSoccerUtils.get_corrected_angle(robot.theta) / np.pi
+                theta = RSoccerUtils.get_corrected_angle(robot.theta) / np.pi
 
-                current_robot_position = current_robot.x, -current_robot.y
-                robot_position = robot.x, -robot.y
+                current_robot_position = current_robot.x, current_robot.y
+                robot_position = robot.x, robot.y
 
                 distance = GeometryUtils.distance(current_robot_position, robot_position)
                 angle = GeometryUtils.angle_between_points(current_robot_position, robot_position)
@@ -90,7 +91,7 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
                     angle / np.pi,
                     theta,
                     self.norm_v(robot.v_x),
-                    self.norm_v(-robot.v_y)
+                    self.norm_v(robot.v_y)
                 ])
             else:
                 observation.extend([0, 0, 0, 0, 0])
@@ -110,82 +111,12 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
         return np.array(observation, dtype=np.float32)
 
     def _frame_to_opponent_observations(self, robot_id: int):
-        observation = []
-
-        current_robot = self._get_robot_by_id(robot_id, True)
-        ball = self._get_ball()
-
-        def get_norm_theta(robot: Robot):
-            theta = -RSoccerUtils.get_corrected_angle(robot.theta)
-
-            if theta < 0:
-                theta += np.pi
-            elif theta > 0:
-                theta -= np.pi
-
-            return theta / np.pi
-
-        def get_normalized_distance(distance: float):
-            return distance / self._get_max_distance()
-
-        def extend_observation_by_ball():
-            current_robot_position = -current_robot.x, current_robot.y
-            ball_position = -ball.x, ball.y
-
-            distance = GeometryUtils.distance(current_robot_position, ball_position)
-            angle = GeometryUtils.angle_between_points(current_robot_position, ball_position)
-
-            observation.extend([
-                get_normalized_distance(distance),
-                angle / np.pi,
-                self.norm_v(-ball.v_x),
-                self.norm_v(ball.v_y)
-            ])
-
-        def extend_observation_by_current_robot():
-            theta = get_norm_theta(current_robot)
-
-            observation.extend([
-                self.norm_x(-current_robot.x),
-                self.norm_y(current_robot.y),
-                theta,
-                self.norm_v(-current_robot.v_x),
-                self.norm_v(current_robot.v_y)
-            ])
-
-        def extend_observation_by_robot(robot: Robot):
-            if self._is_inside_field((robot.x, robot.y)):
-                theta = get_norm_theta(robot)
-
-                current_robot_position = -current_robot.x, current_robot.y
-                robot_position = -robot.x, robot.y
-
-                distance = GeometryUtils.distance(current_robot_position, robot_position)
-                angle = GeometryUtils.angle_between_points(current_robot_position, robot_position)
-
-                observation.extend([
-                    get_normalized_distance(distance),
-                    angle / np.pi,
-                    theta,
-                    self.norm_v(-robot.v_x),
-                    self.norm_v(robot.v_y)
-                ])
-            else:
-                observation.extend([0, 0, 0, 0, 0])
-
-        extend_observation_by_ball()
-        extend_observation_by_current_robot()
-
-        frame = self.frame
-
-        for i in range(self.n_robots_yellow):
-            if robot_id != i:
-                extend_observation_by_robot(frame.robots_yellow[i])
-
-        for i in range(self.n_robots_blue):
-            extend_observation_by_robot(frame.robots_blue[i])
-
-        return np.array(observation, dtype=np.float32)
+        return AttackerEnvironmentUtils.get_observation(
+            self,
+            robot_id,
+            True,
+            False
+        )
     
     def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
         is_yellow = behavior.is_yellow

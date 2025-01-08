@@ -2,6 +2,7 @@ from configuration.configuration import Configuration
 from lib.domain.field import Field
 from lib.domain.robot import Robot
 from lib.domain.ball import Ball
+from lib.utils.domain_utils import DomainUtils
 from lib.utils.geometry_utils import GeometryUtils
 
 from rsoccer_gym.Entities import Robot as RSoccerRobot, Ball as RSoccerBall
@@ -247,4 +248,77 @@ class RSoccerUtils:
         right_wheel_speed /= rbt_wheel_radius
 
         return left_wheel_speed, right_wheel_speed
+    
+    @staticmethod
+    def _get_rendering_frame_by_frame(frame: Frame):
+        rendering_frame = Frame()
+
+        def get_robot(source_robot):
+            return RSoccerUtils._get_robot_inverted_y_axis(source_robot)
+        
+        def get_ball():
+            return RSoccerUtils._get_ball_inverted_y_axis(frame)
+
+        for item in frame.robots_blue:
+            rendering_frame.robots_blue[item] = get_robot(
+                frame.robots_blue[item]
+            )
+
+        for item in frame.robots_yellow:
+            rendering_frame.robots_yellow[item] = get_robot(
+                frame.robots_yellow[item]
+            )
+
+        rendering_frame.ball = get_ball()
+
+        return rendering_frame
+    
+    @staticmethod
+    def _get_frame_by_rendering_frame(rendering_frame: Frame):
+        frame = Frame()
+
+        def get_robot(source_robot):
+            return RSoccerUtils._get_robot_inverted_y_axis(source_robot)
+        
+        def get_ball():
+            return RSoccerUtils._get_ball_inverted_y_axis(rendering_frame)
+
+        for item in rendering_frame.robots_blue:
+            frame.robots_blue[item] = get_robot(
+                rendering_frame.robots_blue[item]
+            )
+
+        for item in rendering_frame.robots_yellow:
+            frame.robots_yellow[item] = get_robot(
+                rendering_frame.robots_yellow[item]
+            )
+
+        frame.ball = get_ball()
+
+        return frame
+    
+    @staticmethod
+    def _get_robot_inverted_y_axis(source_robot: RSoccerRobot):
+        robot = RSoccerRobot()
+        DomainUtils.copy(source_robot, robot)
+        robot.y = -robot.y
+        robot.v_y = -robot.v_y
+        robot.theta = RSoccerUtils.get_angle_inverted_y_axis(robot.theta)
+        return robot
+
+    @staticmethod 
+    def _get_ball_inverted_y_axis(frame: Frame):
+        source_ball = frame.ball
+        ball = RSoccerBall()
+        DomainUtils.copy(source_ball, ball)
+        ball.y = -ball.y
+        return ball
+    
+    @staticmethod
+    def get_angle_inverted_y_axis(theta: float):
+        theta = theta % 360
+        theta = (360 - theta) % 360
+        if theta < 0:
+            theta += 360
+        return theta
     
