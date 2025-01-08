@@ -15,11 +15,13 @@ class GameStateMachineUtils:
     @staticmethod
     def get_state_name(
         foul_enum: FoulEnum,
-        is_yellow: bool,
+        is_yellow: bool | None,
         is_yellow_team: bool
     ):
         foul_enum_name = GameStateMachineUtils.get_foul_enum_name
 
+        if is_yellow is None:
+            return foul_enum_name(foul_enum)
         if is_yellow == is_yellow_team:
             return f'{foul_enum_name(foul_enum)}_team'
         return f'{foul_enum_name(foul_enum)}_foe_team'

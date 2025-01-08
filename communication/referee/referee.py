@@ -13,15 +13,15 @@ class Referee(SocketReceiver):
         )
 
         self.receiver_socket.setblocking(False)
-        self.last_rcv_data = RefereeMessage()
+        self.last_received_message = RefereeMessage()
 
     def receive(self):
         try:
             data = super().receive()
             decoded_data = vssref_command_pb2.VSSRef_Command().FromString(data)
             referee_message = RefereeUtils.get_referee_message(decoded_data)
-            self.last_rcv_data = referee_message
+            self.last_received_message = referee_message
         except BlockingIOError:
-            referee_message = self.last_rcv_data
+            referee_message = self.last_received_message
 
         return referee_message

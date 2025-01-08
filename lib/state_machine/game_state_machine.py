@@ -28,14 +28,8 @@ class GameStateMachine:
         self.model = GameStateMachineModel()
         self.is_yellow_team = is_yellow_team
         self.initial_state = FoulEnum.HALT
-
-        get_foul_enum_name = lambda foul_enum, is_team = None:\
-            GameStateMachineUtils.get_foul_enum_name(
-                foul_enum,
-                is_team
-            )
         
-        get_state_name = lambda foul_enum, is_yellow:\
+        get_state_name = lambda foul_enum, is_yellow = None:\
             GameStateMachineUtils.get_state_name(
                 foul_enum,
                 is_yellow,
@@ -49,16 +43,16 @@ class GameStateMachine:
             )
 
         states = [
-            get_foul_enum_name(FoulEnum.FREE_KICK, True),
-            get_foul_enum_name(FoulEnum.FREE_KICK, False),
-            get_foul_enum_name(FoulEnum.GOAL_KICK, True),
-            get_foul_enum_name(FoulEnum.GOAL_KICK, False),
-            get_foul_enum_name(FoulEnum.KICKOFF, True),
-            get_foul_enum_name(FoulEnum.KICKOFF, False),
-            get_foul_enum_name(FoulEnum.FREE_BALL, True),
-            get_foul_enum_name(FoulEnum.FREE_BALL, False),
-            get_foul_enum_name(FoulEnum.GAME_ON),
-            get_foul_enum_name(FoulEnum.HALT)
+            get_state_name(FoulEnum.FREE_KICK, True),
+            get_state_name(FoulEnum.FREE_KICK, False),
+            get_state_name(FoulEnum.GOAL_KICK, True),
+            get_state_name(FoulEnum.GOAL_KICK, False),
+            get_state_name(FoulEnum.KICKOFF, True),
+            get_state_name(FoulEnum.KICKOFF, False),
+            get_state_name(FoulEnum.FREE_BALL, True),
+            get_state_name(FoulEnum.FREE_BALL, False),
+            get_state_name(FoulEnum.GAME_ON),
+            get_state_name(FoulEnum.HALT)
         ]
 
         transitions = [
@@ -105,12 +99,12 @@ class GameStateMachine:
             {
                 'trigger': get_trigger_name(FoulEnum.GAME_ON),
                 'source': '*',
-                'dest': get_foul_enum_name(FoulEnum.GAME_ON)
+                'dest': get_state_name(FoulEnum.GAME_ON)
             },
             {
                 'trigger': get_trigger_name(FoulEnum.HALT),
                 'source': '*',
-                'dest': get_foul_enum_name(FoulEnum.HALT)
+                'dest': get_state_name(FoulEnum.HALT)
             },
         ]
 
@@ -118,7 +112,7 @@ class GameStateMachine:
             model=self.model,
             states=states,
             transitions=transitions,
-            initial=get_foul_enum_name(self.initial_state)
+            initial=get_state_name(self.initial_state)
         )
 
     def set_state_by_referee_message(self, message: RefereeMessage):  
