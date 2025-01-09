@@ -35,7 +35,11 @@
         },
         "training": {
             "time-step": 0.025,
-            "episode-duration": 15
+            "episode-duration": 15,
+            "max-v": 1.198,
+            "max-distance": 1.9845,
+            "max-x": 0.85,
+            "max-y": 0.65
         }
     },
     "firasim": {

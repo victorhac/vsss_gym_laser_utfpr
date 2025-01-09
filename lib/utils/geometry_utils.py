@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 class GeometryUtils:
     @staticmethod
@@ -28,6 +29,29 @@ class GeometryUtils:
     @staticmethod
     def normalize_in_pi(radians: float):
         return GeometryUtils.normalize_angle(radians, 0, math.pi)
+    
+    @staticmethod
+    def correct_angle(
+        angle: float,
+        is_left_team: bool
+    ):
+        sum_to_angle = np.pi if is_left_team else 0
+        angle = GeometryUtils._assert_angle(angle + sum_to_angle)
+
+        if angle < 0:
+            return angle + math.pi
+        elif angle > 0:
+            return angle - math.pi
+        return angle
+    
+    @staticmethod
+    def _assert_angle(angle: float):
+        angle = angle % (2 * np.pi)
+
+        if angle > np.pi:
+            angle -= 2 * np.pi
+
+        return angle
 
     @staticmethod
     def distance(

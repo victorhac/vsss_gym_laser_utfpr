@@ -10,6 +10,8 @@ from lib.domain.ball import Ball
 import json
 from google.protobuf.json_format import MessageToJson
 
+from lib.utils.geometry_utils import GeometryUtils
+
 class FirasimReceiver(SocketReceiver):
     def __init__(
         self,
@@ -47,7 +49,7 @@ class FirasimReceiver(SocketReceiver):
                 self.is_left_team)
 
         entity.position.theta = \
-            FIRASimUtils.correct_angle(
+            GeometryUtils.correct_angle(
                 data_dict.get('orientation', 0),
                 self.is_left_team)
 

@@ -142,6 +142,26 @@ class Configuration:
         return configuration["training"]["episode-duration"]
     
     @staticmethod
+    def get_rsoccer_training_max_v():
+        configuration = Configuration._get_rsoccer_configuration()
+        return configuration["training"]["max-v"]
+    
+    @staticmethod
+    def get_rsoccer_training_max_distance():
+        configuration = Configuration._get_rsoccer_configuration()
+        return configuration["training"]["max-distance"]
+    
+    @staticmethod
+    def get_rsoccer_training_max_x():
+        configuration = Configuration._get_rsoccer_configuration()
+        return configuration["training"]["max-x"]
+    
+    @staticmethod
+    def get_rsoccer_training_max_y():
+        configuration = Configuration._get_rsoccer_configuration()
+        return configuration["training"]["max-y"]
+    
+    @staticmethod
     def get_firasim_control_ip():
         configuration = Configuration._get_firasim_configuration()
         return configuration["control"]["ip"]
