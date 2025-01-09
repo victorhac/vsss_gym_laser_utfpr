@@ -25,21 +25,39 @@ class Configuration:
             os.path.dirname(__file__),
             "launch.json")
         
-        return Configuration.get_data_from_json_file(launch_file_path)
+        return Configuration._get_data_from_json_file(launch_file_path)
     
     @staticmethod
     def get_configuration_data(mode: str):
         configuration_file_path = os.path.join(
             os.path.dirname(__file__),
+            f"configuration.json")
+        
+        data = Configuration._get_data_from_json_file(configuration_file_path)
+
+        configuration_file_path = os.path.join(
+            os.path.dirname(__file__),
             f"configuration.{mode}.json")
         
-        return Configuration.get_data_from_json_file(configuration_file_path)
+        specific_data = Configuration._get_data_from_json_file(configuration_file_path)
+
+        Configuration._merge_dicts(data, specific_data)
+
+        return data
     
     @staticmethod
-    def get_data_from_json_file(file_path):
+    def _get_data_from_json_file(file_path):
         with open(file_path, 'r') as f:
             data = json.loads(f.read())
         return data
+    
+    @staticmethod
+    def _merge_dicts(base: dict, override: dict):
+        for key, value in override.items():
+            if isinstance(value, dict) and key in base and isinstance(base[key], dict):
+                Configuration._merge_dicts(base[key], value)
+            else:
+                base[key] = value
     
     @staticmethod
     def _get_rsoccer_configuration():
