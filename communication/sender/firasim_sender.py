@@ -53,10 +53,6 @@ class FirasimSender(SocketSender):
         packet = self._fill_team_command_packet(team_command)
         self.transmit(packet)
 
-    def stop_team(self):
-        stop_team_command = TeamCommand()
-        self.transmit_team(stop_team_command)
-
     def _fill_team_command_packet(self, team_command: TeamCommand):
         packet = command_pb2.Commands()
 

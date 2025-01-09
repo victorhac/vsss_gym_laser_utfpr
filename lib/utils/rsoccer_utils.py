@@ -2,7 +2,6 @@ from configuration.configuration import Configuration
 from lib.domain.field import Field
 from lib.domain.robot import Robot
 from lib.domain.ball import Ball
-from lib.environment.base_environment import BaseEnvironment
 from lib.utils.domain_utils import DomainUtils
 from lib.utils.field_utils import FieldUtils
 from lib.utils.geometry_utils import GeometryUtils
@@ -162,7 +161,7 @@ class RSoccerUtils:
     
     @staticmethod
     def get_team_and_foe_team(
-        environment: BaseEnvironment,
+        environment,
         is_yellow: bool
     ):
         frame = environment.frame
@@ -199,3 +198,44 @@ class RSoccerUtils:
             y,
             Configuration.get_field_length(),
             Configuration.get_field_width())
+    
+    @staticmethod
+    def get_velocity_factor():
+        max_v = Configuration.get_rsoccer_training_max_v()
+        rbt_wheel_radius = Configuration.get_rsoccer_robot_wheel_radius()
+        max_motor_speed = Configuration.get_firasim_robot_speed_max_radians_seconds()
+
+        rsoccer_max_motor_speed = max_v / rbt_wheel_radius
+
+        return max_motor_speed / rsoccer_max_motor_speed
+
+    @staticmethod
+    def actions_to_v_wheels(actions: np.ndarray):
+        max_v = Configuration.get_rsoccer_training_max_v()
+        v_wheel_deadzone = Configuration.get_rsoccer_robot_speed_dead_zone_meters_seconds()
+
+        left_wheel_speed = actions[0] * max_v
+        right_wheel_speed = actions[1] * max_v
+
+        left_wheel_speed, right_wheel_speed = np.clip(
+            (left_wheel_speed, right_wheel_speed),
+            -max_v,
+            max_v)
+
+        factor = RSoccerUtils.get_velocity_factor()
+
+        left_wheel_speed *= factor
+        right_wheel_speed *= factor
+
+        if abs(left_wheel_speed) < v_wheel_deadzone:
+            left_wheel_speed = 0
+
+        if abs(right_wheel_speed) < v_wheel_deadzone:
+            right_wheel_speed = 0
+
+        rbt_wheel_radius = Configuration.get_rsoccer_robot_wheel_radius()
+
+        left_wheel_speed /= rbt_wheel_radius
+        right_wheel_speed /= rbt_wheel_radius
+
+        return left_wheel_speed, right_wheel_speed

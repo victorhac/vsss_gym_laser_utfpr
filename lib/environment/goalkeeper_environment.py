@@ -1,13 +1,11 @@
 import numpy as np
-
 from gymnasium.spaces import Box
 from rsoccer_gym.Entities import Robot
-
 from lib.domain.curriculum_task import CurriculumTask
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
 from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
-from lib.utils.environment.attacker_environment_utils import AttackerEnvironmentUtils
+from lib.utils.roles.attacker_utils import AttackerUtils
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.rsoccer_utils import RSoccerUtils
 
@@ -100,7 +98,7 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         return np.array(observation, dtype=np.float32)
 
     def _frame_to_opponent_attacker_observations(self, robot_id: int):
-        return AttackerEnvironmentUtils.get_observation(
+        return AttackerUtils.get_observation(
             self,
             robot_id,
             True,

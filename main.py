@@ -1,10 +1,16 @@
 from communication.receiver.firasim_receiver import FirasimReceiver
 from communication.referee.referee import Referee
 from communication.sender.firasim_sender import FirasimSender
+from configuration.configuration import Configuration
+from lib.command.robot_command import RobotCommand
+from lib.command.team_command import TeamCommand
 from lib.domain.enums.foul_enum import FoulEnum
 from lib.domain.field import Field
 from lib.domain.referee_message import RefereeMessage
 from lib.state_machine.game_state_machine import GameStateMachine
+from lib.utils.roles.attacker_utils import AttackerUtils
+from lib.utils.roles.defender_utils import DefenderUtils
+from lib.utils.roles.goalkeeper_utils import GoalkeeperUtils
 from lib.utils.game_state_machine_utils import GameStateMachineUtils
 from stable_baselines3 import PPO
 
@@ -19,6 +25,38 @@ def load_defender_model():
 
 def load_goalkeeper_model():
     return load_model("models/goalkeeper/PPO/2025_1_4_18_57_50/PPO_model_task_1_update_100_102286296_steps.zip")
+
+def is_left_team(is_yellow_team: bool):
+    return Configuration.get_firasim_is_left_team() == is_yellow_team
+
+def normal_play(is_yellow_team: bool, field: Field):
+    left_team = is_left_team(is_yellow_team)
+    robot_commands = []
+
+    def get_speeds(get_speeds_function, id, model):
+        return get_speeds_function(
+            field,
+            id,
+            left_team,
+            model
+        )
+    
+    values = [
+        (AttackerUtils.get_speeds_by_field, 0, attacker_model),
+        (DefenderUtils.get_speeds_by_field, 1, defender_model),
+        (GoalkeeperUtils.get_speeds_by_field, 2, goalkeeper_model),
+    ]
+
+    for item in values:
+        robot_commands.append(get_speeds(*item))
+
+    command = TeamCommand(is_yellow_team)
+    command.commands = robot_commands
+
+    return command
+
+def stopped_play():
+    pass
 
 attacker_model = load_attacker_model()
 defender_model = load_defender_model()
@@ -44,60 +82,106 @@ def perform(
         )
 
     if state == get_state_name(FoulEnum.FREE_KICK, is_yellow_team):
-        free_kick_team(is_yellow_team, field)
+        free_kick_team(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.FREE_KICK, not is_yellow_team):
-        free_kick_foe_team(is_yellow_team, field)
+        free_kick_foe_team(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.GOAL_KICK, is_yellow_team):
-        goal_kick_team(is_yellow_team, field)
+        goal_kick_team(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.GOAL_KICK, not is_yellow_team):
-        goal_kick_foe_team(is_yellow_team, field)
+        goal_kick_foe_team(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.FREE_BALL, is_yellow_team):
-        free_ball_team(is_yellow_team, field)
+        free_ball_team(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.FREE_BALL, not is_yellow_team):
-        free_ball_foe_team(is_yellow_team, field)
+        free_ball_foe_team(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.KICKOFF, is_yellow_team):
-        kickoff_team(is_yellow_team, field)
+        kickoff_team(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.KICKOFF, not is_yellow_team):
-        kickoff_foe_team(is_yellow_team, field)
+        kickoff_foe_team(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.STOP):
-        stop(is_yellow_team, field)
+        stop(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.GAME_ON):
-        game_on(is_yellow_team, field)
+        game_on(is_yellow_team, field, message)
     elif state == get_state_name(FoulEnum.HALT):
-        halt(is_yellow_team, field)
+        halt(is_yellow_team, field, message)
+    else:
+        halt(is_yellow_team, field, message)
 
-def free_kick_team(is_yellow_team: bool, field: Field):
+def free_kick_team(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
     pass
 
-def free_kick_foe_team(is_yellow_team: bool, field: Field):
+def free_kick_foe_team(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
     pass
 
-def goal_kick_team(is_yellow_team: bool, field: Field):
+def goal_kick_team(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
     pass
 
-def goal_kick_foe_team(is_yellow_team: bool, field: Field):
+def goal_kick_foe_team(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
     pass
 
-def free_ball_team(is_yellow_team: bool, field: Field):
+def free_ball_team(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
     pass
 
-def free_ball_foe_team(is_yellow_team: bool, field: Field):
+def free_ball_foe_team(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
     pass
 
-def kickoff_team(is_yellow_team: bool, field: Field):
+def kickoff_team(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
     pass
 
-def kickoff_foe_team(is_yellow_team: bool, field: Field):
+def kickoff_foe_team(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
     pass
 
-def stop(is_yellow_team: bool, field: Field):
-    pass
+def stop(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
+    return stopped_play(is_yellow_team, field)
 
-def game_on(is_yellow_team: bool, field: Field):
-    pass
+def game_on(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
+    return normal_play(is_yellow_team, field)
 
-def halt(is_yellow_team: bool, field: Field):
-    pass
+def halt(
+    is_yellow_team: bool,
+    field: Field,
+    message: RefereeMessage
+):
+    return stopped_play(is_yellow_team, field)
 
 def main():
     blue_field = Field()

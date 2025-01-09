@@ -3,9 +3,10 @@ from lib.domain.field import Field
 from lib.domain.field import Robot
 from lib.environment.base_environment import BaseEnvironment
 from lib.utils.rsoccer_utils import RSoccerUtils
+from stable_baselines3 import PPO
 import numpy as np
 
-class DefenderEnvironmentUtils:
+class DefenderUtils:
     @staticmethod
     def get_observation(
         base_environment: BaseEnvironment,
@@ -135,3 +136,20 @@ class DefenderEnvironmentUtils:
             extend_observation_by_robot(field.foes[i])
 
         return np.array(observation, dtype=np.float32)
+
+    @staticmethod
+    def get_speeds_by_field(
+        field: Field,
+        robot_id: int,
+        is_left_team: bool,
+        model: PPO
+    ):
+        observation = DefenderUtils.get_observation_by_field(
+            field,
+            robot_id,
+            is_left_team
+        )
+
+        action, _ = model.predict(observation)
+
+        return RSoccerUtils.actions_to_v_wheels(action)

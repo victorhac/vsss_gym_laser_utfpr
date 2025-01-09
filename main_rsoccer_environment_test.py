@@ -1,9 +1,9 @@
 from stable_baselines3 import PPO
 from lib.environment.test_environment import TestEnvironment
 
-from lib.utils.environment.attacker_environment_utils import AttackerEnvironmentUtils
-from lib.utils.environment.defender_environment_utils import DefenderEnvironmentUtils
-from lib.utils.environment.goalkeeper_environment_utils import GoalkeeperEnvironmentUtils
+from lib.utils.roles.attacker_utils import AttackerUtils
+from lib.utils.roles.defender_utils import DefenderUtils
+from lib.utils.roles.goalkeeper_utils import GoalkeeperUtils
 
 render_mode = "human"
 
@@ -32,13 +32,13 @@ def get_action(model: PPO, robot_id: int, is_yellow: bool, is_left: bool, get_ob
     return action
 
 def get_attacker_action(robot_id: int, is_yellow: bool, is_left: bool):
-    return get_action(attacker_model, robot_id, is_yellow, is_left, AttackerEnvironmentUtils.get_observation)
+    return get_action(attacker_model, robot_id, is_yellow, is_left, AttackerUtils.get_observation)
 
 def get_defender_action(robot_id: int, is_yellow: bool, is_left: bool):
-    return get_action(defender_model, robot_id, is_yellow, is_left, DefenderEnvironmentUtils.get_observation)
+    return get_action(defender_model, robot_id, is_yellow, is_left, DefenderUtils.get_observation)
 
 def get_goalkeeper_action(robot_id: int, is_yellow: bool, is_left: bool):
-    return get_action(goalkeeper_model, robot_id, is_yellow, is_left, GoalkeeperEnvironmentUtils.get_observation)
+    return get_action(goalkeeper_model, robot_id, is_yellow, is_left, GoalkeeperUtils.get_observation)
 
 def get_actions():
     action = []

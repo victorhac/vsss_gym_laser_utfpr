@@ -4,8 +4,9 @@ from lib.domain.robot import Robot
 from lib.environment.base_environment import BaseEnvironment
 from lib.utils.rsoccer_utils import RSoccerUtils
 import numpy as np
+from stable_baselines3 import PPO
 
-class GoalkeeperEnvironmentUtils:
+class GoalkeeperUtils:
     @staticmethod
     def get_observation(
         base_environment: BaseEnvironment,
@@ -114,3 +115,20 @@ class GoalkeeperEnvironmentUtils:
         extend_observation_by_robot(field.robots[robot_id])
 
         return np.array(observation, dtype=np.float32)
+
+    @staticmethod
+    def get_speeds_by_field(
+        field: Field,
+        robot_id: int,
+        is_left_team: bool,
+        model: PPO
+    ):
+        observation = GoalkeeperUtils.get_observation_by_field(
+            field,
+            robot_id,
+            is_left_team
+        )
+
+        action, _ = model.predict(observation)
+
+        return RSoccerUtils.actions_to_v_wheels(action)
