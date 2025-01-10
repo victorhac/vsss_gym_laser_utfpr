@@ -49,8 +49,7 @@ class GameStateMachine:
             get_state_name(FoulEnum.GOAL_KICK, False),
             get_state_name(FoulEnum.KICKOFF, True),
             get_state_name(FoulEnum.KICKOFF, False),
-            get_state_name(FoulEnum.FREE_BALL, True),
-            get_state_name(FoulEnum.FREE_BALL, False),
+            get_state_name(FoulEnum.FREE_BALL),
             get_state_name(FoulEnum.GAME_ON),
             get_state_name(FoulEnum.HALT)
         ]
@@ -87,14 +86,9 @@ class GameStateMachine:
                 'dest': get_state_name(FoulEnum.KICKOFF, False)
             },
             {
-                'trigger': get_trigger_name(FoulEnum.FREE_BALL, True),
+                'trigger': get_trigger_name(FoulEnum.FREE_BALL),
                 'source': '*',
-                'dest': get_state_name(FoulEnum.FREE_BALL, True)
-            },
-            {
-                'trigger': get_trigger_name(FoulEnum.FREE_BALL, False),
-                'source': '*',
-                'dest': get_state_name(FoulEnum.FREE_BALL, False)
+                'dest': get_state_name(FoulEnum.FREE_BALL)
             },
             {
                 'trigger': get_trigger_name(FoulEnum.GAME_ON),

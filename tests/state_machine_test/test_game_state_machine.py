@@ -10,12 +10,12 @@ class TestGameStateMachine(unittest.TestCase):
         machine = GameStateMachine(is_yellow_team)
         message = RefereeMessage()
 
-        message.foul_enum = FoulEnum.FREE_BALL
+        message.foul_enum = FoulEnum.GOAL_KICK
         message.is_yellow_team = True
 
         machine.set_state_by_referee_message(message)
 
-        self.assertEqual(machine.get_state(), 'free_ball_foe_team')
+        self.assertEqual(machine.get_state(), 'goal_kick_foe_team')
 
     def should_all_run_when_is_free_kick_team(self):
         is_yellow_team = True

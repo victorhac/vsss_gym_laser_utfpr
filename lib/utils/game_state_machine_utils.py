@@ -47,8 +47,7 @@ class GameStateMachineUtils:
         team_foe_team_foul_enums = [
             FoulEnum.FREE_KICK,
             FoulEnum.GOAL_KICK,
-            FoulEnum.KICKOFF,
-            FoulEnum.FREE_BALL]
+            FoulEnum.KICKOFF]
         
         foul_enum_name = GameStateMachineUtils.get_trigger_name
 
