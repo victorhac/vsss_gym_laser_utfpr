@@ -54,15 +54,10 @@ def normal_play(is_yellow_team: bool, field: Field):
     for item in values:
         robot_commands.append(RobotCommand(*get_speeds(*item)))
 
-    command = TeamCommand(is_yellow_team)
-    command.commands = robot_commands
+    return robot_commands
 
-    return command
-
-def stopped_play(is_yellow_team: bool):
-    command = TeamCommand(is_yellow_team)
-    command.commands = [RobotCommand(0, 0) for _ in range(3)]
-    return command
+def stopped_play():
+    return [RobotCommand(0, 0) for _ in range(3)]
 
 def go_to_point_command(
     robot: Robot,
@@ -87,7 +82,6 @@ def go_to_point_command(
 
 def positioning(
     positionings: dict,
-    is_yellow_team: bool,
     field: Field
 ):
     robot_commands = []
@@ -95,7 +89,7 @@ def positioning(
     for item in positionings:
         if item == "ball":
             continue
-        
+
         robot = field.robots[int(item)]
         robot_command, last_error = go_to_point_command(
             robot,
@@ -104,10 +98,7 @@ def positioning(
         )
         robot_commands.append(robot_command)
 
-    command = TeamCommand(is_yellow_team)
-    command.commands = robot_commands
-
-    return command
+    return robot_commands
 
 def perform(
     is_yellow_team: bool,
@@ -130,78 +121,71 @@ def perform(
         )
 
     if state == get_state_name(FoulEnum.FREE_KICK, is_yellow_team):
-        free_kick_team(is_yellow_team, is_left_team, field)
+        commands = free_kick_team(is_left_team, field)
     elif state == get_state_name(FoulEnum.FREE_KICK, not is_yellow_team):
-        free_kick_foe_team(is_yellow_team, is_left_team, field)
+        commands = free_kick_foe_team(field)
     elif state == get_state_name(FoulEnum.GOAL_KICK, is_yellow_team):
-        goal_kick_team(is_yellow_team, is_left_team, field)
+        commands = goal_kick_team(is_left_team, field)
     elif state == get_state_name(FoulEnum.GOAL_KICK, not is_yellow_team):
-        goal_kick_foe_team(is_yellow_team, is_left_team, field)
+        commands = goal_kick_foe_team(is_left_team, field)
     elif state == get_state_name(FoulEnum.KICKOFF, is_yellow_team):
-        kickoff_team(is_yellow_team, is_left_team, field)
+        commands = kickoff_team(is_left_team, field)
     elif state == get_state_name(FoulEnum.KICKOFF, not is_yellow_team):
-        kickoff_foe_team(is_yellow_team, is_left_team, field)
+        commands = kickoff_foe_team(is_left_team, field)
     elif state == get_state_name(FoulEnum.FREE_BALL):
-        free_ball(is_yellow_team, is_left_team, field, message)
+       commands = free_ball(is_left_team, field, message)
     elif state == get_state_name(FoulEnum.STOP):
-        stop(is_yellow_team)
+        commands = stop()
     elif state == get_state_name(FoulEnum.GAME_ON):
-        game_on(is_yellow_team, field)
+        commands = game_on(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.HALT):
-        halt(is_yellow_team)
+        commands = halt()
     else:
-        halt(is_yellow_team)
+        commands = halt()
+
+    command = TeamCommand(is_yellow_team)
+    command.commands = commands
+
+    return command
 
 def free_kick_team(
-    is_yellow_team: bool,
     is_left_team: bool,
     field: Field
 ):
     positionings = ConfigurationUtils.get_game_states_free_kick_team_positionings(is_left_team)
     return positioning(
         positionings,
-        is_yellow_team,
         field
     )
 
-def free_kick_foe_team(
-    is_yellow_team: bool,
-    is_left_team: bool,
-    field: Field
-):
+def free_kick_foe_team(field: Field):
     positionings = ConfigurationUtils.get_game_states_free_kick_foe_team_positionings(is_left_team)
     return positioning(
         positionings,
-        is_yellow_team,
         field
     )
 
 def goal_kick_team(
-    is_yellow_team: bool,
     is_left_team: bool,
     field: Field
 ):
     positionings = ConfigurationUtils.get_game_states_goal_kick_team_positionings(is_left_team)
     return positioning(
         positionings,
-        is_yellow_team,
         field
     )
 
 def goal_kick_foe_team(
-    is_yellow_team: bool,
     is_left_team: bool,
     field: Field
 ):
     positionings = ConfigurationUtils.get_game_states_goal_kick_foe_team_positionings(is_left_team)
     return positioning(
         positionings,
-        is_yellow_team,
         field
     )
 
 def free_ball(
-    is_yellow_team: bool,
     is_left_team: bool,
     field: Field,
     message: RefereeMessage
@@ -213,38 +197,31 @@ def free_ball(
 
     return positioning(
         positionings,
-        is_yellow_team,
         field
     )
 
 def kickoff_team(
-    is_yellow_team: bool,
     is_left_team: bool,
     field: Field
 ):
     positionings = ConfigurationUtils.get_game_states_kickoff_team_positionings(is_left_team)
     return positioning(
         positionings,
-        is_yellow_team,
         field
     )
 
 def kickoff_foe_team(
-    is_yellow_team: bool,
     is_left_team: bool,
     field: Field
 ):
     positionings = ConfigurationUtils.get_game_states_kickoff_foe_team_positionings(is_left_team)
     return positioning(
         positionings,
-        is_yellow_team,
         field
     )
 
-def stop(
-    is_yellow_team: bool
-):
-    return stopped_play(is_yellow_team)
+def stop():
+    return stopped_play()
 
 def game_on(
     is_yellow_team: bool,
@@ -252,10 +229,8 @@ def game_on(
 ):
     return normal_play(is_yellow_team, field)
 
-def halt(
-    is_yellow_team: bool
-):
-    return stopped_play(is_yellow_team)
+def halt():
+    return stopped_play()
 
 attacker_model = load_attacker_model()
 defender_model = load_defender_model()
