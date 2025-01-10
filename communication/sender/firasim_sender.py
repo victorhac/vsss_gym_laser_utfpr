@@ -7,8 +7,8 @@ from lib.command.team_command import TeamCommand
 class FirasimSender(SocketSender):
     def __init__(self):
         super(FirasimSender, self).__init__(
-            Configuration.get_firasim_control_ip(),
-            Configuration.get_firasim_control_port())
+            Configuration.firasim_control_ip,
+            Configuration.firasim_control_port)
 
     def transmit(self, packet):
         super().transmit(packet)

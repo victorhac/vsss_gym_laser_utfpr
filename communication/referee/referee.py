@@ -7,9 +7,9 @@ from lib.utils.referee_utils import RefereeUtils
 class Referee(SocketReceiver):
     def __init__(self):
         super(Referee, self).__init__(
-            Configuration.get_referee_ip(),
-            Configuration.get_referee_port(),
-            Configuration.get_referee_buffer_size()
+            Configuration.referee_ip,
+            Configuration.referee_port,
+            Configuration.referee_buffer_size
         )
 
         self.receiver_socket.setblocking(False)

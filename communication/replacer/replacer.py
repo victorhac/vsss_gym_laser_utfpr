@@ -8,8 +8,8 @@ class Replacer(SocketSender):
         is_yellow_team: bool
     ):
         super(Replacer, self).__init__(
-            Configuration.get_replacer_ip(),
-            Configuration.get_replacer_port())
+            Configuration.replacer_ip,
+            Configuration.replacer_port)
 
         self.is_yellow_team = is_yellow_team
 

@@ -15,17 +15,17 @@ from lib.utils.motion_utils import MotionUtils
 from configuration.configuration import Configuration
 from lib.utils.rsoccer_utils import RSoccerUtils
 
-TRAINING_EPISODE_DURATION = Configuration.get_rsoccer_training_episode_duration()
+TRAINING_EPISODE_DURATION = Configuration.rsoccer_training_episode_duration
 
-NUMBER_ROBOTS_BLUE = Configuration.get_rsoccer_team_blue_number_robots()
-NUMBER_ROBOTS_YELLOW = Configuration.get_rsoccer_team_yellow_number_robots()
+NUMBER_ROBOTS_BLUE = Configuration.rsoccer_team_blue_number_robots
+NUMBER_ROBOTS_YELLOW = Configuration.rsoccer_team_yellow_number_robots
 
-V_WHEEL_DEADZONE = Configuration.get_rsoccer_robot_speed_dead_zone_meters_seconds()
+V_WHEEL_DEADZONE = Configuration.rsoccer_robot_speed_dead_zone_meters_seconds
 
-TIME_STEP = Configuration.get_rsoccer_training_time_step_seconds()
+TIME_STEP = Configuration.rsoccer_training_time_step
 
 # addapt this for your robot
-MAX_MOTOR_SPEED = Configuration.get_firasim_robot_speed_max_radians_seconds()
+MAX_MOTOR_SPEED = Configuration.firasim_robot_speed_max_radians_seconds
 
 class BaseCurriculumEnvironment(BaseEnvironment):
     def __init__(

@@ -19,14 +19,14 @@ class FirasimReceiver(SocketReceiver):
         field: Field
     ):
         super(FirasimReceiver, self).__init__(
-            Configuration.get_firasim_vision_ip(),
-            Configuration.get_firasim_vision_port(),
-            Configuration.get_firasim_vision_buffer_size())
+            Configuration.firasim_vision_ip,
+            Configuration.firasim_vision_port,
+            Configuration.firasim_vision_buffer_size)
 
         self.is_yellow_team = is_yellow_team
         self.field = field
         self.is_left_team = \
-            Configuration.get_firasim_team_is_yellow_left_team() == is_yellow_team
+            Configuration.firasim_team_is_yellow_left_team == is_yellow_team
 
     def _receive_dict(self):
         data = self.receive()

@@ -331,7 +331,7 @@ class DefenderBehaviorUtils:
             updates_per_task
         )
 
-        model_path = Configuration.get_model_attacker_path()
+        model_path = Configuration.model_attacker_path
 
         return builder\
             .set_from_fixed_model_behavior(model_path)\
@@ -351,7 +351,7 @@ class DefenderBehaviorUtils:
             updates_per_task
         )
 
-        model_path = Configuration.get_model_attacker_path()
+        model_path = Configuration.model_attacker_path
 
         return builder\
             .set_from_fixed_model_behavior(model_path)\

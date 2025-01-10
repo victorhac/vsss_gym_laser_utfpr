@@ -177,33 +177,33 @@ class RSoccerUtils:
 
     @staticmethod
     def get_normalized_distance(distance: float):
-        return np.clip(distance / Configuration.get_rsoccer_training_max_distance(), -1, 1)
+        return np.clip(distance / Configuration.rsoccer_training_max_distance, -1, 1)
     
     @staticmethod
     def norm_v(v: float):
-        return np.clip(v / Configuration.get_rsoccer_training_max_v(), -1, 1)
+        return np.clip(v / Configuration.rsoccer_training_max_v, -1, 1)
     
     @staticmethod
     def norm_x(x: float):
-        return np.clip(x / Configuration.get_rsoccer_training_max_x(), -1, 1)
+        return np.clip(x / Configuration.rsoccer_training_max_x, -1, 1)
     
     @staticmethod
     def norm_y(y: float):
-        return np.clip(y / Configuration.get_rsoccer_training_max_y(), -1, 1)
+        return np.clip(y / Configuration.rsoccer_training_max_y, -1, 1)
     
     @staticmethod
     def is_inside_field(x: float, y: float):
         return FieldUtils.is_inside_field(
             x,
             y,
-            Configuration.get_field_length(),
-            Configuration.get_field_width())
+            Configuration.field_length,
+            Configuration.field_width)
     
     @staticmethod
     def get_velocity_factor():
-        max_v = Configuration.get_rsoccer_training_max_v()
-        rbt_wheel_radius = Configuration.get_rsoccer_robot_wheel_radius()
-        max_motor_speed = Configuration.get_firasim_robot_speed_max_radians_seconds()
+        max_v = Configuration.rsoccer_training_max_v
+        rbt_wheel_radius = Configuration.rsoccer_robot_wheel_radius
+        max_motor_speed = Configuration.firasim_robot_speed_max_radians_seconds
 
         rsoccer_max_motor_speed = max_v / rbt_wheel_radius
 
@@ -211,8 +211,8 @@ class RSoccerUtils:
 
     @staticmethod
     def actions_to_v_wheels(actions: np.ndarray):
-        max_v = Configuration.get_rsoccer_training_max_v()
-        v_wheel_deadzone = Configuration.get_rsoccer_robot_speed_dead_zone_meters_seconds()
+        max_v = Configuration.rsoccer_training_max_v
+        v_wheel_deadzone = Configuration.rsoccer_robot_speed_dead_zone_meters_seconds
 
         left_wheel_speed = actions[0] * max_v
         right_wheel_speed = actions[1] * max_v
@@ -233,7 +233,7 @@ class RSoccerUtils:
         if abs(right_wheel_speed) < v_wheel_deadzone:
             right_wheel_speed = 0
 
-        rbt_wheel_radius = Configuration.get_rsoccer_robot_wheel_radius()
+        rbt_wheel_radius = Configuration.rsoccer_robot_wheel_radius
 
         left_wheel_speed /= rbt_wheel_radius
         right_wheel_speed /= rbt_wheel_radius
