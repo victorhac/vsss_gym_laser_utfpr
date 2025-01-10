@@ -93,6 +93,9 @@ def positioning(
     robot_commands = []
 
     for item in positionings:
+        if item == "ball":
+            continue
+        
         robot = field.robots[int(item)]
         robot_command, last_error = go_to_point_command(
             robot,
