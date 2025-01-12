@@ -6,11 +6,10 @@ class Ball:
         self.velocity = Pose2D()
 
     def __str__(self):
-        msg = (
+        return (
             f'Position: {self.position}\n'
             f'Velocity: {self.velocity}\n'
         )
-        return msg
 
     def __repr__(self):
         return f'Ball({self})'

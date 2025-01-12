@@ -6,12 +6,14 @@ import pygame
 import random
 
 from rsoccer_gym.Entities import Frame, Robot
-from rsoccer_gym.Render import COLORS, Ball, VSSRenderField, VSSRobot
+from rsoccer_gym.Render import COLORS, VSSRenderField, VSSRobot
+from rsoccer_gym.Render import Ball
 from rsoccer_gym.Simulators.rsim import RSimVSS
 from rsoccer_gym.Utils import KDTree
 
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.field_utils import FieldUtils
+from lib.utils.rsoccer_utils import RSoccerUtils
 
 class BaseEnvironment(gym.Env):
     metadata = {
@@ -28,6 +30,7 @@ class BaseEnvironment(gym.Env):
         n_robots_yellow: int,
         time_step: float,
         robot_id: int,
+        training_episode_duration: int,
         render_mode="human",
     ):
         # Initialize Simulator
@@ -35,6 +38,7 @@ class BaseEnvironment(gym.Env):
         self.render_mode = render_mode
         self.time_step = time_step
         self.robot_id = robot_id
+        self.training_episode_duration = training_episode_duration
 
         self.rsim = RSimVSS(
             field_type=field_type,
@@ -56,6 +60,9 @@ class BaseEnvironment(gym.Env):
 
         self.frame: Frame = None
         self.last_frame: Frame = None
+
+        self.rendering_frame: Frame = None
+
         self.steps = 0
         self.sent_commands = None
 
@@ -71,7 +78,9 @@ class BaseEnvironment(gym.Env):
         self.sent_commands = commands
 
         self.last_frame = self.frame
-        self.frame = self._get_rsim_frame()
+
+        self.rendering_frame = self._get_rendering_frame_from_rsim()
+        self.frame = RSoccerUtils._get_frame_by_rendering_frame(self.rendering_frame)
 
         observation = self._frame_to_observations()
         reward, done = self._calculate_reward_and_done()
@@ -87,10 +96,15 @@ class BaseEnvironment(gym.Env):
         self.last_frame = None
         self.sent_commands = None
 
-        initial_pos_frame: Frame = self._get_initial_positions_frame()
+        initial_pos_frame = RSoccerUtils._get_rendering_frame_by_frame(
+            self._get_initial_positions_frame()
+        )
+
         self.rsim.reset(initial_pos_frame)
 
-        self.frame = self._get_rsim_frame()
+        self.rendering_frame = self._get_rendering_frame_from_rsim()
+        self.frame = RSoccerUtils._get_frame_by_rendering_frame(self.rendering_frame)
+
         obs = self._frame_to_observations()
 
         if self.render_mode == "human":
@@ -98,16 +112,16 @@ class BaseEnvironment(gym.Env):
 
         return obs, {}
     
-    def _get_rsim_frame(self):
-        frame = self.rsim.get_frame()
+    def _get_rendering_frame_from_rsim(self):
+        rendering_frame = self.rsim.get_frame()
 
-        for item in frame.robots_blue:
-            frame.robots_blue[item].yellow = False
+        for item in rendering_frame.robots_blue:
+            rendering_frame.robots_blue[item].yellow = False
 
-        for item in frame.robots_yellow:
-            frame.robots_yellow[item].yellow = True
+        for item in rendering_frame.robots_yellow:
+            rendering_frame.robots_yellow[item].yellow = True
 
-        return frame
+        return rendering_frame
 
     def _render(self):
         def pos_transform(pos_x, pos_y):
@@ -117,14 +131,14 @@ class BaseEnvironment(gym.Env):
             )
 
         ball = Ball(
-            *pos_transform(self.frame.ball.x, self.frame.ball.y),
+            *pos_transform(self.rendering_frame.ball.x, self.rendering_frame.ball.y),
             self.field_renderer.scale
         )
 
         self.field_renderer.draw(self.window_surface)
 
         for i in range(self.n_robots_blue):
-            robot = self.frame.robots_blue[i]
+            robot = self.rendering_frame.robots_blue[i]
             x, y = pos_transform(robot.x, robot.y)
             rbt = VSSRobot(
                 x,
@@ -137,7 +151,7 @@ class BaseEnvironment(gym.Env):
             rbt.draw(self.window_surface)
 
         for i in range(self.n_robots_yellow):
-            robot = self.frame.robots_yellow[i]
+            robot = self.rendering_frame.robots_yellow[i]
             x, y = pos_transform(robot.x, robot.y)
             rbt = VSSRobot(
                 x,
@@ -214,6 +228,14 @@ class BaseEnvironment(gym.Env):
     def _get_initial_positions_frame(self) -> Frame:
         """returns frame with robots initial positions"""
         raise NotImplementedError
+    
+    def _has_episode_time_exceeded(self):
+        elapsed_time = int(self.steps * self.time_step)
+
+        if elapsed_time == 0:
+            return False
+
+        return elapsed_time % self.training_episode_duration == 0
 
     def norm_v(self, v):
         return np.clip(v / self.max_v, -1, 1)

@@ -1,16 +1,6 @@
-import math
-
 class FIRASimUtils:
     @staticmethod
-    def normalize_angle(angle: float):
-        if angle < 0:
-            return angle + math.pi
-        elif angle > 0:
-            return angle - math.pi
-        return angle
-    
-    @staticmethod
-    def normalize_position(
+    def correct_position(
         x: float,
         y: float,
         is_left_team: bool):
@@ -21,7 +11,7 @@ class FIRASimUtils:
         return -x, -y
     
     @staticmethod
-    def normalize_speed(
+    def correct_speed(
         x: float,
         y: float,
         is_left_team: bool):

@@ -1,7 +1,7 @@
 from .robot import Robot
 from .ball import Ball
 
-class FieldData:
+class Field:
     def __init__(self):
         self.robots = [Robot() for i in range(3)]
         self.foes = [Robot() for i in range(3)]

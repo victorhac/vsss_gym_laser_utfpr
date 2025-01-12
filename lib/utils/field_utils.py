@@ -12,10 +12,10 @@ class FieldUtils:
     def is_inside_field(
         x: float,
         y: float,
-        field_width: float,
-        field_height: float
+        field_length: float,
+        field_width: float
     ):
-        return abs(x) < field_width / 2 and abs(y) < field_height / 2
+        return abs(x) < field_length / 2 and abs(y) < field_width / 2
 
     @staticmethod
     def get_opponent_goal_position(

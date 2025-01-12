@@ -10,9 +10,9 @@ class TestFieldUtils(unittest.TestCase):
         is_left_team = True
         upper = True
 
-        field_length = Configuration.get_field_length()
-        field_width = Configuration.get_field_width()
-        field_goal_width = Configuration.get_field_goal_width()
+        field_length = Configuration.field_length
+        field_width = Configuration.field_width
+        field_goal_width = Configuration.field_goal_width
 
         value = FieldUtils.get_position_close_to_wall_relative_to_own_goal(
             field_length,

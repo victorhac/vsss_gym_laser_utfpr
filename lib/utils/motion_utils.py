@@ -5,8 +5,8 @@ from lib.utils.robot_utils import RobotUtils
 
 import math
 
-KP = Configuration.get_motion_pid_constants_kp()
-KD = Configuration.get_motion_pid_constants_kd()
+KP = Configuration.motion_pid_constants_kp
+KD = Configuration.motion_pid_constants_kd
 
 class MotionUtils:
     @staticmethod
