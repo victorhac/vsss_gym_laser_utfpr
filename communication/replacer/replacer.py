@@ -4,6 +4,7 @@ from configuration.configuration import Configuration
 from lib.command.team_replace_command import TeamReplaceCommand
 from lib.utils.referee_utils import RefereeUtils
 
+#TODO: it is not working, it is not placing the robots in the field
 class Replacer(SocketSender):
     def __init__(self):
         super(Replacer, self).__init__(

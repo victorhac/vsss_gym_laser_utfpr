@@ -362,11 +362,7 @@ replacer = Replacer()
 
 def main():
     while True:
-        message = RefereeMessage()
-        message.foul_enum = FoulEnum.FREE_BALL
-        message.foul_quadrant = 2
-        message.is_yellow_team = True
-        #message = referee.receive()
+        message = referee.receive()
 
         blue_receiver.update()
         yellow_receiver.update()
