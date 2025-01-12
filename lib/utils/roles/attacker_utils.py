@@ -93,16 +93,12 @@ class AttackerUtils:
     @staticmethod
     def get_observation_by_field(
         field: Field,
-        robot_id: int,
-        is_left_team: bool
+        robot_id: int
     ):
         observation = []
 
         def get_norm_theta(robot: Robot):
-            return RSoccerUtils.get_norm_theta_by_robot(robot, is_left_team)
-        
-        def get_x_and_y(x: float, y: float):
-            return RSoccerUtils.get_x_and_y(x, y, is_left_team)
+            return robot.position.theta / np.pi
 
         def get_normalized_distance(distance: float):
             return RSoccerUtils.get_normalized_distance(distance)
@@ -116,16 +112,15 @@ class AttackerUtils:
         def norm_y(y: float):
             return RSoccerUtils.norm_y(y)
         
-        def is_inside_field(x: float, y: float):
-            return RSoccerUtils.is_inside_field(x, y)
+        def is_inside_field(robot: Robot):
+            return RSoccerUtils.is_inside_field(robot.position.x, robot.position.y)
         
         current_robot = field.robots[robot_id]
-        current_robot_position = get_x_and_y(current_robot.position.x, current_robot.position.y)
+        current_robot_position = current_robot.get_position_tuple()
         ball = field.ball
 
         def extend_observation_by_ball():
-            ball_position = get_x_and_y(ball.position.x, ball.position.y)
-            velocity = get_x_and_y(ball.velocity.x, ball.velocity.y)
+            ball_position = ball.get_position_tuple()
 
             distance = GeometryUtils.distance(current_robot_position, ball_position)
             angle = GeometryUtils.angle_between_points(current_robot_position, ball_position)
@@ -133,29 +128,24 @@ class AttackerUtils:
             observation.extend([
                 get_normalized_distance(distance),
                 angle / np.pi,
-                norm_v(velocity[0]),
-                norm_v(velocity[1])
+                norm_v(ball.velocity.x),
+                norm_v(ball.velocity.y)
             ])
 
         def extend_observation_by_current_robot():
-            position = get_x_and_y(current_robot.position.x, current_robot.position.y)
-            velocity = get_x_and_y(current_robot.velocity.x, current_robot.velocity.y)
-
             observation.extend([
-                norm_x(position[0]),
-                norm_y(position[1]),
+                norm_x(current_robot.position.x),
+                norm_y(current_robot.position.y),
                 get_norm_theta(current_robot),
-                norm_v(velocity[0]),
-                norm_v(velocity[1])
+                norm_v(current_robot.velocity.x),
+                norm_v(current_robot.velocity.y)
             ])
 
-        def extend_observation_by_robot(robot: RSoccerRobot):
-            if is_inside_field(robot.x, robot.y):
+        def extend_observation_by_robot(robot: Robot):
+            if is_inside_field(robot):
                 theta = get_norm_theta(robot)
 
-                robot_position = get_x_and_y(robot.x, robot.y)
-                velocity = get_x_and_y(robot.v_x, robot.v_y)
-
+                robot_position = robot.get_position_tuple()
                 distance = GeometryUtils.distance(current_robot_position, robot_position)
                 angle = GeometryUtils.angle_between_points(current_robot_position, robot_position)
 
@@ -163,8 +153,8 @@ class AttackerUtils:
                     get_normalized_distance(distance),
                     angle / np.pi,
                     theta,
-                    norm_v(velocity[0]),
-                    norm_v(velocity[1])
+                    norm_v(robot.velocity.x),
+                    norm_v(robot.velocity.y)
                 ])
             else:
                 observation.extend([0, 0, 0, 0, 0])
@@ -185,13 +175,11 @@ class AttackerUtils:
     def get_speeds_by_field(
         field: Field,
         robot_id: int,
-        is_left_team: bool,
         model: PPO
     ):
         observation = AttackerUtils.get_observation_by_field(
             field,
-            robot_id,
-            is_left_team
+            robot_id
         )
 
         action, _ = model.predict(observation)

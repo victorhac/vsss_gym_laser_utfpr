@@ -1,36 +1,32 @@
+from communication.protobuf.referee import vssref_placement_pb2
 from communication.sender.socket_sender import SocketSender
 from configuration.configuration import Configuration
-from lib.comm.protocols import vssref_placement_pb2
+from lib.command.team_replace_command import TeamReplaceCommand
+from lib.utils.referee_utils import RefereeUtils
 
 class Replacer(SocketSender):
-    def __init__(
-        self,
-        is_yellow_team: bool
-    ):
+    def __init__(self):
         super(Replacer, self).__init__(
             Configuration.replacer_ip,
             Configuration.replacer_port)
 
-        self.is_yellow_team = is_yellow_team
-
     def transmit(self, packet):
         super().transmit(packet)
 
-    def place_team(self, replacement_list):
-        packet = self._fill_robot_command_packet(replacement_list)
+    def place_team(self, command: TeamReplaceCommand):
+        packet = self._fill_robot_command_packet(command)
         self.transmit(packet)
 
-    def _fill_robot_command_packet(self, replacement_list):
+    def _fill_robot_command_packet(self, command: TeamReplaceCommand):
         placement_packet = vssref_placement_pb2.VSSRef_Placement()
-        placement_packet.world.teamColor = int(self.is_yellow_team)
+        placement_packet.world.teamColor = RefereeUtils\
+            .get_protobuf_color_enum(command.is_yellow_team)
 
-        for desired_placement in replacement_list:
-            entity_data, robot_id = desired_placement
-
+        for item in command.robot_replace_commands:
             robot = placement_packet.world.robots.add()
-            robot.robot_id = int(robot_id)
-            robot.x = entity_data.position.x
-            robot.y = entity_data.position.y
-            robot.orientation = entity_data.position.theta
+            robot.robot_id = item.robot_id
+            robot.x = item.x
+            robot.y = item.y
+            robot.orientation = item.theta
 
         return placement_packet

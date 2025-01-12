@@ -21,7 +21,7 @@ class Referee(SocketReceiver):
             decoded_data = vssref_command_pb2.VSSRef_Command().FromString(data)
             referee_message = RefereeUtils.get_referee_message(decoded_data)
             self.last_received_message = referee_message
-        except BlockingIOError:
+        except BlockingIOError as e:
             referee_message = self.last_received_message
 
         return referee_message

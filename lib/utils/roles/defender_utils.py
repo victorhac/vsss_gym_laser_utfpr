@@ -71,18 +71,14 @@ class DefenderUtils:
     @staticmethod
     def get_observation_by_field(
         field: Field,
-        robot_id: int,
-        is_left_team: bool
+        robot_id: int
     ):
         observation = []
 
         ball = field.ball
         
         def get_norm_theta(robot: Robot):
-            return RSoccerUtils.get_norm_theta_by_robot(robot, is_left_team)
-        
-        def get_x_and_y(x: float, y: float):
-            return RSoccerUtils.get_x_and_y(x, y, is_left_team)
+            return robot.position.theta / np.pi
         
         def norm_v(v: float):
             return RSoccerUtils.norm_v(v)
@@ -93,31 +89,25 @@ class DefenderUtils:
         def norm_y(y: float):
             return RSoccerUtils.norm_y(y)
         
-        def is_inside_field(x: float, y: float):
-            return RSoccerUtils.is_inside_field(x, y)
+        def is_inside_field(robot: Robot):
+            return RSoccerUtils.is_inside_field(robot.position.x, robot.position.y)
 
         def extend_observation_by_ball():
-            x, y = get_x_and_y(ball.position.x, ball.position.y)
-            v_x, v_y = get_x_and_y(ball.velocity.x, ball.velocity.y)
-
             observation.extend([
-                norm_x(x),
-                norm_y(y),
-                norm_v(v_x),
-                norm_v(v_y)
+                norm_x(ball.position.x),
+                norm_y(ball.position.y),
+                norm_v(ball.velocity.x),
+                norm_v(ball.velocity.y)
             ])
 
         def extend_observation_by_robot(robot: Robot):
-            x, y = get_x_and_y(robot.position.x, robot.position.y)
-            v_x, v_y = get_x_and_y(robot.velocity.x, robot.velocity.y)
-
-            if is_inside_field((x, y)): 
+            if is_inside_field(robot):
                 observation.extend([
-                    norm_x(x),
-                    norm_y(y),
+                    norm_x(robot.position.x),
+                    norm_y(robot.position.y),
                     get_norm_theta(robot),
-                    norm_v(v_x),
-                    norm_v(v_y)
+                    norm_v(robot.velocity.x),
+                    norm_v(robot.velocity.y)
                 ])
             else:
                 observation.extend([0, 0, 0, 0, 0])
@@ -141,13 +131,11 @@ class DefenderUtils:
     def get_speeds_by_field(
         field: Field,
         robot_id: int,
-        is_left_team: bool,
         model: PPO
     ):
         observation = DefenderUtils.get_observation_by_field(
             field,
-            robot_id,
-            is_left_team
+            robot_id
         )
 
         action, _ = model.predict(observation)

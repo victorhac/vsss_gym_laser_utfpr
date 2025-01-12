@@ -54,16 +54,16 @@ class FirasimSender(SocketSender):
         self.transmit(packet)
 
     def _fill_team_command_packet(self, team_command: TeamCommand):
-        packet = command_pb2.Commands()
+        command_packet = command_pb2.Commands()
 
         for i in range(len(team_command.commands)):
-            command = packet.robot_commands.add()
+            command = command_packet.robot_commands.add()
             command.id = i
             command.yellowteam = team_command.is_yellow
             command.wheel_left = team_command.commands[i].left_speed
             command.wheel_right = team_command.commands[i].right_speed
 
         packet = packet_pb2.Packet()
-        packet.cmd.CopyFrom(packet)
+        packet.cmd.CopyFrom(command_packet)
 
         return packet

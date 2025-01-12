@@ -8,17 +8,18 @@ class GameStateMachineModel():
     def set_state_by_referee_message(
         self,
         message: RefereeMessage
-    ):        
-        get_trigger_name = GameStateMachineUtils.get_trigger_method_name(
-            message.foul_enum,
-            message.is_yellow_team
-        )
+    ):
+        if message.foul_enum is not None:        
+            get_trigger_name = GameStateMachineUtils.get_trigger_method_name(
+                message.foul_enum,
+                message.is_yellow_team
+            )
 
-        getattr(
-            self,
-            get_trigger_name,
-            None
-        )()
+            getattr(
+                self,
+                get_trigger_name,
+                None
+            )()
 
 class GameStateMachine:
     def __init__(
@@ -45,6 +46,8 @@ class GameStateMachine:
         states = [
             get_state_name(FoulEnum.FREE_KICK, True),
             get_state_name(FoulEnum.FREE_KICK, False),
+            get_state_name(FoulEnum.PENALTY_KICK, True),
+            get_state_name(FoulEnum.PENALTY_KICK, False),
             get_state_name(FoulEnum.GOAL_KICK, True),
             get_state_name(FoulEnum.GOAL_KICK, False),
             get_state_name(FoulEnum.KICKOFF, True),
@@ -64,6 +67,16 @@ class GameStateMachine:
                 'trigger': get_trigger_name(FoulEnum.FREE_KICK, False),
                 'source': '*',
                 'dest': get_state_name(FoulEnum.FREE_KICK, False)
+            },
+            {
+                'trigger': get_trigger_name(FoulEnum.PENALTY_KICK, True),
+                'source': '*',
+                'dest': get_state_name(FoulEnum.PENALTY_KICK, True)
+            },
+            {
+                'trigger': get_trigger_name(FoulEnum.PENALTY_KICK, False),
+                'source': '*',
+                'dest': get_state_name(FoulEnum.PENALTY_KICK, False)
             },
             {
                 'trigger': get_trigger_name(FoulEnum.GOAL_KICK, True),

@@ -170,10 +170,6 @@ class RSoccerUtils:
         foe_team = frame.robots_blue if is_yellow else frame.robots_yellow
 
         return team, foe_team
-    
-    @staticmethod
-    def get_norm_theta_by_robot(robot: Robot, is_left_team: bool):
-        return GeometryUtils.correct_angle(robot.position.theta, is_left_team) / np.pi
 
     @staticmethod
     def get_normalized_distance(distance: float):
@@ -238,4 +234,4 @@ class RSoccerUtils:
         left_wheel_speed /= rbt_wheel_radius
         right_wheel_speed /= rbt_wheel_radius
 
-        return left_wheel_speed, right_wheel_speed
+        return right_wheel_speed, left_wheel_speed

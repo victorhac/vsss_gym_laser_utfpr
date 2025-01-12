@@ -1,6 +1,6 @@
 import socket
 import struct
-from abc import ABC, abstractmethod
+from abc import ABC
 
 class SocketReceiver(ABC):
     def __init__(
@@ -16,10 +16,6 @@ class SocketReceiver(ABC):
 
     def receive(self):
         return self.receiver_socket.recv(self.buffer_size)
-    
-    @abstractmethod
-    def update(self):
-        pass
 
     def _create_socket(self):
         sock = socket.socket(
