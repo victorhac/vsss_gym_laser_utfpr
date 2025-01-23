@@ -16,3 +16,6 @@ class Robot():
     
     def get_position_tuple(self):
         return (self.position.x, self.position.y)
+    
+    def get_velocity_tuple(self):
+        return (self.velocity.x, self.velocity.y)
