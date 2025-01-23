@@ -1,13 +1,12 @@
 from math import cos, pi, sin, sqrt, atan2, exp
 import numpy as np
-from lib.domain.obstacle import Obstacle
+from lib.domain.univector_field_navigation.obstacle import Obstacle
 
-d_e = 5.37 / 100
-kr = 4.15 / 100
-k0 = 0.12 / 100
-d_min = 3.48 / 100
-gaussian_delta = 4.57 / 100
-step = 3 / 100
+d_e = 0.0537
+kr = 0.0415
+k0 = 0.0012
+d_min = 0.0948
+gaussian_delta = 0.0457
 
 def get_vector(
     point1: 'tuple[float, float]',
@@ -30,7 +29,7 @@ def wrap_to_pi(angle: float):
         return angle
 
 def get_closest_obstacle(
-    point: 'tuple[float, float]',
+    position: 'tuple[float, float]',
     obstacles: 'list[Obstacle]'
 ):
     last_ro = 0
@@ -38,7 +37,7 @@ def get_closest_obstacle(
     returned_obstacle = None
 
     for obstacle in obstacles:
-        vector = get_vector(point, obstacle.position)
+        vector = get_vector(position, obstacle.position)
     
         if not count:
             last_ro = get_vector_norm(vector)
@@ -55,13 +54,14 @@ def n_h(phi: float):
     return np.array([cos(phi), sin(phi)])
 
 def phi_auf(
-    obstacle: 'Obstacle',
-    point: 'tuple[float, float]',
-    point_obstacle_distance: float,
-    velocities = np.array([0, 0])
+    obstacle: Obstacle,
+    robot_position: 'tuple[float, float]',
+    robot_velocity: 'tuple[float, float]',
+    point_obstacle_distance: float
 ):
     obstacle_position = np.array(obstacle.position)
     obstacle_velocities = np.array(obstacle.velocities)
+    velocities = np.array(robot_velocity)
 
     shifting_vector = k0 * (obstacle_velocities - velocities)
     shifting_vector_norm = get_vector_norm(shifting_vector)
@@ -72,7 +72,7 @@ def phi_auf(
         virtual_obstacle_position = obstacle_position \
             + point_obstacle_distance * shifting_vector / shifting_vector_norm
 
-    vector = get_vector(virtual_obstacle_position, point)
+    vector = get_vector(virtual_obstacle_position, robot_position)
     phi_auf = phi_r(vector)
     
     return wrap_to_pi(phi_auf)
@@ -141,14 +141,15 @@ def phi_tuf(
 
     return wrap_to_pi(phi_tuf_value)
 
-def composition(
-    point: 'tuple[float, float]',
+def get_univector_field_point(
+    robot_position: 'tuple[float, float]',
+    robot_velocity: 'tuple[float, float]',
     desired_position: 'tuple[float, float]',
     obstacles: 'list[Obstacle]'
 ):
     point_desired_vector = get_vector(
         desired_position,
-        point)
+        robot_position)
 
     theta = phi_r(point_desired_vector)
 
@@ -156,16 +157,16 @@ def composition(
         theta,
         point_desired_vector)
 
-    phi_composed_value = get_phi_composed_value(
+    return get_phi_composed_value(
         phi_tuf_value,
-        point,
+        robot_position,
+        robot_velocity,
         obstacles)
-
-    return n_h(phi_composed_value)
 
 def get_phi_composed_value(
     phi_tuf_value: float,
-    point: 'tuple[float, float]',
+    robot_position: 'tuple[float, float]',
+    robot_velocity: 'tuple[float, float]',
     obstacles: 'list[Obstacle]'
 ):
     if len(obstacles) == 0:
@@ -173,24 +174,27 @@ def get_phi_composed_value(
 
     return get_phi_composed_value_when_there_exists_obstacle(
         phi_tuf_value,
-        point,
-        obstacles) 
+        robot_position,
+        robot_velocity,
+        obstacles)
 
 def get_phi_composed_value_when_there_exists_obstacle(
     phi_tuf_value: float,
-    point: 'tuple[float, float]',
+    robot_position: 'tuple[float, float]',
+    robot_velocity: 'tuple[float, float]',
     obstacles: 'list[Obstacle]'
 ):
-    obstacle = get_closest_obstacle(point, obstacles)
+    obstacle = get_closest_obstacle(robot_position, obstacles)
     obstacle_point_vector = get_vector(
         obstacle.position,
-        point)
+        robot_position)
 
     obstacle_point_distance = get_vector_norm(obstacle_point_vector)
 
     phi_auf_value = phi_auf(
         obstacle,
-        point,
+        robot_position,
+        robot_velocity,
         obstacle_point_distance)
 
     return phi_composed(
@@ -198,24 +202,3 @@ def get_phi_composed_value_when_there_exists_obstacle(
         phi_auf_value,
         obstacle_point_distance,
         obstacle)
-
-def get_univector_field(
-    length: float,
-    width: float,
-    center: 'tuple[float, float]',
-    desired_position: 'tuple[float, float]',
-    obstacles: 'list[Obstacle]'
-):
-    field_length_half = length / 2
-    field_width_half = width / 2
-
-    x_min = center[0] - field_length_half
-    x_max = center[0] + field_length_half
-    y_min = center[1] - field_width_half
-    y_max = center[1] + field_width_half
-
-    return [
-        composition((x, y), desired_position, obstacles)
-        for x in np.arange(x_min, x_max, step)
-            for y in np.arange(y_min, y_max, step)
-    ]

@@ -36,16 +36,16 @@ class FirasimSender(SocketSender):
         right_speed: float,
         is_yellow_team: bool
     ):
-        packet = command_pb2.Commands()
+        commands = command_pb2.Commands()
 
-        robot = packet.robot_commands.add()
+        robot = commands.robot_commands.add()
         robot.id = robot_id
         robot.yellowteam = is_yellow_team
         robot.wheel_left = left_speed
         robot.wheel_right = right_speed
 
         packet = packet_pb2.Packet()
-        packet.cmd.CopyFrom(packet)
+        packet.cmd.CopyFrom(commands)
 
         return packet
 

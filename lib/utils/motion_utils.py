@@ -1,3 +1,4 @@
+import numpy as np
 from lib.domain.robot import Robot
 from lib.utils.geometry_utils import GeometryUtils
 from configuration.configuration import Configuration
@@ -7,6 +8,17 @@ import math
 
 KP = Configuration.motion_pid_constants_kp
 KD = Configuration.motion_pid_constants_kd
+K_TURNING = 0.443467
+
+def wrap_to_pi(angle: float):
+    pi = np.pi
+
+    if angle > pi:
+        return angle - 2 * pi
+    if angle < -pi:
+        return 2 * pi + angle
+    else:
+        return angle
 
 class MotionUtils:
     @staticmethod
@@ -39,6 +51,34 @@ class MotionUtils:
         leftMotorSpeed, rightMotorSpeed = MotionUtils._get_speeds(motorSpeed, base_speed, reversed)
 
         return leftMotorSpeed, rightMotorSpeed, error
+    
+    @staticmethod
+    def go_to_point_by_theta(
+        robot: Robot,
+        theta: float,
+        base_speed: float = 30
+    ):
+        vector = np.array([math.cos(theta), math.sin(theta)])
+
+        speed = base_speed * np.linalg.norm(vector)
+        angle_difference = wrap_to_pi(theta - robot.position.theta)
+        
+        motors_speeds = np.array([
+            speed * math.cos(angle_difference),
+            speed * math.cos(angle_difference)
+        ])
+
+        if angle_difference >= math.pi / 2 \
+                or angle_difference <= -math.pi / 2:
+            motors_speeds += np.array([
+                speed * K_TURNING * math.sin(angle_difference),
+                -speed * K_TURNING * math.sin(angle_difference)])
+        else:
+            motors_speeds += np.array([
+                -speed * K_TURNING * math.sin(angle_difference),
+                speed * K_TURNING * math.sin(angle_difference)])
+
+        return motors_speeds
 
     @staticmethod
     def _get_speeds(
