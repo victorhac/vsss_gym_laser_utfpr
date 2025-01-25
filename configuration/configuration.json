@@ -382,5 +382,12 @@
                 "distance-to-goal": 0.3
             }
         }
+    },
+    "univector-field-navigation": {
+        "de": 0.0537,
+        "kr": 0.0415,
+        "k0": 0.0012,
+        "dmin": 0.0948,
+        "gaussian-delta": 0.0457
     }
 }
