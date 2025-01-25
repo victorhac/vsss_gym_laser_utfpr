@@ -141,7 +141,7 @@ def phi_tuf(
 
     return wrap_to_pi(phi_tuf_value)
 
-def get_univector_field_point(
+def get_univector_field_point_theta(
     robot_position: 'tuple[float, float]',
     robot_velocity: 'tuple[float, float]',
     desired_position: 'tuple[float, float]',
