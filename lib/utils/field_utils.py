@@ -1,6 +1,10 @@
 import random
 import math
 
+from lib.domain.ball import Ball
+from lib.domain.field import Field
+from lib.domain.robot import Robot
+from lib.domain.univector_field_navigation.obstacle import Obstacle
 from lib.utils.geometry_utils import GeometryUtils
 
 class FieldUtils:
@@ -294,3 +298,42 @@ class FieldUtils:
             return x, y
 
         return -x, -y
+
+    @staticmethod
+    def is_inside_goal_area(
+        position: 'tuple[float, float]',
+        field_length: float,
+        goal_area_length: float,
+        goal_area_width: float
+    ):
+        x, y = position
+
+        return (abs(x) > field_length / 2 - goal_area_length) and (abs(y) < goal_area_width / 2)
+    
+    @staticmethod
+    def to_obstacles(
+        obstacles: 'list[(Robot | Ball)]'
+    ):
+        return [
+            Obstacle(
+                item.get_position_tuple(),
+                item.get_velocity_tuple()
+            )
+            for item in obstacles
+        ]
+    
+    @staticmethod
+    def to_obstacles_except_current_robot_and_ball(
+        field: Field,
+        current_robot_id: int
+    ):
+        team_robots = []
+
+        for i, robot in enumerate(field.robots):
+            if i != current_robot_id:
+                team_robots.append(robot)
+
+        obstacles = field.foes
+        obstacles.extend(team_robots)
+
+        return FieldUtils.to_obstacles(obstacles)

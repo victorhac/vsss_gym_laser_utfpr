@@ -223,6 +223,18 @@ class Configuration:
     game_states_kickoff_foe_team_positionings_2_x = game_states_kickoff_foe_team_positionings["2"]["x"]
     game_states_kickoff_foe_team_positionings_2_y = game_states_kickoff_foe_team_positionings["2"]["y"]
 
+    positioning_default_supporter_distance_to_wall = configuration["positioning"]["default-supporter"]["distance-to-wall"]
+    positioning_default_supporter_x_step_count = configuration["positioning"]["default-supporter"]["x-step-count"]
+    positioning_default_supporter_y_step_count = configuration["positioning"]["default-supporter"]["y-step-count"]
+    positioning_default_supporter_ball_min_distance = configuration["positioning"]["default-supporter"]["ball-min-distance"]
+    positioning_default_supporter_robot_min_distance = configuration["positioning"]["default-supporter"]["robot-min-distance"]
+    positioning_default_supporter_considered_robot_distance = configuration["positioning"]["default-supporter"]["considered-robot-distance"]
+    positioning_default_supporter_distance_behind_ball = configuration["positioning"]["default-supporter"]["distance-behind-ball"]
+    positioning_default_supporter_weights_distance_to_robot = configuration["positioning"]["default-supporter"]["weights"]["distance-to-robot"]
+    positioning_default_supporter_weights_distance_to_position = configuration["positioning"]["default-supporter"]["weights"]["distance-to-position"]
+    positioning_default_supporter_weights_distance_to_ball = configuration["positioning"]["default-supporter"]["weights"]["distance-to-ball"]
+    positioning_default_supporter_weights_distance_to_goal = configuration["positioning"]["default-supporter"]["weights"]["distance-to-goal"]
+
     def get_firasim_is_left_team():
         return Configuration.firasim_team_is_yellow_left_team \
             == Configuration.firasim_team_is_yellow_team

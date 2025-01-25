@@ -365,5 +365,22 @@
                 }
             }
         }
+    },
+    "positioning": {
+        "default-supporter": {
+            "distance-to-wall": 0.1,
+            "x-step-count": 10,
+            "y-step-count": 10,
+            "ball-min-distance": 0.3,
+            "robot-min-distance": 0.2,
+            "considered-robot-distance": 0.4,
+            "distance-behind-ball": 0.1,
+            "weights": {
+                "distance-to-robot": 0.3,
+                "distance-to-position": 0.2,
+                "distance-to-ball": 0.2,
+                "distance-to-goal": 0.3
+            }
+        }
     }
 }
