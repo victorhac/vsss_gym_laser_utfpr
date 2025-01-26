@@ -422,6 +422,18 @@ class BaseEnvironment(gym.Env):
             position[0],
             position[1],
             self.get_field_length(),
+            self.get_field_width(),
+            self.get_goal_width(),
+            self.get_goal_depth())
+    
+    def _is_inside_playable_field(
+        self,
+        position: 'tuple[float, float]'
+    ):
+        return FieldUtils.is_inside_playable_field(
+            position[0],
+            position[1],
+            self.get_field_length(),
             self.get_field_width())
 
     def _is_inside_own_goal_area(
