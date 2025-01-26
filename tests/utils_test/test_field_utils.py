@@ -47,5 +47,22 @@ class TestFieldUtils(unittest.TestCase):
 
         print(position)
 
+    def test_is_inside_field(self):
+        field_length = Configuration.field_length
+        field_width = Configuration.field_width
+        goal_width = Configuration.field_goal_width
+        goal_depth = Configuration.field_goal_depth
+
+        inside = FieldUtils.is_inside_field(
+            -.849,
+            -.19,
+            field_length,
+            field_width,
+            goal_width,
+            goal_depth
+        )
+
+        self.assertEqual(inside, True)
+
 if __name__ == "__main__":
     unittest.main()

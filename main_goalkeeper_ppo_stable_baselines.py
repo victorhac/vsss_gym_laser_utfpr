@@ -28,7 +28,7 @@ batch_size = 128
 device = "cpu"
 
 load_model = True
-loaded_model_path = "models/goalkeeper/PPO/2025_1_4_15_58_15/interrupted_model.zip"
+loaded_model_path = "models/goalkeeper/PPO/2025_1_25_0_22_2/PPO_model_task_1_update_100_32250806_steps.zip"
 
 check_count = 100
 starting_update = 0
