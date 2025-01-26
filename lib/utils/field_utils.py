@@ -17,6 +17,20 @@ class FieldUtils:
         x: float,
         y: float,
         field_length: float,
+        field_width: float,
+        goal_width: float,
+        goal_depth: float
+    ):
+        if abs(y) < goal_width / 2:
+            return abs(x) < (field_length / 2 + goal_depth)
+
+        return abs(x) < field_length / 2 and abs(y) < field_width / 2
+    
+    @staticmethod
+    def is_inside_playable_field(
+        x: float,
+        y: float,
+        field_length: float,
         field_width: float
     ):
         return abs(x) < field_length / 2 and abs(y) < field_width / 2

@@ -193,7 +193,9 @@ class RSoccerUtils:
             x,
             y,
             Configuration.field_length,
-            Configuration.field_width)
+            Configuration.field_width,
+            Configuration.field_goal_width,
+            Configuration.field_goal_depth)
     
     @staticmethod
     def get_velocity_factor():

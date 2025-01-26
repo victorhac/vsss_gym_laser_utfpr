@@ -166,7 +166,7 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
             (ball.x, ball.y),
             undesired_position)
 
-        ball_potential = ((distance_to_desired - distance_to_undesired) / field_length - 1) / 2
+        ball_potential = ((distance_to_undesired - distance_to_desired) / field_length - 1) / 2
 
         if previous_ball_potential is not None:
             ball_potential_difference = ball_potential - previous_ball_potential
@@ -209,8 +209,8 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
 
         return self._ball_gradient_reward_by_positions(
             self.previous_ball_potential,
-            own_goal_position,
-            defensive_line_position)
+            defensive_line_position,
+            own_goal_position)
 
     def _get_reward(self):
         robot = self._get_agent()
@@ -220,12 +220,17 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         w_energy = 2e-4
         w_alignment = 1
 
-        if not self._is_inside_own_goal_area(
-            (robot.x, robot.y),
-            self.is_yellow_team
-        ):
-            goal_position = self.get_inside_own_goal_position(self.is_yellow_team)
-            x, y = goal_position[0], goal_position[1]
+        robot_position = (robot.x, robot.y)
+
+        is_inside_own_goal_area = self._is_inside_own_goal_area(
+            robot_position,
+            self.is_yellow_team)
+
+        is_inside_playable_field = self._is_inside_playable_field(
+            robot_position)
+
+        if not is_inside_own_goal_area or not is_inside_playable_field:
+            x, y = -0.675, self._get_y_target()
             return -1 + w_move * self._move_reward((x, y), 5, 5)
 
         if self._is_ball_inside_goal_area():
@@ -256,13 +261,9 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
             (ball.x, ball.y),
             self.is_yellow_team)
     
-    def _get_alignment_reward(self):
+    def _get_y_target(self):
         ball = self._get_ball()
-        robot = self._get_agent()
-
         robot_radius = self.get_robot_radius()
-
-        field_width = self.get_field_width()
         goal_line_x = -self.get_field_length() / 2
         goal_y_max = self.get_goal_width() / 2
         goal_y_min = -goal_y_max
@@ -287,6 +288,19 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
                 y_target = get_y_target()
             else:
                 y_target = intersection_y
+
+        return y_target
+    
+    def _get_alignment_reward(self):
+        robot = self._get_agent()
+
+        robot_radius = self.get_robot_radius()
+
+        field_width = self.get_field_width()
+        goal_y_max = self.get_goal_width() / 2
+        goal_y_min = -goal_y_max
+
+        y_target = self._get_y_target()
 
         max_distance = abs(field_width / 2 - goal_y_min + robot_radius)
         distance_to_target = abs(robot.y - y_target)

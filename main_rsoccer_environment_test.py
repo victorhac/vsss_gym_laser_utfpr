@@ -23,7 +23,7 @@ def load_defender_model():
     return load_model("models/defender/PPO/2025_1_3_23_6_42/interrupted_model.zip")
 
 def load_goalkeeper_model():
-    return load_model("models/goalkeeper/PPO/2025_1_4_18_57_50/PPO_model_task_1_update_100_102286296_steps.zip")
+    return load_model("models/goalkeeper/PPO/2025_1_25_18_2_1/PPO_model_task_1_update_100_36667946_steps.zip")
 
 env = TestEnvironment(render_mode)
 
@@ -80,7 +80,7 @@ def get_actions():
     action.extend(get_goalkeeper_action(2, False, True))
 
     action.extend(get_attacker_action(0, True, False))
-    action.extend(get_defender_action(1, True, False))
+    action.extend((0,0))
     action.extend(get_goalkeeper_action(2, True, False))
 
     return action
