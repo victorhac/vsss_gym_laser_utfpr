@@ -2,7 +2,7 @@
     "rsoccer": {
         "training": {
             "time-step": 0.025,
-            "episode-duration": 60
+            "episode-duration": 40
         }
     }
 }

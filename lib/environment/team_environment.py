@@ -287,7 +287,7 @@ class TeamEnvironment(BaseCurriculumEnvironment):
                 reward = -5
                 self.last_game_score = -0.5
             elif self._has_episode_time_exceeded():
-                self.last_game_score = None
+                self.last_game_score = 0
 
         return reward, is_done
     

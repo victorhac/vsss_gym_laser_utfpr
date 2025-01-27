@@ -9,9 +9,9 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_1(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
-        default_threshold: float = .9
+        updates_per_task: int = 10,
+        games_count: int = 10,
+        default_threshold: float = .8
     ):    
         behaviors = [
             TeamBehaviorUtils.get_own_team_multiple_role_behavior(
@@ -38,9 +38,9 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_2(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
-        default_threshold: float = .9
+        updates_per_task: int = 10,
+        games_count: int = 10,
+        default_threshold: float = .8
     ):    
         behaviors = [
             TeamBehaviorUtils.get_own_team_multiple_role_behavior(
@@ -71,9 +71,9 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_3(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
-        default_threshold: float = .9
+        updates_per_task: int = 10,
+        games_count: int = 10,
+        default_threshold: float = .8
     ):    
         behaviors = [
             TeamBehaviorUtils.get_own_team_multiple_role_behavior(
@@ -108,8 +108,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_4(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .7
     ):    
         behaviors = [
@@ -142,8 +142,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_5(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .7
     ):    
         behaviors = [
@@ -181,8 +181,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_6(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .6
     ):    
         behaviors = [
@@ -225,8 +225,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_7(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .7
     ):    
         behaviors = [
@@ -263,8 +263,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_8(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .7
     ):    
         behaviors = [
@@ -306,8 +306,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_9(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .6
     ):    
         behaviors = [
@@ -354,8 +354,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_10(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .8
     ):    
         behaviors = [
@@ -396,8 +396,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_11(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .6
     ):    
         behaviors = [
@@ -443,8 +443,8 @@ class TeamBehaviorUtils:
     @staticmethod
     def get_task_12(
         update_count: int = 0,
-        updates_per_task: int = 100,
-        games_count: int = 100,
+        updates_per_task: int = 20,
+        games_count: int = 20,
         default_threshold: float = .5
     ):    
         behaviors = [

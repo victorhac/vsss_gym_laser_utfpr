@@ -27,8 +27,8 @@ batch_size = 128
 
 device = "cpu"
 
-load_model = False
-loaded_model_path = ""
+load_model = True
+loaded_model_path = "models/team/PPO/2025_1_27_0_24_50/interrupted_model.zip"
 
 check_count = 100
 starting_update = 0
