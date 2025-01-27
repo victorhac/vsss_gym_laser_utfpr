@@ -5,12 +5,13 @@ class BallCurriculumBehavior:
     def __init__(
         self,
         position_enum: PositionEnum,
-        updates_per_task: int = 10,
+        updates_per_task: int,
         distance_range: 'tuple[float, float] | None' = None,
         distance_to_wall: 'float | None' = None,
         x_line: 'float | None' = None,
         y_range: 'tuple[float, float] | None' = None,
-        left_to_line: 'bool | None' = None
+        left_to_line: 'bool | None' = None,
+        fixed_position: 'tuple[float, float] | None' = None
     ):
         self.position_enum = position_enum
         self.updates_per_task = updates_per_task
@@ -20,6 +21,8 @@ class BallCurriculumBehavior:
         self.x_line = x_line
         self.y_range = y_range
         self.left_to_line = left_to_line
+
+        self.fixed_position = fixed_position
 
         self.updates = 0
         

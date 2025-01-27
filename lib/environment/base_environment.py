@@ -227,8 +227,11 @@ class BaseEnvironment(gym.Env):
         """returns frame with robots initial positions"""
         raise NotImplementedError
     
+    def _get_episode_elapsed_time(self):
+        return int(self.steps * self.time_step)
+    
     def _has_episode_time_exceeded(self):
-        elapsed_time = int(self.steps * self.time_step)
+        elapsed_time = self._get_episode_elapsed_time()
 
         if elapsed_time == 0:
             return False
@@ -304,7 +307,7 @@ class BaseEnvironment(gym.Env):
             
         distance_to_undesired = GeometryUtils.distance((ball.x, ball.y), undesired_position)
 
-        ball_potential = ((distance_to_desired - distance_to_undesired) / field_length - 1) / 2
+        ball_potential = ((distance_to_undesired - distance_to_desired) / field_length - 1) / 2
 
         if previous_ball_potential is not None:
             ball_potential_difference = ball_potential - previous_ball_potential
@@ -435,6 +438,17 @@ class BaseEnvironment(gym.Env):
             position[1],
             self.get_field_length(),
             self.get_field_width())
+    
+    def _is_close_to_wall(
+        self,
+        position: 'tuple[float, float]',
+        tolerance: float = 0.1
+    ):
+        return FieldUtils.is_close_to_wall(
+            position,
+            self.get_field_length(),
+            self.get_field_width(),
+            tolerance)
 
     def _is_inside_own_goal_area(
         self,

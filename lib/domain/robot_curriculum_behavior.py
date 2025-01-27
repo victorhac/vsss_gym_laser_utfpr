@@ -1,6 +1,8 @@
 from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 import numpy as np
 
+from lib.domain.enums.role_enum import RoleEnum
+
 class RobotCurriculumBehavior:
     def __init__(
         self,
@@ -31,6 +33,8 @@ class RobotCurriculumBehavior:
         self.y_range = None
         self.left_to_line = None
 
+        self.fixed_position = None
+
         self.model_path = None
 
     def set_distance_to_wall(
@@ -38,6 +42,12 @@ class RobotCurriculumBehavior:
         distance_to_wall: float
     ):
         self.distance_to_wall = distance_to_wall
+
+    def set_fixed_position(
+        self,
+        position: 'tuple[float, float]'
+    ):
+        self.fixed_position = position
 
     def set_distance_range(
         self,
@@ -53,8 +63,13 @@ class RobotCurriculumBehavior:
         self.velocity_alpha_range = velocity_alpha_range
         self._try_set_velocity_alpha()
 
-    def set_model_path(self, model_path: str):
+    def set_model_path(
+        self,
+        model_path: str,
+        role_enum: RoleEnum = RoleEnum.ATTACKER
+    ):
         self.model_path = model_path
+        self.role_enum = role_enum
 
     def set_relative_to_vertical_line_position_enum_values(
         self,

@@ -7,3 +7,4 @@ class RobotCurriculumBehaviorEnum(Enum):
     FROM_PREVIOUS_MODEL = 3,
     FROM_FIXED_MODEL = 4,
     FROM_MODEL = 5
+    MULTIPLE_ROLE = 6

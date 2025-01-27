@@ -102,7 +102,7 @@ class GoalkeeperUtils:
 
         extend_observation_by_ball()
 
-        extend_observation_by_robot(field.robots[robot_id])
+        extend_observation_by_robot(field.get_robot_by_id(robot_id))
 
         return np.array(observation, dtype=np.float32)
 

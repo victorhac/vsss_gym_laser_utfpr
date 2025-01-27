@@ -115,7 +115,7 @@ class AttackerUtils:
         def is_inside_field(robot: Robot):
             return RSoccerUtils.is_inside_field(robot.position.x, robot.position.y)
         
-        current_robot = field.robots[robot_id]
+        current_robot = field.get_robot_by_id(robot_id)
         current_robot_position = current_robot.get_position_tuple()
         ball = field.ball
 
@@ -164,10 +164,10 @@ class AttackerUtils:
 
         for i in range(3):
             if i != robot_id:
-                extend_observation_by_robot(field.robots[i])
+                extend_observation_by_robot(field.get_robot_by_id(i))
 
         for i in range(3):
-            extend_observation_by_robot(field.foes[i])
+            extend_observation_by_robot(field.get_foe_by_id(i))
 
         return np.array(observation, dtype=np.float32)
     

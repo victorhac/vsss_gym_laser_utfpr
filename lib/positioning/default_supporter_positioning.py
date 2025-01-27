@@ -1,6 +1,7 @@
 import numpy as np
 from configuration.configuration import Configuration
 from lib.domain.field import Field
+from lib.domain.robot import Robot
 from lib.utils.field_utils import FieldUtils
 from lib.utils.geometry_utils import GeometryUtils
 
@@ -78,25 +79,33 @@ def _get_distance_to_robot_score(
 ):
     distance_scores = []
     ball_position = field.ball.get_position_tuple()
+    robots = field.get_active_robots()
+    foes = field.get_active_foes()
 
-    for index, item in enumerate([*field.robots, *field.foes]):
-        if index == robot_id:
-            continue
-
+    def append_score(robot: Robot):
         distance = _get_distance(
-            item.get_position_tuple(),
+            robot.get_position_tuple(),
             ball_position
         )
 
         if distance > considered_robot_distance:
-            continue
+            return
 
         distance_score = _get_repulsive_distance_score(
             position,
-            item.get_position_tuple(),
+            robot.get_position_tuple(),
             robot_min_distance)
 
         distance_scores.append(distance_score)
+
+    for item in robots:
+        if item.id == robot_id:
+            continue
+
+        append_score(item)
+
+    for item in foes:
+        append_score(item)
 
     return 1 if len(distance_scores) == 0 else np.mean(distance_scores)
 
@@ -105,7 +114,7 @@ def _get_distance_to_position_score(
     robot_id: int,
     field: Field
 ):
-    robot = field.robots[robot_id]
+    robot = field.get_robot_by_id(robot_id)
     return _get_attraction_distance_score(
         position,
         robot.get_position_tuple(),

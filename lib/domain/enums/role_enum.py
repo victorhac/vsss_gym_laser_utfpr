@@ -5,4 +5,4 @@ class RoleEnum(Enum):
 	ATTACKER = 1
 	DEFENDER = 2
 	GOALKEEPER = 3
-	SUPPORTER = 3
+	SUPPORTER = 4

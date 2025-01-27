@@ -81,9 +81,9 @@ class TrainingUtils():
         ball: Ball,
         own_goal_position: 'tuple[float, float]'
     ):
-        a_position = (robot.position.x, robot.position.y)
-        b_position = (ball.position.x, ball.position.y)
-        c_position = own_goal_position
+        a_position = own_goal_position
+        b_position = (robot.position.x, robot.position.y)
+        c_position = (ball.position.x, ball.position.y)
 
         return TrainingUtils.r_pos(a_position, b_position, c_position)
 
