@@ -1,6 +1,8 @@
 from lib.domain.enums.role_enum import RoleEnum
 from lib.environment.team_environment import TeamEnvironment
 from lib.utils.behavior.team_behavior_utils import TeamBehaviorUtils
+from lib.utils.model_utils import ModelUtils
+from lib.utils.roles.team_utils import TeamUtils
 
 render_mode = 'human'
 
@@ -9,7 +11,9 @@ updates_per_task = 3
 games_count = 100
 default_threshold = 0.5
 
-task = TeamBehaviorUtils.get_task_11(
+model = ModelUtils.get_team_model()
+
+task = TeamBehaviorUtils.get_task_2(
     update_count,
     updates_per_task,
     games_count,
@@ -27,3 +31,5 @@ while True:
     while not done:
         next_state, reward, done, _, _ = env.step(action)
         env.render()
+        observation = TeamUtils.get_observation(env, False, True)
+        action = model.predict(observation)[0]

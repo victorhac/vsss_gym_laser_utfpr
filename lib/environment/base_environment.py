@@ -230,6 +230,9 @@ class BaseEnvironment(gym.Env):
     def _get_episode_elapsed_time(self):
         return int(self.steps * self.time_step)
     
+    def _get_time_factor(self):
+        return 1 - (self._get_episode_elapsed_time() / self.training_episode_duration)
+    
     def _has_episode_time_exceeded(self):
         elapsed_time = self._get_episode_elapsed_time()
 
