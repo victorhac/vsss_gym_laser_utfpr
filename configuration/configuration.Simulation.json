@@ -1,0 +1,7 @@
+{
+    "rsoccer": {
+        "training": {
+            "episode-duration": 5
+        }
+    }
+}

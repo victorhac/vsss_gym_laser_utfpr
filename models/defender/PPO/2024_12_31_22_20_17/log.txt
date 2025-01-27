@@ -1,0 +1,416 @@
+Task: 1; Update: 0; Last 57 games score: -0.41228070175438597.
+Task: 1; Update: 0; Last 100 games score: -0.38.
+Task: 1; Update: 0; Last 100 games score: -0.315.
+Task: 1; Update: 0; Last 100 games score: -0.11.
+Task: 1; Update: 0; Last 100 games score: -0.015.
+Task: 1; Update: 0; Last 100 games score: 0.145.
+Task: 1; Update: 0; Last 100 games score: 0.08.
+Task: 1; Update: 0; Last 100 games score: -0.055.
+Task: 1; Update: 0; Last 100 games score: 0.05.
+Task: 1; Update: 0; Last 100 games score: 0.005.
+Task: 1; Update: 0; Last 100 games score: -0.025.
+Task: 1; Update: 0; Last 100 games score: 0.105.
+Task: 1; Update: 0; Last 100 games score: 0.085.
+Task: 1; Update: 0; Last 100 games score: 0.195.
+Task: 1; Update: 0; Last 100 games score: 0.355.
+Task: 1; Update: 0; Last 100 games score: 0.375.
+Task: 1; Update: 0; Last 100 games score: 0.335.
+Task: 1; Update: 0; Last 100 games score: 0.435.
+Task: 1; Update: 0; Last 100 games score: 0.55.
+Task: 1; Update: 0; Last 100 games score: 0.46.
+Task: 1; Update: 0; Last 100 games score: 0.675.
+Task: 1; Update: 0; Last 100 games score: 0.77.
+Task: 1; Update: 0; Last 100 games score: 0.635.
+Task: 1; Update: 0; Last 100 games score: 0.78.
+Task: 1; Update: 0; Last 100 games score: 0.65.
+Task: 1; Update: 0; Last 100 games score: 0.79.
+Task: 1; Update: 0; Last 100 games score: 0.825.
+Task: 1; Update: 0; Last 100 games score: 0.8.
+Task: 1; Update: 0; Last 100 games score: 0.84.
+Task: 1; Update: 0; Last 100 games score: 0.785.
+Task: 1; Update: 0; Last 100 games score: 0.69.
+Task: 1; Update: 0; Last 100 games score: 0.835.
+UPDATED; Timesteps: 1289540; Task: 1; Update: 0; Last 100 games score: 0.905.
+Task: 1; Update: 1; Last 100 games score: 0.85.
+Task: 1; Update: 1; Last 100 games score: 0.82.
+Task: 1; Update: 1; Last 100 games score: 0.86.
+Task: 1; Update: 1; Last 100 games score: 0.81.
+Task: 1; Update: 1; Last 100 games score: 0.835.
+Task: 1; Update: 1; Last 100 games score: 0.86.
+UPDATED; Timesteps: 1539916; Task: 1; Update: 1; Last 100 games score: 0.905.
+UPDATED; Timesteps: 1555456; Task: 1; Update: 2; Last 100 games score: 0.91.
+Task: 1; Update: 3; Last 30 games score: 0.8666666666666667.
+UPDATED; Timesteps: 1597344; Task: 1; Update: 3; Last 100 games score: 0.91.
+Task: 1; Update: 4; Last 15 games score: 0.7.
+Task: 1; Update: 4; Last 100 games score: 0.87.
+UPDATED; Timesteps: 1674008; Task: 1; Update: 4; Last 100 games score: 0.905.
+Task: 1; Update: 5; Last 33 games score: 0.9393939393939394.
+UPDATED; Timesteps: 1689576; Task: 1; Update: 5; Last 100 games score: 0.905.
+UPDATED; Timesteps: 1702190; Task: 1; Update: 6; Last 100 games score: 0.91.
+UPDATED; Timesteps: 1715938; Task: 1; Update: 7; Last 100 games score: 0.93.
+Task: 1; Update: 8; Last 29 games score: 0.7758620689655172.
+UPDATED; Timesteps: 1731254; Task: 1; Update: 8; Last 100 games score: 0.91.
+Task: 1; Update: 9; Last 100 games score: 0.86.
+UPDATED; Timesteps: 1761606; Task: 1; Update: 9; Last 100 games score: 0.905.
+Task: 1; Update: 10; Last 100 games score: 0.865.
+UPDATED; Timesteps: 1809262; Task: 1; Update: 10; Last 100 games score: 0.905.
+UPDATED; Timesteps: 1821764; Task: 1; Update: 11; Last 100 games score: 0.915.
+Task: 1; Update: 12; Last 100 games score: 0.835.
+UPDATED; Timesteps: 1850198; Task: 1; Update: 12; Last 100 games score: 0.905.
+UPDATED; Timesteps: 1861006; Task: 1; Update: 13; Last 100 games score: 0.935.
+UPDATED; Timesteps: 1873410; Task: 1; Update: 14; Last 100 games score: 0.94.
+Task: 1; Update: 15; Last 44 games score: 0.875.
+UPDATED; Timesteps: 1896972; Task: 1; Update: 15; Last 100 games score: 0.905.
+Task: 1; Update: 16; Last 100 games score: 0.88.
+UPDATED; Timesteps: 1923446; Task: 1; Update: 16; Last 100 games score: 0.915.
+UPDATED; Timesteps: 1941604; Task: 1; Update: 17; Last 100 games score: 0.905.
+Task: 1; Update: 18; Last 100 games score: 0.89.
+UPDATED; Timesteps: 1969184; Task: 1; Update: 18; Last 100 games score: 0.905.
+UPDATED; Timesteps: 1984248; Task: 1; Update: 19; Last 100 games score: 0.915.
+UPDATED; Timesteps: 1999144; Task: 1; Update: 20; Last 100 games score: 0.915.
+Task: 1; Update: 21; Last 6 games score: 0.8333333333333334.
+UPDATED; Timesteps: 2015776; Task: 1; Update: 21; Last 100 games score: 0.915.
+UPDATED; Timesteps: 2029440; Task: 1; Update: 22; Last 100 games score: 0.91.
+Task: 1; Update: 23; Last 77 games score: 0.8701298701298701.
+UPDATED; Timesteps: 2044588; Task: 1; Update: 23; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2053660; Task: 1; Update: 24; Last 100 games score: 0.955.
+UPDATED; Timesteps: 2066414; Task: 1; Update: 25; Last 100 games score: 0.92.
+UPDATED; Timesteps: 2077684; Task: 1; Update: 26; Last 100 games score: 0.94.
+Task: 1; Update: 27; Last 21 games score: 0.9285714285714286.
+UPDATED; Timesteps: 2089010; Task: 1; Update: 27; Last 100 games score: 0.95.
+UPDATED; Timesteps: 2101582; Task: 1; Update: 28; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2113986; Task: 1; Update: 29; Last 100 games score: 0.925.
+Task: 1; Update: 30; Last 40 games score: 0.9.
+UPDATED; Timesteps: 2126404; Task: 1; Update: 30; Last 100 games score: 0.92.
+UPDATED; Timesteps: 2140012; Task: 1; Update: 31; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2153886; Task: 1; Update: 32; Last 100 games score: 0.91.
+Task: 1; Update: 33; Last 58 games score: 0.9827586206896551.
+UPDATED; Timesteps: 2164820; Task: 1; Update: 33; Last 100 games score: 0.975.
+UPDATED; Timesteps: 2180248; Task: 1; Update: 34; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2191938; Task: 1; Update: 35; Last 100 games score: 0.955.
+Task: 1; Update: 36; Last 66 games score: 0.8939393939393939.
+UPDATED; Timesteps: 2204958; Task: 1; Update: 36; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2217516; Task: 1; Update: 37; Last 100 games score: 0.935.
+UPDATED; Timesteps: 2228632; Task: 1; Update: 38; Last 100 games score: 0.95.
+Task: 1; Update: 39; Last 86 games score: 0.872093023255814.
+UPDATED; Timesteps: 2250178; Task: 1; Update: 39; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2277464; Task: 1; Update: 40; Last 100 games score: 0.905.
+Task: 1; Update: 41; Last 16 games score: 0.71875.
+UPDATED; Timesteps: 2289084; Task: 1; Update: 41; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2304918; Task: 1; Update: 42; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2319128; Task: 1; Update: 43; Last 100 games score: 0.91.
+Task: 1; Update: 44; Last 5 games score: 1.0.
+UPDATED; Timesteps: 2342354; Task: 1; Update: 44; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2354562; Task: 1; Update: 45; Last 100 games score: 0.945.
+Task: 1; Update: 46; Last 47 games score: 0.9680851063829787.
+UPDATED; Timesteps: 2369640; Task: 1; Update: 46; Last 100 games score: 0.915.
+UPDATED; Timesteps: 2381736; Task: 1; Update: 47; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2393636; Task: 1; Update: 48; Last 100 games score: 0.94.
+Task: 1; Update: 49; Last 46 games score: 0.8586956521739131.
+UPDATED; Timesteps: 2418458; Task: 1; Update: 49; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2432332; Task: 1; Update: 50; Last 100 games score: 0.905.
+Task: 1; Update: 51; Last 58 games score: 0.9051724137931034.
+UPDATED; Timesteps: 2449174; Task: 1; Update: 51; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2461942; Task: 1; Update: 52; Last 100 games score: 0.945.
+UPDATED; Timesteps: 2474108; Task: 1; Update: 53; Last 100 games score: 0.915.
+Task: 1; Update: 54; Last 47 games score: 0.9148936170212766.
+UPDATED; Timesteps: 2512496; Task: 1; Update: 54; Last 100 games score: 0.905.
+Task: 1; Update: 55; Last 52 games score: 0.8557692307692307.
+UPDATED; Timesteps: 2538928; Task: 1; Update: 55; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2558598; Task: 1; Update: 56; Last 100 games score: 0.91.
+Task: 1; Update: 57; Last 9 games score: 1.0.
+UPDATED; Timesteps: 2568902; Task: 1; Update: 57; Last 100 games score: 0.94.
+UPDATED; Timesteps: 2581642; Task: 1; Update: 58; Last 100 games score: 0.925.
+Task: 1; Update: 59; Last 100 games score: 0.815.
+UPDATED; Timesteps: 2606604; Task: 1; Update: 59; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2624972; Task: 1; Update: 60; Last 100 games score: 0.915.
+UPDATED; Timesteps: 2638454; Task: 1; Update: 61; Last 100 games score: 0.925.
+Task: 1; Update: 62; Last 12 games score: 0.875.
+UPDATED; Timesteps: 2650326; Task: 1; Update: 62; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2661134; Task: 1; Update: 63; Last 100 games score: 0.945.
+UPDATED; Timesteps: 2673510; Task: 1; Update: 64; Last 100 games score: 0.93.
+Task: 1; Update: 65; Last 46 games score: 0.9021739130434783.
+UPDATED; Timesteps: 2689512; Task: 1; Update: 65; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2703050; Task: 1; Update: 66; Last 100 games score: 0.93.
+Task: 1; Update: 67; Last 100 games score: 0.895.
+UPDATED; Timesteps: 2721278; Task: 1; Update: 67; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2735362; Task: 1; Update: 68; Last 100 games score: 0.915.
+UPDATED; Timesteps: 2752484; Task: 1; Update: 69; Last 100 games score: 0.905.
+Task: 1; Update: 70; Last 70 games score: 0.9071428571428571.
+UPDATED; Timesteps: 2762746; Task: 1; Update: 70; Last 100 games score: 0.935.
+UPDATED; Timesteps: 2774394; Task: 1; Update: 71; Last 100 games score: 0.945.
+UPDATED; Timesteps: 2786882; Task: 1; Update: 72; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2799804; Task: 1; Update: 73; Last 100 games score: 0.93.
+Task: 1; Update: 74; Last 1 games score: -1.0.
+UPDATED; Timesteps: 2812502; Task: 1; Update: 74; Last 100 games score: 0.915.
+UPDATED; Timesteps: 2824626; Task: 1; Update: 75; Last 100 games score: 0.94.
+UPDATED; Timesteps: 2835070; Task: 1; Update: 76; Last 100 games score: 0.975.
+Task: 1; Update: 77; Last 38 games score: 0.9605263157894737.
+UPDATED; Timesteps: 2847138; Task: 1; Update: 77; Last 100 games score: 0.925.
+UPDATED; Timesteps: 2858590; Task: 1; Update: 78; Last 100 games score: 0.99.
+UPDATED; Timesteps: 2868852; Task: 1; Update: 79; Last 100 games score: 0.965.
+Task: 1; Update: 80; Last 79 games score: 0.9240506329113924.
+UPDATED; Timesteps: 2887458; Task: 1; Update: 80; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2903992; Task: 1; Update: 81; Last 100 games score: 0.915.
+Task: 1; Update: 82; Last 100 games score: 0.89.
+UPDATED; Timesteps: 2920638; Task: 1; Update: 82; Last 100 games score: 0.905.
+UPDATED; Timesteps: 2933182; Task: 1; Update: 83; Last 100 games score: 0.97.
+UPDATED; Timesteps: 2947140; Task: 1; Update: 84; Last 100 games score: 0.91.
+UPDATED; Timesteps: 2959222; Task: 1; Update: 85; Last 100 games score: 0.935.
+Task: 1; Update: 86; Last 3 games score: 1.0.
+UPDATED; Timesteps: 2973348; Task: 1; Update: 86; Last 100 games score: 0.955.
+UPDATED; Timesteps: 2990848; Task: 1; Update: 87; Last 100 games score: 0.91.
+Task: 1; Update: 88; Last 75 games score: 0.96.
+UPDATED; Timesteps: 3003448; Task: 1; Update: 88; Last 100 games score: 0.94.
+UPDATED; Timesteps: 3023524; Task: 1; Update: 89; Last 100 games score: 0.91.
+Task: 1; Update: 90; Last 97 games score: 0.8556701030927835.
+UPDATED; Timesteps: 3051174; Task: 1; Update: 90; Last 100 games score: 0.91.
+UPDATED; Timesteps: 3065636; Task: 1; Update: 91; Last 100 games score: 0.915.
+UPDATED; Timesteps: 3078264; Task: 1; Update: 92; Last 100 games score: 0.94.
+Task: 1; Update: 93; Last 10 games score: 1.0.
+UPDATED; Timesteps: 3090850; Task: 1; Update: 93; Last 100 games score: 0.94.
+UPDATED; Timesteps: 3104668; Task: 1; Update: 94; Last 100 games score: 0.915.
+UPDATED; Timesteps: 3116974; Task: 1; Update: 95; Last 100 games score: 0.95.
+Task: 1; Update: 96; Last 24 games score: 0.875.
+UPDATED; Timesteps: 3129994; Task: 1; Update: 96; Last 100 games score: 0.955.
+UPDATED; Timesteps: 3142412; Task: 1; Update: 97; Last 100 games score: 0.985.
+UPDATED; Timesteps: 3154438; Task: 1; Update: 98; Last 100 games score: 1.0.
+Task: 1; Update: 99; Last 47 games score: 0.9680851063829787.
+UPDATED; Timesteps: 3167668; Task: 1; Update: 99; Last 100 games score: 0.955.
+UPDATED; Timesteps: 3180800; Task: 1; Update: 100; Last 100 games score: 0.905.
+Task: 2; Update: 0; Last 59 games score: 0.5677966101694916.
+Task: 2; Update: 0; Last 100 games score: 0.425.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.325.
+Task: 2; Update: 0; Last 100 games score: 0.305.
+Task: 2; Update: 0; Last 100 games score: 0.465.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.4.
+Task: 2; Update: 0; Last 100 games score: 0.285.
+Task: 2; Update: 0; Last 100 games score: 0.31.
+Task: 2; Update: 0; Last 100 games score: 0.435.
+Task: 2; Update: 0; Last 100 games score: 0.305.
+Task: 2; Update: 0; Last 100 games score: 0.275.
+Task: 2; Update: 0; Last 100 games score: 0.305.
+Task: 2; Update: 0; Last 100 games score: 0.27.
+Task: 2; Update: 0; Last 100 games score: 0.495.
+Task: 2; Update: 0; Last 100 games score: 0.24.
+Task: 2; Update: 0; Last 100 games score: 0.465.
+Task: 2; Update: 0; Last 100 games score: 0.305.
+Task: 2; Update: 0; Last 100 games score: 0.395.
+Task: 2; Update: 0; Last 100 games score: 0.475.
+Task: 2; Update: 0; Last 100 games score: 0.35.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.35.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.39.
+Task: 2; Update: 0; Last 100 games score: 0.41.
+Task: 2; Update: 0; Last 100 games score: 0.41.
+Task: 2; Update: 0; Last 100 games score: 0.355.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.405.
+Task: 2; Update: 0; Last 100 games score: 0.36.
+Task: 2; Update: 0; Last 100 games score: 0.26.
+Task: 2; Update: 0; Last 100 games score: 0.33.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.32.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.23.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.355.
+Task: 2; Update: 0; Last 100 games score: 0.38.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.385.
+Task: 2; Update: 0; Last 100 games score: 0.515.
+Task: 2; Update: 0; Last 100 games score: 0.39.
+Task: 2; Update: 0; Last 100 games score: 0.41.
+Task: 2; Update: 0; Last 100 games score: 0.42.
+Task: 2; Update: 0; Last 100 games score: 0.48.
+Task: 2; Update: 0; Last 100 games score: 0.47.
+Task: 2; Update: 0; Last 100 games score: 0.435.
+Task: 2; Update: 0; Last 100 games score: 0.38.
+Task: 2; Update: 0; Last 100 games score: 0.485.
+Task: 2; Update: 0; Last 100 games score: 0.43.
+Task: 2; Update: 0; Last 100 games score: 0.415.
+Task: 2; Update: 0; Last 100 games score: 0.38.
+Task: 2; Update: 0; Last 100 games score: 0.485.
+Task: 2; Update: 0; Last 100 games score: 0.365.
+Task: 2; Update: 0; Last 100 games score: 0.58.
+Task: 2; Update: 0; Last 100 games score: 0.535.
+Task: 2; Update: 0; Last 100 games score: 0.585.
+Task: 2; Update: 0; Last 100 games score: 0.535.
+Task: 2; Update: 0; Last 100 games score: 0.51.
+Task: 2; Update: 0; Last 100 games score: 0.54.
+Task: 2; Update: 0; Last 100 games score: 0.525.
+Task: 2; Update: 0; Last 100 games score: 0.6.
+Task: 2; Update: 0; Last 100 games score: 0.59.
+Task: 2; Update: 0; Last 100 games score: 0.475.
+Task: 2; Update: 0; Last 100 games score: 0.63.
+Task: 2; Update: 0; Last 100 games score: 0.565.
+Task: 2; Update: 0; Last 100 games score: 0.53.
+Task: 2; Update: 0; Last 100 games score: 0.555.
+Task: 2; Update: 0; Last 100 games score: 0.63.
+Task: 2; Update: 0; Last 100 games score: 0.535.
+Task: 2; Update: 0; Last 100 games score: 0.45.
+Task: 2; Update: 0; Last 100 games score: 0.495.
+Task: 2; Update: 0; Last 100 games score: 0.49.
+Task: 2; Update: 0; Last 100 games score: 0.565.
+Task: 2; Update: 0; Last 100 games score: 0.51.
+Task: 2; Update: 0; Last 100 games score: 0.49.
+Task: 2; Update: 0; Last 100 games score: 0.51.
+Task: 2; Update: 0; Last 100 games score: 0.585.
+Task: 2; Update: 0; Last 100 games score: 0.5.
+Task: 2; Update: 0; Last 100 games score: 0.47.
+Task: 2; Update: 0; Last 100 games score: 0.51.
+Task: 2; Update: 0; Last 100 games score: 0.51.
+Task: 2; Update: 0; Last 100 games score: 0.455.
+Task: 2; Update: 0; Last 100 games score: 0.45.
+Task: 2; Update: 0; Last 100 games score: 0.52.
+Task: 2; Update: 0; Last 100 games score: 0.45.
+Task: 2; Update: 0; Last 100 games score: 0.49.
+Task: 2; Update: 0; Last 100 games score: 0.46.
+Task: 2; Update: 0; Last 100 games score: 0.42.
+Task: 2; Update: 0; Last 100 games score: 0.41.
+Task: 2; Update: 0; Last 100 games score: 0.435.
+Task: 2; Update: 0; Last 100 games score: 0.555.
+Task: 2; Update: 0; Last 100 games score: 0.41.
+Task: 2; Update: 0; Last 100 games score: 0.435.
+Task: 2; Update: 0; Last 100 games score: 0.44.
+Task: 2; Update: 0; Last 100 games score: 0.51.
+Task: 2; Update: 0; Last 100 games score: 0.36.
+Task: 2; Update: 0; Last 100 games score: 0.45.
+Task: 2; Update: 0; Last 100 games score: 0.385.
+Task: 2; Update: 0; Last 100 games score: 0.41.
+Task: 2; Update: 0; Last 100 games score: 0.48.
+Task: 2; Update: 0; Last 100 games score: 0.425.
+Task: 2; Update: 0; Last 100 games score: 0.49.
+Task: 2; Update: 0; Last 100 games score: 0.435.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.46.
+Task: 2; Update: 0; Last 100 games score: 0.395.
+Task: 2; Update: 0; Last 100 games score: 0.325.
+Task: 2; Update: 0; Last 100 games score: 0.355.
+Task: 2; Update: 0; Last 100 games score: 0.39.
+Task: 2; Update: 0; Last 100 games score: 0.33.
+Task: 2; Update: 0; Last 100 games score: 0.27.
+Task: 2; Update: 0; Last 100 games score: 0.33.
+Task: 2; Update: 0; Last 100 games score: 0.31.
+Task: 2; Update: 0; Last 100 games score: 0.315.
+Task: 2; Update: 0; Last 100 games score: 0.38.
+Task: 2; Update: 0; Last 100 games score: 0.295.
+Task: 2; Update: 0; Last 100 games score: 0.215.
+Task: 2; Update: 0; Last 100 games score: 0.41.
+Task: 2; Update: 0; Last 100 games score: 0.345.
+Task: 2; Update: 0; Last 100 games score: 0.26.
+Task: 2; Update: 0; Last 100 games score: 0.44.
+Task: 2; Update: 0; Last 100 games score: 0.31.
+Task: 2; Update: 0; Last 100 games score: 0.425.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.36.
+Task: 2; Update: 0; Last 100 games score: 0.39.
+Task: 2; Update: 0; Last 100 games score: 0.355.
+Task: 2; Update: 0; Last 100 games score: 0.315.
+Task: 2; Update: 0; Last 100 games score: 0.44.
+Task: 2; Update: 0; Last 100 games score: 0.435.
+Task: 2; Update: 0; Last 100 games score: 0.275.
+Task: 2; Update: 0; Last 100 games score: 0.42.
+Task: 2; Update: 0; Last 100 games score: 0.35.
+Task: 2; Update: 0; Last 100 games score: 0.45.
+Task: 2; Update: 0; Last 100 games score: 0.335.
+Task: 2; Update: 0; Last 100 games score: 0.345.
+Task: 2; Update: 0; Last 100 games score: 0.36.
+Task: 2; Update: 0; Last 100 games score: 0.275.
+Task: 2; Update: 0; Last 100 games score: 0.345.
+Task: 2; Update: 0; Last 100 games score: 0.4.
+Task: 2; Update: 0; Last 100 games score: 0.35.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.3.
+Task: 2; Update: 0; Last 100 games score: 0.3.
+Task: 2; Update: 0; Last 100 games score: 0.22.
+Task: 2; Update: 0; Last 100 games score: 0.305.
+Task: 2; Update: 0; Last 100 games score: 0.315.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.345.
+Task: 2; Update: 0; Last 100 games score: 0.41.
+Task: 2; Update: 0; Last 100 games score: 0.305.
+Task: 2; Update: 0; Last 100 games score: 0.28.
+Task: 2; Update: 0; Last 100 games score: 0.305.
+Task: 2; Update: 0; Last 100 games score: 0.265.
+Task: 2; Update: 0; Last 100 games score: 0.44.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.29.
+Task: 2; Update: 0; Last 100 games score: 0.35.
+Task: 2; Update: 0; Last 100 games score: 0.325.
+Task: 2; Update: 0; Last 100 games score: 0.33.
+Task: 2; Update: 0; Last 100 games score: 0.32.
+Task: 2; Update: 0; Last 100 games score: 0.325.
+Task: 2; Update: 0; Last 100 games score: 0.235.
+Task: 2; Update: 0; Last 100 games score: 0.215.
+Task: 2; Update: 0; Last 100 games score: 0.27.
+Task: 2; Update: 0; Last 100 games score: 0.26.
+Task: 2; Update: 0; Last 100 games score: 0.245.
+Task: 2; Update: 0; Last 100 games score: 0.2.
+Task: 2; Update: 0; Last 100 games score: 0.225.
+Task: 2; Update: 0; Last 100 games score: 0.225.
+Task: 2; Update: 0; Last 100 games score: 0.115.
+Task: 2; Update: 0; Last 100 games score: 0.145.
+Task: 2; Update: 0; Last 100 games score: 0.25.
+Task: 2; Update: 0; Last 100 games score: 0.295.
+Task: 2; Update: 0; Last 100 games score: 0.405.
+Task: 2; Update: 0; Last 100 games score: 0.255.
+Task: 2; Update: 0; Last 100 games score: 0.395.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.315.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.295.
+Task: 2; Update: 0; Last 100 games score: 0.285.
+Task: 2; Update: 0; Last 100 games score: 0.245.
+Task: 2; Update: 0; Last 100 games score: 0.415.
+Task: 2; Update: 0; Last 100 games score: 0.36.
+Task: 2; Update: 0; Last 100 games score: 0.385.
+Task: 2; Update: 0; Last 100 games score: 0.3.
+Task: 2; Update: 0; Last 100 games score: 0.385.
+Task: 2; Update: 0; Last 100 games score: 0.325.
+Task: 2; Update: 0; Last 100 games score: 0.36.
+Task: 2; Update: 0; Last 100 games score: 0.37.
+Task: 2; Update: 0; Last 100 games score: 0.3.
+Task: 2; Update: 0; Last 100 games score: 0.235.
+Task: 2; Update: 0; Last 100 games score: 0.32.
+Task: 2; Update: 0; Last 100 games score: 0.35.
+Task: 2; Update: 0; Last 100 games score: 0.32.
+Task: 2; Update: 0; Last 100 games score: 0.285.
+Task: 2; Update: 0; Last 100 games score: 0.32.
+Task: 2; Update: 0; Last 100 games score: 0.31.
+Task: 2; Update: 0; Last 100 games score: 0.28.
+Task: 2; Update: 0; Last 100 games score: 0.28.
+Task: 2; Update: 0; Last 100 games score: 0.23.
+Task: 2; Update: 0; Last 100 games score: 0.19.
+Task: 2; Update: 0; Last 100 games score: 0.165.
+Task: 2; Update: 0; Last 100 games score: 0.23.
+Task: 2; Update: 0; Last 100 games score: 0.26.
+Task: 2; Update: 0; Last 100 games score: 0.31.
+Task: 2; Update: 0; Last 100 games score: 0.27.
+Task: 2; Update: 0; Last 100 games score: 0.19.
+Task: 2; Update: 0; Last 100 games score: 0.12.
+Task: 2; Update: 0; Last 100 games score: 0.14.
+Task: 2; Update: 0; Last 100 games score: 0.2.
+Task: 2; Update: 0; Last 100 games score: 0.16.
+Task: 2; Update: 0; Last 100 games score: 0.14.
+Task: 2; Update: 0; Last 100 games score: 0.15.
+Task: 2; Update: 0; Last 100 games score: 0.095.
+Task: 2; Update: 0; Last 100 games score: 0.09.
+Task: 2; Update: 0; Last 100 games score: 0.195.
+Task: 2; Update: 0; Last 100 games score: 0.2.
+Task: 2; Update: 0; Last 100 games score: 0.18.
+Task: 2; Update: 0; Last 100 games score: 0.155.
+Task: 2; Update: 0; Last 100 games score: 0.215.
+Task: 2; Update: 0; Last 100 games score: 0.31.
+Task: 2; Update: 0; Last 100 games score: 0.31.
+Task: 2; Update: 0; Last 100 games score: 0.355.
+Task: 2; Update: 0; Last 100 games score: 0.395.
+Task: 2; Update: 0; Last 100 games score: 0.34.
+Task: 2; Update: 0; Last 100 games score: 0.2.
+Task: 2; Update: 0; Last 100 games score: 0.26.
+Task: 2; Update: 0; Last 100 games score: 0.27.

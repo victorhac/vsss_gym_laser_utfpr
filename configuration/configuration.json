@@ -1,0 +1,386 @@
+{
+    "motion": {
+        "pid": {
+            "constants": {
+                "kp": 20,
+                "ki": 0,
+                "kd": 2.5
+            }
+        }
+    },
+    "rsoccer": {
+        "robot": {
+            "wheel": {
+                "radius": 0.026
+            },
+            "motor": {
+                "max-rpm": 440
+            },
+            "speed": {
+                "max-radians-seconds": 46.08,
+                "dead-zone-meters-seconds": 0.05
+            },
+            "width": 0.075,
+            "length": 0.075
+        },
+        "team": {
+            "is-yellow-left-team": false,
+            "is-yellow-team": false,
+            "blue": {
+                "number-robots": 3
+            },
+            "yellow": {
+                "number-robots": 3
+            }
+        },
+        "training": {
+            "time-step": 0.025,
+            "episode-duration": 20,
+            "max-v": 1.198,
+            "max-distance": 1.9845,
+            "max-x": 0.85,
+            "max-y": 0.65
+        }
+    },
+    "firasim": {
+        "control": {
+            "ip": "127.0.0.1",
+            "port": 20011
+        },
+        "vision": {
+            "ip": "224.0.0.1",
+            "port": 10002,
+            "buffer": {
+                "size": 1024
+            }
+        },
+        "robot": {
+            "wheel": {
+                "radius": 0.0325
+            },
+            "speed": {
+                "max-radians-seconds": 30
+            },
+            "width": 0.075,
+            "length": 0.075
+        },
+        "team": {
+            "is-yellow-left-team": true,
+            "is-yellow-team": true,
+            "blue": {
+                "number-robots": 3
+            },
+            "yellow": {
+                "number-robots": 3
+            }
+        }
+    },
+    "referee": {
+        "ip": "224.5.23.2",
+        "port": 10003,
+        "buffer": {
+            "size": 1024
+        }
+    },
+    "replacer": {
+        "ip": "224.5.23.2",
+        "port": 10004
+    },
+    "field": {
+        "length": 1.5,
+        "width": 1.3,
+        "goal": {
+            "width": 0.4,
+            "depth": 0.1
+        },
+        "goal-area": {
+            "length": 0.15,
+            "width": 0.7
+        },
+        "ball": {
+            "radius": 0.0215
+        }
+    },
+    "model": {
+        "attacker": {
+            "path": "models/attacker/PPO/2024_9_24_14_48_13/PPO_model_task_6_update_117_13999986_steps.zip"
+        },
+        "defender": {
+            "path": "models/defender/PPO/2025_1_3_23_6_42/interrupted_model.zip"
+        },
+        "goalkeeper": {
+            "path": "models/goalkeeper/PPO/2025_1_4_18_57_50/PPO_model_task_1_update_100_102286296_steps.zip"
+        }
+    },
+    "game": {
+        "states": {
+            "free-kick": {
+                "team": {
+                    "positionings": {
+                        "ball": {
+                            "x": 0.375,
+                            "y": 0
+                        },
+                        "0": {
+                            "x": 0.3,
+                            "y": 0
+                        },
+                        "1": {
+                            "x": -0.3,
+                            "y": 0
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                },
+                "foe-team": {
+                    "positionings": {
+                        "ball": {
+                            "x": -0.375,
+                            "y": 0
+                        },
+                        "0": {
+                            "x": -0.6,
+                            "y": 0.2
+                        },
+                        "1": {
+                            "x": -0.6,
+                            "y": -0.2
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                }
+            },
+            "penalty-kick": {
+                "team": {
+                    "positionings": {
+                        "ball": {
+                            "x": 0.375,
+                            "y": 0
+                        },
+                        "0": {
+                            "x": 0.3,
+                            "y": 0
+                        },
+                        "1": {
+                            "x": -0.1,
+                            "y": 0
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                },
+                "foe-team": {
+                    "positionings": {
+                        "ball": {
+                            "x": -0.375,
+                            "y": 0
+                        },
+                        "0": {
+                            "x": 0.1,
+                            "y": 0.2
+                        },
+                        "1": {
+                            "x": 0.1,
+                            "y": -0.2
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                }
+            },
+            "goal-kick": {
+                "team": {
+                    "positionings": {
+                        "ball": {
+                            "x": -0.6,
+                            "y": 0
+                        },
+                        "0": {
+                            "x": -0.5,
+                            "y": -0.2
+                        },
+                        "1": {
+                            "x": -0.2,
+                            "y": -0.5
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                },
+                "foe-team": {
+                    "positionings": {
+                        "ball": {
+                            "x": 0.6,
+                            "y": 0
+                        },
+                        "0": {
+                            "x": 0,
+                            "y": 0.3
+                        },
+                        "1": {
+                            "x": -0.2,
+                            "y": -0.5
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                }
+            },
+            "free-ball": {
+                "quadrant-1": {
+                    "positionings": {
+                        "ball": {
+                            "x": 0.375,
+                            "y": 0.4
+                        },
+                        "0": {
+                            "x": 0.175,
+                            "y": 0.4
+                        },
+                        "1": {
+                            "x": -0.2,
+                            "y": 0.5
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                },
+                "quadrant-2": {
+                    "positionings": {
+                        "ball": {
+                            "x": -0.375,
+                            "y": 0.4
+                        },
+                        "0": {
+                            "x": -0.575,
+                            "y": 0.4
+                        },
+                        "1": {
+                            "x": -0.575,
+                            "y": -0.1
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                },
+                "quadrant-3": {
+                    "positionings": {
+                        "ball": {
+                            "x": -0.375,
+                            "y": -0.4
+                        },
+                        "0": {
+                            "x": -0.575,
+                            "y": -0.4
+                        },
+                        "1": {
+                            "x": -0.575,
+                            "y": 0.1
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                },
+                "quadrant-4": {
+                    "positionings": {
+                        "ball": {
+                            "x": 0.375,
+                            "y": -0.4
+                        },
+                        "0": {
+                            "x": 0.175,
+                            "y": -0.4
+                        },
+                        "1": {
+                            "x": -0.2,
+                            "y": -0.5
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                }
+            },
+            "kickoff": {
+                "team": {
+                    "positionings": {
+                        "ball": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "0": {
+                            "x": -0.15,
+                            "y": 0
+                        },
+                        "1": {
+                            "x": -0.45,
+                            "y": 0
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                },
+                "foe-team": {
+                    "positionings": {
+                        "ball": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "0": {
+                            "x": -0.2,
+                            "y": 0
+                        },
+                        "1": {
+                            "x": -0.45,
+                            "y": 0
+                        },
+                        "2": {
+                            "x": -0.7,
+                            "y": 0
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "positioning": {
+        "default-supporter": {
+            "distance-to-wall": 0.1,
+            "x-step-count": 10,
+            "y-step-count": 10,
+            "ball-min-distance": 0.3,
+            "robot-min-distance": 0.2,
+            "considered-robot-distance": 0.4,
+            "distance-behind-ball": 0.1,
+            "weights": {
+                "distance-to-robot": 0.3,
+                "distance-to-position": 0.2,
+                "distance-to-ball": 0.2,
+                "distance-to-goal": 0.3
+            }
+        }
+    }
+}
