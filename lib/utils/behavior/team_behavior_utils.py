@@ -7,11 +7,11 @@ from lib.domain.enums.role_enum import RoleEnum
 
 class TeamBehaviorUtils:  
     @staticmethod
-    def get_task_3(
+    def get_task_1(
         update_count: int = 0,
-        updates_per_task: int = 10,
-        games_count: int = 10,
-        default_threshold: float = .8
+        updates_per_task: int = 100,
+        games_count: int = 100,
+        default_threshold: float = .9
     ):    
         behaviors = [
             TeamBehaviorUtils.get_own_team_multiple_role_behavior(
@@ -35,7 +35,7 @@ class TeamBehaviorUtils:
         )
 
         return CurriculumTask(
-            "3",
+            "1",
             behaviors,
             ball_behavior,
             update_count=update_count,
@@ -44,10 +44,10 @@ class TeamBehaviorUtils:
             default_threshold=default_threshold)
     
     @staticmethod
-    def get_task_10(
+    def get_task_2(
         update_count: int = 0,
-        updates_per_task: int = 20,
-        games_count: int = 20,
+        updates_per_task: int = 100,
+        games_count: int = 100,
         default_threshold: float = .8
     ):    
         behaviors = [
@@ -70,14 +70,12 @@ class TeamBehaviorUtils:
                 (0, 1))
         ]
 
-        ball_behavior = TeamBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OPPONENT_GOAL,
-            updates_per_task,
-            (.2, 1.35)
+        ball_behavior = TeamBehaviorUtils.get_fixed_position_ball_behavior(
+            updates_per_task
         )
 
         return CurriculumTask(
-            "10",
+            "2",
             behaviors,
             ball_behavior,
             update_count=update_count,
@@ -86,11 +84,11 @@ class TeamBehaviorUtils:
             default_threshold=default_threshold)
 
     @staticmethod
-    def get_task_11(
+    def get_task_3(
         update_count: int = 0,
-        updates_per_task: int = 20,
-        games_count: int = 20,
-        default_threshold: float = .6
+        updates_per_task: int = 100,
+        games_count: int = 100,
+        default_threshold: float = .5
     ):    
         behaviors = [
             TeamBehaviorUtils.get_own_team_multiple_role_behavior(
@@ -117,14 +115,12 @@ class TeamBehaviorUtils:
                 (0, 1))
         ]
 
-        ball_behavior = TeamBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OPPONENT_GOAL,
-            updates_per_task,
-            (.2, 1.35)
+        ball_behavior = TeamBehaviorUtils.get_fixed_position_ball_behavior(
+            updates_per_task
         )
 
         return CurriculumTask(
-            "11",
+            "3",
             behaviors,
             ball_behavior,
             update_count=update_count,
@@ -133,10 +129,10 @@ class TeamBehaviorUtils:
             default_threshold=default_threshold)
     
     @staticmethod
-    def get_task_12(
+    def get_task_4(
         update_count: int = 0,
-        updates_per_task: int = 20,
-        games_count: int = 20,
+        updates_per_task: int = 100,
+        games_count: int = 100,
         default_threshold: float = .5
     ):    
         behaviors = [
@@ -169,14 +165,12 @@ class TeamBehaviorUtils:
                 (0, 1))
         ]
 
-        ball_behavior = TeamBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OPPONENT_GOAL,
-            updates_per_task,
-            (.2, 1.35)
+        ball_behavior = TeamBehaviorUtils.get_fixed_position_ball_behavior(
+            updates_per_task
         )
 
         return CurriculumTask(
-            "9",
+            "4",
             behaviors,
             ball_behavior,
             update_count=update_count,
@@ -194,6 +188,15 @@ class TeamBehaviorUtils:
             position_enum=position_enum,
             updates_per_task=updates_per_task,
             distance_range=distance_range)
+    
+    @staticmethod
+    def get_fixed_position_ball_behavior(
+        updates_per_task: int
+    ):
+        return BallCurriculumBehavior(
+            position_enum=PositionEnum.FIXED,
+            fixed_position=(0, 0),
+            updates_per_task=updates_per_task)
     
     @staticmethod
     def get_own_team_multiple_role_behavior(

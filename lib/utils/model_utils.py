@@ -16,7 +16,3 @@ class ModelUtils:
     @staticmethod
     def get_goalkeeper_model():
         return ModelUtils._load_ppo_model("models/goalkeeper/PPO/2025_1_25_18_2_1/PPO_model_task_1_update_100_36667946_steps.zip")
-    
-    @staticmethod
-    def get_team_model():
-        return ModelUtils._load_ppo_model("models/team/PPO/2025_1_27_4_57_4/interrupted_model.zip")

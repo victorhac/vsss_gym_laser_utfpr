@@ -72,17 +72,10 @@ def main():
 
     tasks = [
         get_first_task(),
+        TeamBehaviorUtils.get_task_1(),
         TeamBehaviorUtils.get_task_2(),
         TeamBehaviorUtils.get_task_3(),
-        TeamBehaviorUtils.get_task_4(),
-        TeamBehaviorUtils.get_task_5(),
-        TeamBehaviorUtils.get_task_6(),
-        TeamBehaviorUtils.get_task_7(),
-        TeamBehaviorUtils.get_task_8(),
-        TeamBehaviorUtils.get_task_9(),
-        TeamBehaviorUtils.get_task_10(),
-        TeamBehaviorUtils.get_task_11(),
-        TeamBehaviorUtils.get_task_12()
+        TeamBehaviorUtils.get_task_4()
     ]
 
     save_path = get_task_models_path()

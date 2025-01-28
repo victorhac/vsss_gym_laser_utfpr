@@ -33,7 +33,7 @@ class TeamEnvironment(BaseCurriculumEnvironment):
         self.observation_space = Box(
             low=-1,
             high=1,
-            shape=(34,),
+            shape=(35,),
             dtype=np.float32)
 
         self.is_yellow_team = False
@@ -81,7 +81,9 @@ class TeamEnvironment(BaseCurriculumEnvironment):
         return False
 
     def _frame_to_observations(self):
-        observation = []
+        observation = [
+            self._get_time_factor()
+        ]
 
         current_robot = self._get_robot_by_id(self.robot_id, self.is_yellow_team)
         ball = self._get_ball()
@@ -279,6 +281,7 @@ class TeamEnvironment(BaseCurriculumEnvironment):
         if is_done:
             if self._any_team_scored_goal():
                 reward = 10 if self._has_scored_goal() else -10
+                reward *= 1 - self._get_time_factor()
                 self.last_game_score = 1
             elif self._is_ball_deadlocked():
                 reward = -2.5
@@ -318,24 +321,29 @@ class TeamEnvironment(BaseCurriculumEnvironment):
     def _get_reward(self):
         w_move = 0.2
         w_ball_gradient = 0.8
-        w_distance_to_ball = 0.4
-        w_defensive = 0.2
-        w_blocked_robot = 0.2
-        w_crowded_robot = 0.2
 
         ball = self._get_ball()
 
         if ball.v_x < 0:
+            w_defensive = 0.4
+            w_blocked_robot = 0.4
+            w_crowded_robot = 0.2
+
             defensive_penalty = self._get_defensive_penalty()
+
+            penalty = w_defensive * defensive_penalty +\
+                w_blocked_robot * self._get_blocked_robot_penalty() +\
+                w_crowded_robot * self._get_crowded_robot_penalty()
         else:
-            defensive_penalty = 0
+            w_blocked_robot = 0.6
+            w_crowded_robot = 0.4
+
+            penalty = w_blocked_robot * self._get_blocked_robot_penalty() +\
+                w_crowded_robot * self._get_crowded_robot_penalty()
 
         return w_move * self._get_move_towards_ball_reward() +\
             w_ball_gradient * self._get_ball_gradient_reward() +\
-            w_defensive * defensive_penalty +\
-            w_distance_to_ball * self._get_distance_to_ball_reward() +\
-            w_blocked_robot * self._get_blocked_robot_penalty() +\
-            w_crowded_robot * self._get_crowded_robot_penalty()
+            penalty
 
     def _get_move_towards_ball_reward(self):
         ball = self._get_ball()
@@ -343,11 +351,16 @@ class TeamEnvironment(BaseCurriculumEnvironment):
         return self._move_towards_ball_reward(robot.id)
     
     def _get_ball_gradient_reward(self):
+        previous_ball_potential = self.previous_ball_potential
+
         reward, self.previous_ball_potential =\
             self._ball_gradient_reward_by_positions(
-                self.previous_ball_potential,
+                previous_ball_potential,
                 self.get_inside_own_goal_position(True),
                 self.get_inside_own_goal_position(False))
+        
+        if previous_ball_potential is not None and abs(reward) < 0.01:
+            reward = -1
         
         return reward
     
@@ -369,15 +382,6 @@ class TeamEnvironment(BaseCurriculumEnvironment):
 
         return r_def
 
-    def _get_distance_to_ball_reward(self):
-        ball = self._get_ball()
-        robot = self._get_team_robot_closest_to_position((ball.x, ball.y))
-        distance = GeometryUtils.distance(
-            (robot.x, robot.y),
-            (ball.x, ball.y))
-    
-        return 1 - distance / self._get_max_distance()
-
     def _get_blocked_robot_penalty(self):
         for robot_id in self.blocked_robots.keys():
             blocked_time = self.blocked_robots[robot_id]
@@ -387,27 +391,22 @@ class TeamEnvironment(BaseCurriculumEnvironment):
         return 0
 
     def _get_crowded_robot_penalty(self):
-        crowding_distance = 0.3
+        crowding_distance = 0.1
 
         robots = self._get_robots_outside_own_goal_area()
-        ball = self._get_ball()
 
         if len(robots) == 1:
             return 0
 
-        crowded_robots = [
-            robot
-            for robot in robots
-            if GeometryUtils.distance(
-                (robot.x, robot.y),
-                (ball.x, ball.y)
-            ) < crowding_distance
-        ]
+        for item in robots:
+            for item2 in robots:
+                if item.id != item2.id and\
+                        GeometryUtils.distance(
+                            (item.x, item.y),
+                            (item2.x, item2.y)) < crowding_distance:
+                    return -1
 
-        if len(crowded_robots) == 0:
-            return 0
-        
-        return -len(crowded_robots) / len(robots)
+        return 0
     
     def _get_robots_outside_own_goal_area(self):
         return list(

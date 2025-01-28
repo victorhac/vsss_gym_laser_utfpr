@@ -11,8 +11,6 @@ updates_per_task = 3
 games_count = 100
 default_threshold = 0.5
 
-model = ModelUtils.get_team_model()
-
 task = TeamBehaviorUtils.get_task_2(
     update_count,
     updates_per_task,
@@ -26,10 +24,10 @@ while True:
     obs = env.reset()
     reward = 0
     done = False
-    action = [1, RoleEnum.SUPPORTER, RoleEnum.SUPPORTER]
+    action = [1, 2, 4]
 
     while not done:
         next_state, reward, done, _, _ = env.step(action)
         env.render()
-        observation = TeamUtils.get_observation(env, False, True)
-        action = model.predict(observation)[0]
+        print(reward)
+        #action = model.predict(observation)[0]
