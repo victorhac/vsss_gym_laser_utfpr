@@ -109,7 +109,10 @@
             "path": "models/defender/PPO/2025_1_3_23_6_42/interrupted_model.zip"
         },
         "goalkeeper": {
-            "path": "models/goalkeeper/PPO/2025_1_4_18_57_50/PPO_model_task_1_update_100_102286296_steps.zip"
+            "path": "models/goalkeeper/PPO/2025_1_25_18_2_1/PPO_model_task_1_update_100_36667946_steps.zip"
+        },
+        "team": {
+            "path": ""
         }
     },
     "game": {

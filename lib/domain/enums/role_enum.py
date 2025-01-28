@@ -1,8 +1,7 @@
 from enum import Enum
 
 class RoleEnum(Enum):
-	NONE = 0
-	ATTACKER = 1
-	DEFENDER = 2
-	GOALKEEPER = 3
-	SUPPORTER = 4
+	ATTACKER = 0
+	DEFENDER = 1
+	GOALKEEPER = 2
+	SUPPORTER = 3
