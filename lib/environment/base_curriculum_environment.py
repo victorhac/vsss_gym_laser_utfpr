@@ -50,6 +50,8 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         self.previous_ball_potential = None
         self.last_game_score = None
+        self.is_yellow_team = False
+        self.is_left_team = True
 
         self._set_error_dictionaries()
         self._set_model_dictionaries()

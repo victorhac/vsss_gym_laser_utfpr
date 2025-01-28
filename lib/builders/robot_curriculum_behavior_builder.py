@@ -18,6 +18,7 @@ class RobotCurriculumBehaviorBuilder:
         self.distance_range = None
         self.distance_to_wall = None
         self.velocity_alpha_range = None
+        #TODO: take this property off
         self.model_path = None
 
     def set_ball_following_behavior(self):
