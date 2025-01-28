@@ -3,15 +3,16 @@ from lib.environment.team_environment import TeamEnvironment
 from lib.utils.behavior.team_behavior_utils import TeamBehaviorUtils
 from lib.utils.model_utils import ModelUtils
 from lib.utils.roles.team_utils import TeamUtils
+import os
 
 render_mode = 'human'
 
-update_count = 3
-updates_per_task = 3
+update_count = 0
+updates_per_task = 100
 games_count = 100
 default_threshold = 0.5
 
-task = TeamBehaviorUtils.get_task_2(
+task = TeamBehaviorUtils.get_task_1(
     update_count,
     updates_per_task,
     games_count,
@@ -24,10 +25,11 @@ while True:
     obs = env.reset()
     reward = 0
     done = False
-    action = [1, 2, 4]
+    action = [0, 2, 3]
 
     while not done:
         next_state, reward, done, _, _ = env.step(action)
         env.render()
         print(reward)
-        #action = model.predict(observation)[0]
+        # observation = TeamUtils.get_observation(env, False, True)
+        # action = model.predict(observation)[0]

@@ -11,7 +11,7 @@ class TeamBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .9
+        default_threshold: float = .8
     ):    
         behaviors = [
             TeamBehaviorUtils.get_own_team_multiple_role_behavior(
@@ -48,7 +48,7 @@ class TeamBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .8
+        default_threshold: float = .7
     ):    
         behaviors = [
             TeamBehaviorUtils.get_own_team_multiple_role_behavior(
@@ -133,7 +133,7 @@ class TeamBehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .5
+        default_threshold: float = .4
     ):    
         behaviors = [
             TeamBehaviorUtils.get_own_team_multiple_role_behavior(
