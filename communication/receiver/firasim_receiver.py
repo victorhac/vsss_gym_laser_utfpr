@@ -77,7 +77,7 @@ class FirasimReceiver(SocketReceiver):
             self._entity_from_dict(field.ball, raw_data_dict['ball'])
 
         for i in range(len(team_list_of_dicts)):
-            self._entity_from_dict(field.robots[i], team_list_of_dicts[i])
+            self._entity_from_dict(field._robots[i], team_list_of_dicts[i])
 
         for i in range(len(foes_list_of_dicts)):
-            self._entity_from_dict(field.foes[i], foes_list_of_dicts[i])
+            self._entity_from_dict(field._foes[i], foes_list_of_dicts[i])

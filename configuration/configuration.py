@@ -235,6 +235,12 @@ class Configuration:
     positioning_default_supporter_weights_distance_to_ball = configuration["positioning"]["default-supporter"]["weights"]["distance-to-ball"]
     positioning_default_supporter_weights_distance_to_goal = configuration["positioning"]["default-supporter"]["weights"]["distance-to-goal"]
 
+    univector_field_navigation_de = configuration["univector-field-navigation"]["de"]
+    univector_field_navigation_kr = configuration["univector-field-navigation"]["kr"]
+    univector_field_navigation_k0 = configuration["univector-field-navigation"]["k0"]
+    univector_field_navigation_dmin = configuration["univector-field-navigation"]["dmin"]
+    univector_field_navigation_gaussian_delta = configuration["univector-field-navigation"]["gaussian-delta"]
+
     def get_firasim_is_left_team():
         return Configuration.firasim_team_is_yellow_left_team \
             == Configuration.firasim_team_is_yellow_team

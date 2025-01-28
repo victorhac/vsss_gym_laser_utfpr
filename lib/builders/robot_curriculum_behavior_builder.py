@@ -1,3 +1,4 @@
+from lib.domain.enums.role_enum import RoleEnum
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
 from lib.domain.enums.position_enum import PositionEnum
 from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
@@ -32,13 +33,22 @@ class RobotCurriculumBehaviorBuilder:
         self.model_path = model_path
         return self
     
-    def set_from_fixed_model_behavior(self, model_path: str):
+    def set_from_fixed_model_behavior(
+        self,
+        model_path: str,
+        role_enum: RoleEnum = RoleEnum.ATTACKER
+    ):
         self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL
+        self.role_enum = role_enum
         self.model_path = model_path
         return self
     
     def set_from_model_behavior(self):
         self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_MODEL
+        return self
+    
+    def set_multiple_role_behavior(self):
+        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.MULTIPLE_ROLE
         return self
 
     def set_position_enum(
@@ -88,6 +98,14 @@ class RobotCurriculumBehaviorBuilder:
         self.position_enum = PositionEnum.RELATIVE_TO_OPPONENT_VERTICAL_LINE
         return self
     
+    def set_fixed_position_enum(
+        self,
+        position: 'tuple[float, float]'
+    ):
+        self.fixed_position = position
+        self.position_enum = PositionEnum.FIXED
+        return self
+    
     def set_distance_range(
         self,
         distance_range: 'tuple[float, float]'
@@ -120,7 +138,10 @@ class RobotCurriculumBehaviorBuilder:
             self._set_velocity_alpha_range(robot_curriculum_behavior)
 
         if self.model_path is not None:
-            robot_curriculum_behavior.set_model_path(self.model_path)
+            robot_curriculum_behavior.set_model_path(
+                self.model_path,
+                self.role_enum
+            )
             
         return robot_curriculum_behavior
 
@@ -139,6 +160,8 @@ class RobotCurriculumBehaviorBuilder:
                 self.x_line,
                 self.y_range,
                 self.left_to_line)
+        elif self.position_enum == PositionEnum.FIXED:
+            robot_curriculum_behavior.set_fixed_position(self.fixed_position)
     
     def _set_distance_range(
         self,

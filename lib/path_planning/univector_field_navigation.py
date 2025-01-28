@@ -1,12 +1,13 @@
 from math import cos, pi, sin, sqrt, atan2, exp
 import numpy as np
+from configuration.configuration import Configuration
 from lib.domain.univector_field_navigation.obstacle import Obstacle
 
-d_e = 0.0537
-kr = 0.0415
-k0 = 0.0012
-d_min = 0.0948
-gaussian_delta = 0.0457
+d_e = Configuration.univector_field_navigation_de
+kr = Configuration.univector_field_navigation_kr
+k0 = Configuration.univector_field_navigation_k0
+d_min = Configuration.univector_field_navigation_dmin
+gaussian_delta = Configuration.univector_field_navigation_gaussian_delta
 
 def get_vector(
     point1: 'tuple[float, float]',

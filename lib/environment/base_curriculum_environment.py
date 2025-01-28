@@ -332,6 +332,8 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 relative_position,
                 behavior.distance,
                 is_yellow)
+        elif position_enum == PositionEnum.FIXED:
+            return lambda: behavior.fixed_position
 
         return self._get_random_position_inside_field
 

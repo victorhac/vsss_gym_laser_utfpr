@@ -6,8 +6,7 @@ import pygame
 import random
 
 from rsoccer_gym.Entities import Frame, Robot
-from rsoccer_gym.Render import COLORS, VSSRenderField, VSSRobot
-from rsoccer_gym.Render import Ball
+from rsoccer_gym.Render import COLORS, VSSRenderField, VSSRobot, Ball
 from rsoccer_gym.Simulators.rsim import RSimVSS
 from rsoccer_gym.Utils import KDTree
 
@@ -33,7 +32,6 @@ class BaseEnvironment(gym.Env):
         training_episode_duration: int,
         render_mode="human",
     ):
-        # Initialize Simulator
         super().__init__()
         self.render_mode = render_mode
         self.time_step = time_step
@@ -229,8 +227,14 @@ class BaseEnvironment(gym.Env):
         """returns frame with robots initial positions"""
         raise NotImplementedError
     
+    def _get_episode_elapsed_time(self):
+        return int(self.steps * self.time_step)
+    
+    def _get_time_factor(self):
+        return self._get_episode_elapsed_time() / self.training_episode_duration
+    
     def _has_episode_time_exceeded(self):
-        elapsed_time = int(self.steps * self.time_step)
+        elapsed_time = self._get_episode_elapsed_time()
 
         if elapsed_time == 0:
             return False
@@ -306,7 +310,7 @@ class BaseEnvironment(gym.Env):
             
         distance_to_undesired = GeometryUtils.distance((ball.x, ball.y), undesired_position)
 
-        ball_potential = ((distance_to_desired - distance_to_undesired) / field_length - 1) / 2
+        ball_potential = ((distance_to_undesired - distance_to_desired) / field_length - 1) / 2
 
         if previous_ball_potential is not None:
             ball_potential_difference = ball_potential - previous_ball_potential
@@ -322,10 +326,11 @@ class BaseEnvironment(gym.Env):
     def _move_reward(
         self,
         position: 'tuple[float, float]',
+        robot_id: int = 0,
         min_value: float = -5.0,
         max_value: float = 5.0
     ):
-        robot = self._get_agent()
+        robot = self._get_team_robot(robot_id)
         robot_position = np.array([robot.x, robot.y])
 
         robot_velocities = np.array([robot.v_x, robot.v_y])
@@ -436,6 +441,17 @@ class BaseEnvironment(gym.Env):
             position[1],
             self.get_field_length(),
             self.get_field_width())
+    
+    def _is_close_to_wall(
+        self,
+        position: 'tuple[float, float]',
+        tolerance: float = 0.1
+    ):
+        return FieldUtils.is_close_to_wall(
+            position,
+            self.get_field_length(),
+            self.get_field_width(),
+            tolerance)
 
     def _is_inside_own_goal_area(
         self,
@@ -477,6 +493,9 @@ class BaseEnvironment(gym.Env):
 
     def _get_agent(self):
         return self.frame.robots_blue[self.robot_id]
+    
+    def _get_team_robot(self, robot_id: int):
+        return self.frame.robots_blue[robot_id]
 
     def _create_robot_command(
         self,

@@ -114,16 +114,16 @@ class DefenderUtils:
 
         extend_observation_by_ball()
 
-        extend_observation_by_robot(field.robots[robot_id])
+        extend_observation_by_robot(field.get_robot_by_id(robot_id))
 
         for i in range(3):
             if i == robot_id:
                 continue
 
-            extend_observation_by_robot(field.robots[i])
+            extend_observation_by_robot(field.get_robot_by_id(i))
 
         for i in range(3):
-            extend_observation_by_robot(field.foes[i])
+            extend_observation_by_robot(field.get_foe_by_id(i))
 
         return np.array(observation, dtype=np.float32)
 

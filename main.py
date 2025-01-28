@@ -105,16 +105,17 @@ def positioning(
         if item == "ball":
             continue
 
-        robot = field.robots[int(item)]
+        robot = field.get_robot_by_id(int(item))
 
-        pid_error_key_team = str(is_yellow_team)
-        robot_command, pid_errors[pid_error_key_team][item] = go_to_point_command(
-            robot,
-            (positionings[item]["x"], positionings[item]["y"]),
-            pid_errors[pid_error_key_team][item]
-        )
+        if robot.active:
+            pid_error_key_team = str(is_yellow_team)
+            robot_command, pid_errors[pid_error_key_team][item] = go_to_point_command(
+                robot,
+                (positionings[item]["x"], positionings[item]["y"]),
+                pid_errors[pid_error_key_team][item]
+            )
 
-        robot_commands.append(robot_command)
+            robot_commands.append(robot_command)
 
     return robot_commands
 
@@ -131,7 +132,10 @@ def replace_positioning(
             continue
 
         index = int(item)
-        robot = field.robots[index]
+        robot = field.get_robot_by_id(index)
+
+        if not robot.active:
+            continue
 
         x, y = positionings[item]["x"], positionings[item]["y"]
 

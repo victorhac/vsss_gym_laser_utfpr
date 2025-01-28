@@ -1,5 +1,7 @@
 import numpy as np
 from lib.domain.robot import Robot
+from lib.domain.univector_field_navigation.obstacle import Obstacle
+from lib.path_planning.univector_field_navigation import get_univector_field_point_theta
 from lib.utils.geometry_utils import GeometryUtils
 from configuration.configuration import Configuration
 from lib.utils.robot_utils import RobotUtils
@@ -20,6 +22,12 @@ def wrap_to_pi(angle: float):
     else:
         return angle
 
+def _is_close(robot: Robot, position: 'tuple[float, float]'):
+    return GeometryUtils.is_close(
+        robot.get_position_tuple(),
+        position,
+        .05) 
+
 class MotionUtils:
     @staticmethod
     def go_to_point(
@@ -28,6 +36,9 @@ class MotionUtils:
         last_error: float = 0,
         base_speed: float = 30
     ):
+        if _is_close(robot, target_position):
+            return 0, 0
+    
         x, y = robot.get_position_tuple()
         robot_angle = robot.position.theta
 
@@ -79,6 +90,28 @@ class MotionUtils:
                 speed * K_TURNING * math.sin(angle_difference)])
 
         return motors_speeds
+
+    @staticmethod
+    def go_to_point_univector(
+        robot: Robot,
+        target_position: 'tuple[float, float]',
+        obstacles: 'tuple[Obstacle]',
+        base_speed: float = 30
+    ):
+        if _is_close(robot, target_position):
+            return 0, 0 
+
+        theta = get_univector_field_point_theta(
+            robot.get_position_tuple(),
+            robot.get_velocity_tuple(),
+            target_position,
+            obstacles
+        )
+
+        return MotionUtils.go_to_point_by_theta(
+            robot,
+            theta,
+            base_speed)
 
     @staticmethod
     def _get_speeds(

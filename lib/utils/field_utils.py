@@ -343,11 +343,22 @@ class FieldUtils:
     ):
         team_robots = []
 
-        for i, robot in enumerate(field.robots):
-            if i != current_robot_id:
+        for robot in field.get_active_robots():
+            if robot.id != current_robot_id:
                 team_robots.append(robot)
 
-        obstacles = field.foes
+        obstacles = field.get_active_foes()
         obstacles.extend(team_robots)
 
         return FieldUtils.to_obstacles(obstacles)
+    
+    def is_close_to_wall(
+        position: 'tuple[float, float]',
+        field_length: float,
+        field_width: float,
+        tolerance: float
+    ):
+        #TODO: change to consider the goal area
+        x, y = position
+
+        return abs(x) > field_length / 2 - tolerance or abs(y) > field_width / 2 - tolerance
