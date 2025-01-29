@@ -104,7 +104,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         error = self._get_error(robot_id, is_yellow)
 
-        left_speed, right_speed, current_error = MotionUtils.go_to_point(
+        right_speed, left_speed, current_error = MotionUtils.go_to_point(
             robot,
             point,
             error,
