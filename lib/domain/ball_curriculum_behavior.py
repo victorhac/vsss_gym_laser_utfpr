@@ -1,28 +1,17 @@
-from lib.domain.enums.position_enum import PositionEnum
 import numpy as np
+
+from lib.position_setup.position_setup import PositionSetup
 
 class BallCurriculumBehavior:
     def __init__(
         self,
-        position_enum: PositionEnum,
         updates_per_task: int,
-        distance_range: 'tuple[float, float] | None' = None,
-        distance_to_wall: 'float | None' = None,
-        x_line: 'float | None' = None,
-        y_range: 'tuple[float, float] | None' = None,
-        left_to_line: 'bool | None' = None,
-        fixed_position: 'tuple[float, float] | None' = None
+        position_setup: PositionSetup,
+        distance_range: 'tuple[float, float] | None' = None
     ):
-        self.position_enum = position_enum
         self.updates_per_task = updates_per_task
         self.distance_range = distance_range
-        self.distance_to_wall = distance_to_wall
-
-        self.x_line = x_line
-        self.y_range = y_range
-        self.left_to_line = left_to_line
-
-        self.fixed_position = fixed_position
+        self.position_setup = position_setup
 
         self.updates = 0
         

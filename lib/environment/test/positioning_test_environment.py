@@ -9,7 +9,7 @@ from lib.environment.base_environment import BaseEnvironment
 
 from configuration.configuration import Configuration
 from lib.positioning.default_supporter_positioning import get_supporter_position
-from lib.utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 
 TRAINING_EPISODE_DURATION = Configuration.rsoccer_training_episode_duration
 

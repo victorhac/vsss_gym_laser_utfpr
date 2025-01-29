@@ -12,7 +12,7 @@ from rsoccer_gym.Utils import KDTree
 
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.field_utils import FieldUtils
-from lib.utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 
 class BaseEnvironment(gym.Env):
     metadata = {
@@ -357,32 +357,6 @@ class BaseEnvironment(gym.Env):
             self.get_field_length(),
             self.get_field_width())
 
-    def _get_random_position_inside_own_goal_area(self):
-        return FieldUtils.get_random_position_inside_own_goal_area(
-            self.get_field_length(),
-            self.get_goal_area_length(),
-            self.get_goal_area_width(),
-            True)
-
-    def _get_random_position_inside_opponent_goal_area(self):
-        return FieldUtils.get_random_position_inside_own_goal_area(
-            self.get_field_length(),
-            self.get_goal_area_length(),
-            self.get_goal_area_width(),
-            False)
-
-    def _get_random_position_inside_own_area(self):
-        return FieldUtils.get_random_position_inside_own_area(
-            self.get_field_length(),
-            self.get_field_width(),
-            True)
-
-    def _get_random_position_inside_opponent_area(self):
-        return FieldUtils.get_random_position_inside_own_area(
-            self.get_field_length(),
-            self.get_field_width(),
-            False)
-
     def _get_own_goal_position(self):
         return FieldUtils.get_own_goal_position(
             self.get_field_length(),
@@ -403,22 +377,6 @@ class BaseEnvironment(gym.Env):
             self.get_field_width(),
             position,
             distance)
-
-    def _get_random_position_inside_own_area_except_goal_area(self):
-        return FieldUtils.get_random_position_inside_own_area_except_goal_area(
-            self.get_field_length(),
-            self.get_field_width(),
-            self.get_goal_area_length(),
-            self.get_goal_area_width(),
-            True)
-
-    def _get_random_position_inside_opponent_area_except_goal_area(self):
-        return FieldUtils.get_random_position_inside_own_area_except_goal_area(
-            self.get_field_length(),
-            self.get_field_width(),
-            self.get_goal_area_length(),
-            self.get_goal_area_width(),
-            False)
 
     def _is_inside_field(
         self,
@@ -521,162 +479,6 @@ class BaseEnvironment(gym.Env):
             return self._get_yellow_robot_by_id(id)
 
         return self._get_blue_robot_by_id(id)
-    
-    def _get_own_area_position_function(self, is_yellow: bool):
-        if is_yellow:
-            return self._get_random_position_inside_opponent_area
-
-        return self._get_random_position_inside_own_area
-
-    def _get_opponent_area_position_function(self, is_yellow: bool):
-        return self._get_own_area_position_function(not is_yellow)
-
-    def _get_goal_area_position_function(self, is_yellow: bool):
-        if is_yellow:
-            return self._get_random_position_inside_opponent_goal_area
-
-        return self._get_random_position_inside_own_goal_area
-
-    def _get_opponent_goal_area_position_function(self, is_yellow: bool):
-        return self._get_goal_area_position_function(not is_yellow)
-
-    def _get_own_area_except_goal_area_position_function(self, is_yellow: bool):
-        if is_yellow:
-            return self._get_random_position_inside_opponent_area_except_goal_area
-
-        return self._get_random_position_inside_own_area_except_goal_area
-
-    def _get_opponent_area_except_goal_area_position_function(self, is_yellow: bool):
-        return self._get_own_area_except_goal_area_position_function(not is_yellow)
-
-    def _get_relative_to_own_goal_position_function(self, is_yellow: bool, distance: float):
-        if not is_yellow:
-            return lambda: self._get_random_position_at_distance(
-                distance,
-                self._get_own_goal_position())
-
-        return lambda: self._get_random_position_at_distance(
-            distance,
-            self._get_opponent_goal_position())
-
-    def _get_relative_to_opponent_goal_position_function(self, is_yellow: bool, distance: float):
-        return self._get_relative_to_own_goal_position_function(not is_yellow, distance)
-
-    def _get_random_position_at_distance_position_function(
-        self,
-        distance: float,
-        position: 'tuple[float, float]'
-    ):
-        return lambda: self._get_random_position_at_distance(distance, position)
-    
-    def _get_position_close_to_wall_relative_to_own_goal_function(
-        self,
-        distance: float,
-        distance_to_wall: float,
-        is_yellow_team: bool
-    ):
-        return lambda: self._get_position_close_to_wall_relative_to_goal(
-            distance,
-            distance_to_wall,
-            not is_yellow_team)
-    
-    def _get_position_close_to_wall_relative_to_opponent_goal_function(
-        self,
-        distance: float,
-        distance_to_wall: float,
-        is_yellow_team: bool
-    ):
-        return lambda: self._get_position_close_to_wall_relative_to_goal(
-            distance,
-            distance_to_wall,
-            is_yellow_team)
-    
-    def _get_position_close_to_wall_relative_to_goal(
-        self,
-        distance: float,
-        distance_to_wall: float,
-        is_left_team: bool
-    ):
-        upper = random.choice([True, False])
-
-        return FieldUtils.get_position_close_to_wall_relative_to_own_goal(
-            self.get_field_length(),
-            self.get_field_width(),
-            self.get_goal_width(),
-            distance,
-            distance_to_wall,
-            is_left_team,
-            upper)
-    
-    def _get_random_position_at_distance_to_vertical_line(
-        self,
-        distance: float,
-        x_line: float,
-        y_range: 'tuple[float, float]',
-        left_to_line: bool,
-        is_left_team: bool
-    ):
-        return FieldUtils.get_random_position_at_distance_to_vertical_line(
-            distance,
-            x_line,
-            y_range,
-            left_to_line,
-            is_left_team)
-    
-    def _get_random_position_at_distance_to_own_vertical_line_function(
-        self,
-        distance: float,
-        x_line: float,
-        y_range: 'tuple[float, float]',
-        left_to_line: bool,
-        is_yellow_team: bool
-    ):
-        return lambda: self._get_random_position_at_distance_to_vertical_line(
-            distance,
-            x_line,
-            y_range,
-            left_to_line,
-            not is_yellow_team)
-    
-    def _get_random_position_at_distance_to_opponent_vertical_line_function(
-        self,
-        distance: float,
-        x_line: float,
-        y_range: 'tuple[float, float]',
-        left_to_line: bool,
-        is_yellow_team: bool
-    ):
-        return lambda: self._get_random_position_at_distance_to_vertical_line(
-            distance,
-            x_line,
-            y_range,
-            left_to_line,
-            is_yellow_team)
-    
-    def _get_position_behind_position_function(
-        self,
-        position: 'tuple[float, float]',
-        distance: float,
-        is_yellow_team: bool
-    ):
-        return lambda: self._get_position_behind_position(
-            position,
-            distance,
-            not is_yellow_team)
-    
-    def _get_position_behind_position(
-        self,
-        position: 'tuple[float, float]',
-        distance: float,
-        is_left_team: bool
-    ):
-        if not is_left_team:
-            distance = -distance
-
-        x = position[0] - distance
-        y = position[1]
-        
-        return x, y
     
     def _is_close_to_ball(
         self,

@@ -19,7 +19,7 @@ task = TeamBehaviorUtils.get_task_4(
     default_threshold
 )
 
-model = ModelUtils.get_team_model()
+model = ModelUtils.team_model()
 env = TeamEnvironment(task, render_mode)
 
 while True:

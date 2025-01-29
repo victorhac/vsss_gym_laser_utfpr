@@ -3,19 +3,10 @@ from gymnasium.spaces import MultiDiscrete, Box
 from rsoccer_gym.Entities import Robot
 from lib.domain.curriculum_task import CurriculumTask
 from lib.domain.enums.role_enum import RoleEnum
-from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
-from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
-from lib.positioning.default_supporter_positioning import get_supporter_position
-from lib.utils.field_utils import FieldUtils
-from lib.utils.model_utils import ModelUtils
-from lib.utils.motion_utils import MotionUtils
-from lib.utils.roles.attacker_utils import AttackerUtils
 from lib.utils.geometry_utils import GeometryUtils
-from lib.utils.roles.defender_utils import DefenderUtils
-from lib.utils.roles.goalkeeper_utils import GoalkeeperUtils
-from lib.utils.rsoccer_utils import RSoccerUtils
-from lib.utils.training_utils import TrainingUtils
+from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer.training_utils import TrainingUtils
 
 class TeamEnvironment(BaseCurriculumEnvironment):
     def __init__(
@@ -49,10 +40,6 @@ class TeamEnvironment(BaseCurriculumEnvironment):
             1: None,
             2: None
         }
-
-        self.attacker_model = ModelUtils.get_attacker_model()
-        self.defender_model = ModelUtils.get_defender_model()
-        self.goalkeeper_model = ModelUtils.get_goalkeeper_model()
 
     def reset(
         self,
@@ -121,150 +108,6 @@ class TeamEnvironment(BaseCurriculumEnvironment):
             extend_observation_by_robot(frame.robots_yellow[i])
 
         return np.array(observation, dtype=np.float32)
-
-    def _frame_to_attacker_observation(
-        self,
-        robot_id: int,
-        is_yellow_team: bool
-    ):
-        return AttackerUtils.get_observation(
-            self,
-            robot_id,
-            is_yellow_team,
-            not is_yellow_team)
-    
-    def _frame_to_defender_observation(
-        self,
-        robot_id: int,
-        is_yellow_team: bool
-    ):
-        return DefenderUtils.get_observation(
-            self,
-            robot_id,
-            is_yellow_team,
-            not is_yellow_team)
-    
-    def _frame_to_goalkeeper_observation(
-        self,
-        robot_id: int,
-        is_yellow_team: bool
-    ):
-        return GoalkeeperUtils.get_observation(
-            self,
-            robot_id,
-            is_yellow_team,
-            not is_yellow_team)
-    
-    def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
-        is_yellow = behavior.is_yellow
-        robot_id = behavior.robot_id
-
-        actions = self._get_from_model_actions(behavior)
-
-        left_speed, right_speed = self._actions_to_v_wheels(actions)
-        velocity_alpha = behavior.get_velocity_alpha()
-
-        return self._create_robot_command(
-            robot_id,
-            is_yellow,
-            left_speed * velocity_alpha,
-            right_speed * velocity_alpha)
-    
-    def _create_multiple_role_robot_command(
-        self,
-        behavior: RobotCurriculumBehavior,
-        role_enum: RoleEnum
-    ):
-        is_yellow = behavior.is_yellow
-        robot_id = behavior.robot_id
-        robot = self._get_robot_by_id(robot_id, is_yellow)
-
-        if role_enum == RoleEnum.ATTACKER:
-            observation = self._frame_to_attacker_observation(robot_id, is_yellow)
-            action = self.attacker_model.predict(observation)[0]
-            left_speed, right_speed = self._actions_to_v_wheels(action)
-        elif role_enum == RoleEnum.DEFENDER:
-            observation = self._frame_to_defender_observation(robot_id, is_yellow)
-            action = self.defender_model.predict(observation)[0]
-            left_speed, right_speed = self._actions_to_v_wheels(action)
-        elif role_enum == RoleEnum.GOALKEEPER:
-            observation = self._frame_to_goalkeeper_observation(robot_id, is_yellow)
-            action = self.goalkeeper_model.predict(observation)[0]
-            left_speed, right_speed = self._actions_to_v_wheels(action)
-        elif role_enum == RoleEnum.SUPPORTER:
-            field = RSoccerUtils.get_field_by_frame(self.frame, is_yellow)
-            obstacles = FieldUtils.to_obstacles_except_current_robot_and_ball(
-                field,
-                robot_id)
-
-            position = get_supporter_position(
-                robot_id,
-                field)
-
-            right_speed, left_speed = MotionUtils.go_to_point_univector(
-                RSoccerUtils.to_robot(robot),
-                position,
-                obstacles)
-        else:
-            left_speed, right_speed = 0, 0
-
-        return self._create_robot_command(
-            robot_id,
-            is_yellow,
-            left_speed,
-            right_speed)
-    
-    def _create_robot_command_by_behavior(
-        self,
-        behavior: RobotCurriculumBehavior,
-        role_enum: 'RoleEnum | None' = None
-    ):
-        robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
-
-        if robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.BALL_FOLLOWING:
-            return self._create_ball_following_robot_command(behavior)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING:
-            return self._create_goalkeeper_ball_following_robot_command(behavior)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL or\
-            robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL:
-            return self._create_from_model_robot_command(behavior)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.MULTIPLE_ROLE:
-            return self._create_multiple_role_robot_command(behavior, role_enum)
-
-        return self._create_robot_command(
-            behavior.robot_id,
-            behavior.is_yellow,
-            0,
-            0)
-    
-    def _get_observation_by_behavior(
-        self,
-        behavior: RobotCurriculumBehavior
-    ):
-        def frame_to_observation(frame_to_observation_function):
-            return frame_to_observation_function(
-                behavior.robot_id,
-                behavior.is_yellow)
-    
-        if behavior.role_enum == RoleEnum.DEFENDER:
-            return frame_to_observation(self._frame_to_defender_observation)
-        elif behavior.role_enum == RoleEnum.GOALKEEPER:
-            return frame_to_observation(self._frame_to_goalkeeper_observation)
-        
-        return frame_to_observation(self._frame_to_attacker_observation)
-
-    def _get_from_model_actions(self, behavior: RobotCurriculumBehavior):
-        model = self._update_model(
-            behavior.robot_id,
-            behavior.is_yellow,
-            behavior.model_path)
-
-        if model is None:
-            return (0, 0)
-
-        return model.predict(
-            self._get_observation_by_behavior(behavior)
-        )[0]
 
     def _move_towards_ball_reward(self, robot_id: int):
         ball = self._get_ball()
@@ -372,9 +215,9 @@ class TeamEnvironment(BaseCurriculumEnvironment):
         r_def = -1
 
         for robot in robots:
-            current_r_def = TrainingUtils.r_def(
-                RSoccerUtils.to_robot(robot),
-                RSoccerUtils.to_ball(ball),
+            current_r_def = TrainingUtils.get_defensive_positioning_reward(
+                robot,
+                ball,
                 own_goal_position)
             
             if current_r_def > r_def:

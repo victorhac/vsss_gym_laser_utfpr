@@ -2,7 +2,7 @@ from rsoccer_gym.Entities import Robot as RSoccerRobot
 from lib.domain.field import Field
 from lib.domain.field import Robot
 from lib.environment.base_environment import BaseEnvironment
-from lib.utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 from stable_baselines3 import PPO
 import numpy as np
 

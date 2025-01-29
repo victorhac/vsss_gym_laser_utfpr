@@ -1,8 +1,15 @@
 from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehaviorBuilder
 from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.curriculum_task import CurriculumTask
-from lib.domain.enums.position_enum import PositionEnum
 from configuration.configuration import Configuration
+from lib.position_setup.area_except_goal_area_position_setup import AreaExceptGoalAreaPositionSetup
+from lib.position_setup.behind_ball_position_setup import BehindBallPositionSetup
+from lib.position_setup.field_position_setup import FieldPositionSetup
+from lib.position_setup.goal_area_position_setup import GoalAreaPositionSetup
+from lib.position_setup.position_setup import PositionSetup
+from lib.position_setup.relative_to_ball_position_setup import RelativeToBallPositionSetup
+from lib.position_setup.relative_to_vertical_line_position_setup import RelativeToVerticalLinePositionSetup
+from lib.position_setup.relative_to_wall_position_setup import RelativeToWallPositionSetup
 
 class DefenderBehaviorUtils:
     @staticmethod
@@ -15,7 +22,7 @@ class DefenderBehaviorUtils:
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task)
         ]
 
@@ -43,7 +50,7 @@ class DefenderBehaviorUtils:
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task)
         ]
 
@@ -71,11 +78,11 @@ class DefenderBehaviorUtils:
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(False),
                 updates_per_task,
                 (0, .5))
         ]
@@ -104,19 +111,19 @@ class DefenderBehaviorUtils:
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task),
             DefenderBehaviorUtils.get_own_team_goalkeeper_stopped_behavior(
                 2,
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(False),
                 updates_per_task,
                 (0, .5)),
             DefenderBehaviorUtils.get_opponent_team_stopped_behavior(
                 1,
-                PositionEnum.OPPONENT_AREA_EXCEPT_GOAL_AREA,
+                AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task
             )
         ]
@@ -145,23 +152,23 @@ class DefenderBehaviorUtils:
         behaviors = [
             DefenderBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task),
             DefenderBehaviorUtils.get_own_team_stopped_behavior(
                 1,
-                PositionEnum.FIELD,
+                FieldPositionSetup(),
                 updates_per_task),
             DefenderBehaviorUtils.get_own_team_goalkeeper_stopped_behavior(
                 2,
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(False),
                 updates_per_task,
                 (0, .5)),
             DefenderBehaviorUtils.get_opponent_team_stopped_behavior(
                 1,
-                PositionEnum.FIELD,
+                FieldPositionSetup(),
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_goalkeeper_ball_following_behavior(
                 2,
@@ -225,7 +232,7 @@ class DefenderBehaviorUtils:
                 updates_per_task),
             DefenderBehaviorUtils.get_own_team_stopped_behavior(
                 1,
-                PositionEnum.FIELD,
+                FieldPositionSetup(),
                 updates_per_task),
             DefenderBehaviorUtils.get_own_team_goalkeeper_stopped_behavior(
                 2,
@@ -235,7 +242,7 @@ class DefenderBehaviorUtils:
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_stopped_behavior(
                 1,
-                PositionEnum.FIELD,
+                FieldPositionSetup(),
                 updates_per_task),
             DefenderBehaviorUtils.get_opponent_team_goalkeeper_ball_following_behavior(
                 2,
@@ -261,39 +268,47 @@ class DefenderBehaviorUtils:
         updates_per_task: int,
         distance_range: 'tuple[float, float] | None' = None
     ):
+        position_setup = RelativeToVerticalLinePositionSetup(
+            True,
+            -.6,
+            (-.65, .65),
+            False
+        )
+
         return BallCurriculumBehavior(
-            position_enum=PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE,
             updates_per_task=updates_per_task,
             distance_range=distance_range,
-            x_line=-.6,
-            y_range=(-.65, .65),
-            left_to_line=False)
+            position_setup=position_setup)
     
     @staticmethod
     def get_close_to_own_goal_ball_behavior(
         updates_per_task: int
     ):
+        position_setup = RelativeToWallPositionSetup(
+            True,
+            .07
+        )
+
         return BallCurriculumBehavior(
-            position_enum=PositionEnum.OWN_GOAL_RELATIVE_TO_WALL,
             updates_per_task=updates_per_task,
             distance_range=(1.15, 0),
-            distance_to_wall=.07)
+            position_setup=position_setup)
     
     @staticmethod
     def get_own_team_from_model_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_from_model_behavior()\
-            .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
             .build()
     
@@ -302,25 +317,29 @@ class DefenderBehaviorUtils:
         robot_id: int,
         updates_per_task: int
     ):
+        position_setup = RelativeToVerticalLinePositionSetup(
+            True,
+            0,
+            (-.65, .65),
+            True
+        )
+
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_from_model_behavior()\
-            .set_relative_to_own_vertical_line_position_enum(
-                0,
-                (-.65, .65),
-                True)\
             .set_distance_range((.6, .05))\
             .build()
     
     @staticmethod
     def get_opponent_team_from_fixed_model_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int,
         velocity_alpha_range: 'tuple[float, float]',
         distance_range: 'tuple[float, float]' = (.2, .5)
@@ -328,14 +347,14 @@ class DefenderBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         model_path = Configuration.model_attacker_path
 
         return builder\
             .set_from_fixed_model_behavior(model_path)\
-            .set_position_enum(position_enum)\
             .set_distance_range(distance_range)\
             .set_velocity_alpha_range(velocity_alpha_range)\
             .build()
@@ -345,17 +364,18 @@ class DefenderBehaviorUtils:
         robot_id: int,
         updates_per_task: int
     ):
+        position_setup = BehindBallPositionSetup(False)
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         model_path = Configuration.model_attacker_path
 
         return builder\
             .set_from_fixed_model_behavior(model_path)\
-            .set_position_enum(PositionEnum.BEHIND_BALL)\
             .set_distance_range((.3, .3))\
             .set_velocity_alpha_range((.4, .7))\
             .build()
@@ -363,18 +383,18 @@ class DefenderBehaviorUtils:
     @staticmethod
     def get_own_team_ball_following_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_ball_following_behavior()\
-            .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
             .set_velocity_alpha_range((0, .5))\
             .build()
@@ -382,18 +402,18 @@ class DefenderBehaviorUtils:
     @staticmethod
     def get_own_team_stopped_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_ball_following_behavior()\
-            .set_position_enum(position_enum)\
             .set_distance_range((.5, .2))\
             .set_velocity_alpha_range((0, 0))\
             .build()
@@ -401,19 +421,19 @@ class DefenderBehaviorUtils:
     @staticmethod
     def get_opponent_team_ball_following_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int,
         velocity_alpha_range: 'tuple[float, float]'
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_ball_following_behavior()\
-            .set_position_enum(position_enum)\
             .set_distance_range((.8, .4))\
             .set_velocity_alpha_range(velocity_alpha_range)\
             .build()
@@ -421,18 +441,18 @@ class DefenderBehaviorUtils:
     @staticmethod
     def get_opponent_team_stopped_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_ball_following_behavior()\
-            .set_position_enum(position_enum)\
             .set_distance_range((.8, .4))\
             .set_velocity_alpha_range((0, 0))\
             .build()
@@ -443,16 +463,17 @@ class DefenderBehaviorUtils:
         is_yellow: bool,
         updates_per_task: int
     ):
+        position_setup = GoalAreaPositionSetup(not is_yellow)
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             is_yellow,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_ball_following_behavior()\
-            .set_velocity_alpha_range((0,0))\
-            .set_position_enum(PositionEnum.OWN_GOAL_AREA)\
+            .set_velocity_alpha_range((0, 0))\
             .build()
     
     @staticmethod

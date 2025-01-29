@@ -9,7 +9,7 @@ from lib.position_setup.position_setup import PositionSetup
 from lib.position_setup.relative_to_ball_position_setup import RelativeToBallPositionSetup
 from lib.position_setup.relative_to_goal_position_setup import RelativeToGoalPositionSetup
 
-class AttackerBehaviorUtils:
+class AttackerV2BehaviorUtils:
     @staticmethod
     def get_task_1(
         update_count: int = 0,
@@ -18,13 +18,13 @@ class AttackerBehaviorUtils:
         default_threshold: float = .7
     ):
         behaviors = [
-            AttackerBehaviorUtils.get_own_team_from_model_behavior(
+            AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
                 RelativeToBallPositionSetup(True),
                 updates_per_task)
         ]
 
-        ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
+        ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
             RelativeToGoalPositionSetup(False),
             updates_per_task,
             distance_range=(.2, 1.3)
@@ -47,18 +47,18 @@ class AttackerBehaviorUtils:
         default_threshold: float = .7
     ):
         behaviors = [
-            AttackerBehaviorUtils.get_own_team_from_model_behavior(
+            AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
                 RelativeToBallPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 0,
                 True,
                 AreaPositionSetup(False),
                 updates_per_task)
         ]
     
-        ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
+        ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
             AreaPositionSetup(True),
             updates_per_task
         )
@@ -80,16 +80,16 @@ class AttackerBehaviorUtils:
         default_threshold: float = .7
     ):
         behaviors = [
-            AttackerBehaviorUtils.get_own_team_from_model_behavior(
+            AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
                 RelativeToBallPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
+            AttackerV2BehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
                 updates_per_task)
         ]
     
-        ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
+        ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
             AreaPositionSetup(True),
             updates_per_task
         )
@@ -111,26 +111,26 @@ class AttackerBehaviorUtils:
         default_threshold: float = .6
     ):
         behaviors = [
-            AttackerBehaviorUtils.get_own_team_from_model_behavior(
+            AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
                 RelativeToBallPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 False,
                 AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
+            AttackerV2BehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 True,
                 AreaExceptGoalAreaPositionSetup(False),
                 updates_per_task)
         ]
     
-        ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
+        ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
             AreaPositionSetup(True),
             updates_per_task
         )
@@ -155,36 +155,36 @@ class AttackerBehaviorUtils:
         games_count: int = 200
     ):
         behaviors = [
-            AttackerBehaviorUtils.get_own_team_from_model_behavior(
+            AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
                 RelativeToBallPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 False,
                 AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 2,
                 False,
                 GoalAreaPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
+            AttackerV2BehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 True,
                 AreaExceptGoalAreaPositionSetup(False),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 2,
                 True,
                 GoalAreaPositionSetup(False),
                 updates_per_task)
         ]
     
-        ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
+        ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
             AreaPositionSetup(True),
             updates_per_task
         )
@@ -210,37 +210,37 @@ class AttackerBehaviorUtils:
         games_count: int = 200
     ):
         behaviors = [
-            AttackerBehaviorUtils.get_own_team_from_model_behavior(
+            AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
                 RelativeToBallPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 False,
                 AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 2,
                 False,
                 AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task),
-            AttackerBehaviorUtils.get_opponent_team_from_previous_model_behavior(
+            AttackerV2BehaviorUtils.get_opponent_team_from_previous_model_behavior(
                 0,
                 RelativeToBallPositionSetup(False),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 True,
                 AreaExceptGoalAreaPositionSetup(False),
                 updates_per_task),
-            AttackerBehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_stopped_behavior(
                 2,
                 True,
                 GoalAreaPositionSetup(False),
                 updates_per_task),
         ]
     
-        ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
+        ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
             AreaPositionSetup(True),
             updates_per_task
         )
