@@ -20,6 +20,7 @@ class RobotCurriculumBehaviorBuilder:
         self.distance_to_wall = None
         self.velocity_alpha_range = None
         self.model_path = None
+        self.role_enum = None
 
     def set_ball_following_behavior(self):
         self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.BALL_FOLLOWING
@@ -29,9 +30,14 @@ class RobotCurriculumBehaviorBuilder:
         self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING
         return self
     
-    def set_from_previous_model_behavior(self, model_path: 'str | None' = None):
+    def set_from_previous_model_behavior(
+        self,
+        model_path: 'str | None' = None,
+        role_enum: RoleEnum = RoleEnum.ATTACKER
+    ):
         self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL
         self.model_path = model_path
+        self.role_enum = role_enum
         return self
     
     def set_from_fixed_model_behavior(
@@ -86,6 +92,8 @@ class RobotCurriculumBehaviorBuilder:
                 self.model_path,
                 self.role_enum
             )
+        elif self.role_enum is not None:
+            robot_curriculum_behavior.role_enum = self.role_enum
             
         return robot_curriculum_behavior
     

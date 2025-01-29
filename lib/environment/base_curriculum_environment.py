@@ -278,7 +278,13 @@ class BaseCurriculumEnvironment(BaseEnvironment):
         behavior: RobotCurriculumBehavior
     ):
         observation = self._frame_to_observation_by_behavior(behavior)
-        return self._get_model(behavior).predict(observation)[0]
+
+        model = self._get_model(behavior)
+
+        if model is None:
+            return np.array([0, 0], np.float32)
+
+        return model.predict(observation)[0]
     
     def _create_from_model_robot_command(
         self,
@@ -501,7 +507,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
     def _get_model(
         self,
         behavior: RobotCurriculumBehavior
-    ) -> PPO:
+    ):
         if behavior.is_yellow:
             model_id = self.opponent_model_id_dictionary[behavior.robot_id]
         else:

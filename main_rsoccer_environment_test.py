@@ -15,7 +15,7 @@ updates_per_task = 2
 games_count = 2
 default_threshold = 0.5
 
-task = AttackerV2BehaviorUtils.get_task_4(
+task = AttackerV2BehaviorUtils.get_task_6(
     update_count,
     updates_per_task,
     games_count,

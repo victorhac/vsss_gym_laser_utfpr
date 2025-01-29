@@ -1,14 +1,12 @@
 from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehaviorBuilder
 from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.curriculum_task import CurriculumTask
-from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.position_setup.area_except_goal_area_position_setup import AreaExceptGoalAreaPositionSetup
 from lib.position_setup.area_position_setup import AreaPositionSetup
 from lib.position_setup.behind_ball_position_setup import BehindBallPositionSetup
 from lib.position_setup.goal_area_position_setup import GoalAreaPositionSetup
 from lib.position_setup.position_setup import PositionSetup
 from lib.position_setup.relative_to_ball_position_setup import RelativeToBallPositionSetup
-from lib.position_setup.relative_to_goal_position_setup import RelativeToGoalPositionSetup
 from lib.position_setup.relative_to_vertical_line_position_setup import RelativeToVerticalLinePositionSetup
 
 class AttackerV2BehaviorUtils:
@@ -176,14 +174,15 @@ class AttackerV2BehaviorUtils:
     def get_task_5(
         update_count: int = 0,
         updates_per_task: int = 100,
-        default_threshold: float = .5,
-        games_count: int = 100
+        games_count: int = 100,
+        default_threshold: float = .5
     ):
         behaviors = [
             AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
                 RelativeToBallPositionSetup(True),
-                updates_per_task),
+                updates_per_task,
+                distance_range=(0.3, 0.3)),
             AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 False,
@@ -210,8 +209,14 @@ class AttackerV2BehaviorUtils:
         ]
     
         ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
-            AreaPositionSetup(True),
-            updates_per_task
+            RelativeToVerticalLinePositionSetup(
+                True,
+                0,
+                (-.6, .6),
+                True
+            ),
+            updates_per_task,
+            distance_range=(.2, .5)
         )
 
         return CurriculumTask(
@@ -227,14 +232,15 @@ class AttackerV2BehaviorUtils:
     def get_task_6(
         update_count: int = 0,
         updates_per_task: int = 100,
-        default_threshold: float = .4,
-        games_count: int = 100
+        games_count: int = 100,
+        default_threshold: float = .4
     ):
         behaviors = [
             AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                BehindBallPositionSetup(True),
-                updates_per_task),
+                RelativeToBallPositionSetup(True),
+                updates_per_task,
+                distance_range=(0.3, 0.3)),
             AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 False,
@@ -249,21 +255,24 @@ class AttackerV2BehaviorUtils:
                 0,
                 RelativeToBallPositionSetup(False),
                 updates_per_task),
-            AttackerV2BehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_opponent_team_ball_following_behavior(
                 1,
-                True,
-                AreaExceptGoalAreaPositionSetup(False),
                 updates_per_task),
-            AttackerV2BehaviorUtils.get_stopped_behavior(
+            AttackerV2BehaviorUtils.get_goalkeeper_ball_following_behavior(
                 2,
                 True,
-                GoalAreaPositionSetup(False),
                 updates_per_task),
         ]
     
         ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
-            AreaPositionSetup(True),
-            updates_per_task
+            RelativeToVerticalLinePositionSetup(
+                True,
+                0,
+                (-.6, .6),
+                True
+            ),
+            updates_per_task,
+            distance_range=(.2, .5)
         )
 
         return CurriculumTask(
@@ -317,7 +326,9 @@ class AttackerV2BehaviorUtils:
     def get_opponent_team_from_previous_model_behavior(
         robot_id: int,
         position_setup: PositionSetup,
-        updates_per_task: int
+        updates_per_task: int,
+        distance_range: 'tuple[float, float]' = (.3, .6),
+        velocity_alpha_range: 'tuple[float, float]' = (0, .5)
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
@@ -328,8 +339,8 @@ class AttackerV2BehaviorUtils:
 
         return builder\
             .set_from_previous_model_behavior()\
-            .set_distance_range((.3, .6))\
-            .set_velocity_alpha_range((0, .5))\
+            .set_distance_range(distance_range)\
+            .set_velocity_alpha_range(velocity_alpha_range)\
             .build()
     
     @staticmethod
@@ -352,10 +363,10 @@ class AttackerV2BehaviorUtils:
 
         if distance_range is not None:
             builder.set_distance_range(distance_range)
-            
+
         if velocity_alpha_range is not None:
             builder.set_velocity_alpha_range(velocity_alpha_range)
-            
+
         return builder.build()
     
     @staticmethod
@@ -382,18 +393,19 @@ class AttackerV2BehaviorUtils:
     def get_goalkeeper_ball_following_behavior(
         robot_id: int,
         is_yellow: bool,
-        updates_per_task: int
+        updates_per_task: int,
+        velocity_alpha_range: 'tuple[float, float]' = (.2, .2)
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             is_yellow,
-            RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING,
             updates_per_task,
             GoalAreaPositionSetup(not is_yellow)
         )
 
         return builder\
-            .set_velocity_alpha_range((.2, .2))\
+            .set_goalkeeper_ball_following_behavior()\
+            .set_velocity_alpha_range(velocity_alpha_range)\
             .build()
     
     @staticmethod
