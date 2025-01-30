@@ -1,4 +1,4 @@
-class RobotUtils:
+lass RobotUtils:
     @staticmethod
     def truncateMotorSpeed(motorSpeed: float, baseSpeed: float):
         if motorSpeed > baseSpeed:
