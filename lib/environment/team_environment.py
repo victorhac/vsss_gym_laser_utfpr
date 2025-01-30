@@ -244,9 +244,10 @@ class TeamEnvironment(BaseCurriculumEnvironment):
         for item in robots:
             for item2 in robots:
                 if item.id != item2.id and\
-                        GeometryUtils.distance(
+                        GeometryUtils.is_close(
                             (item.x, item.y),
-                            (item2.x, item2.y)) < crowding_distance:
+                            (item2.x, item2.y),
+                            crowding_distance):
                     return -1
 
         return 0
