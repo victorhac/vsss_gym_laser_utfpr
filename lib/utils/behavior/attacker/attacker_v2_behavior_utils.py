@@ -238,7 +238,12 @@ class AttackerV2BehaviorUtils:
         behaviors = [
             AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                RelativeToBallPositionSetup(True),
+                RelativeToVerticalLinePositionSetup(
+                    True,
+                    0,
+                    (-.3, .3),
+                    True
+                ),
                 updates_per_task,
                 distance_range=(0.3, 0.3)),
             AttackerV2BehaviorUtils.get_stopped_behavior(
@@ -249,7 +254,7 @@ class AttackerV2BehaviorUtils:
             AttackerV2BehaviorUtils.get_stopped_behavior(
                 2,
                 False,
-                AreaExceptGoalAreaPositionSetup(True),
+                GoalAreaPositionSetup(True),
                 updates_per_task),
             AttackerV2BehaviorUtils.get_opponent_team_from_previous_model_behavior(
                 0,
@@ -267,12 +272,12 @@ class AttackerV2BehaviorUtils:
         ball_behavior = AttackerV2BehaviorUtils.get_ball_behavior(
             RelativeToVerticalLinePositionSetup(
                 True,
-                0,
+                .6,
                 (-.6, .6),
                 True
             ),
             updates_per_task,
-            distance_range=(.2, .5)
+            distance_range=(.05, 1.2)
         )
 
         return CurriculumTask(
