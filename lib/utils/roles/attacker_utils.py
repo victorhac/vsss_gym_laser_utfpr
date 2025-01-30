@@ -3,7 +3,7 @@ from lib.domain.robot import Robot
 from lib.domain.field import Field
 from lib.environment.base_environment import BaseEnvironment
 from lib.utils.geometry_utils import GeometryUtils
-from lib.utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 import numpy as np
 from stable_baselines3 import PPO
 

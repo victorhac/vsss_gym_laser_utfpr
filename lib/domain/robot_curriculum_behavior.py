@@ -2,6 +2,7 @@ from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehav
 import numpy as np
 
 from lib.domain.enums.role_enum import RoleEnum
+from lib.position_setup.position_setup import PositionSetup
 
 class RobotCurriculumBehavior:
     def __init__(
@@ -9,6 +10,7 @@ class RobotCurriculumBehavior:
         robot_id: int,
         is_yellow: bool,
         robot_curriculum_behavior_enum: RobotCurriculumBehaviorEnum,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         self.robot_id = robot_id
@@ -18,36 +20,17 @@ class RobotCurriculumBehavior:
 
         self.updates = 0
 
-        self.position_enum = None
-
         self.distance = None
         self.distance_range = None
         self.distance_beta = None
-        self.distance_to_wall = None
 
         self.velocity_alpha = None
         self.velocity_alpha_range = None
         self.velocity_beta = None
 
-        self.x_line = None
-        self.y_range = None
-        self.left_to_line = None
-
-        self.fixed_position = None
+        self.position_setup = position_setup
 
         self.model_path = None
-
-    def set_distance_to_wall(
-        self,
-        distance_to_wall: float
-    ):
-        self.distance_to_wall = distance_to_wall
-
-    def set_fixed_position(
-        self,
-        position: 'tuple[float, float]'
-    ):
-        self.fixed_position = position
 
     def set_distance_range(
         self,
@@ -70,16 +53,6 @@ class RobotCurriculumBehavior:
     ):
         self.model_path = model_path
         self.role_enum = role_enum
-
-    def set_relative_to_vertical_line_position_enum_values(
-        self,
-        x_line: float,
-        y_range: 'tuple[float, float]',
-        left_to_line: bool
-    ):
-        self.x_line = x_line
-        self.y_range = y_range
-        self.left_to_line = left_to_line
 
     def _try_set_distance(self):
         if self.distance_range is not None:

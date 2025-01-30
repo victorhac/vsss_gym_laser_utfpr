@@ -8,7 +8,7 @@ from lib.environment.base_curriculum_environment import BaseCurriculumEnvironmen
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 
-class DefenderEnvironment(BaseCurriculumEnvironment):
+class DefenderV2Environment(BaseCurriculumEnvironment):
     def __init__(
         self,
         task: CurriculumTask,

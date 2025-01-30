@@ -116,7 +116,7 @@ class FieldUtils:
     def get_random_position_inside_field(
         field_length: float,
         field_width: float,
-        margin = 0.15
+        margin = 0.1
     ):
         max_x = field_length / 2
         max_y = field_width / 2
@@ -130,7 +130,7 @@ class FieldUtils:
         field_length: float,
         field_width: float,
         is_left_team: bool,
-        margin = 0.15
+        margin = 0.1
     ):
         max_x = field_length / 2
         max_y = field_width / 2
@@ -149,7 +149,7 @@ class FieldUtils:
         goal_area_length: float,
         goal_area_width: float,
         is_left_team: bool,
-        margin = 0.15
+        margin = 0.1
     ):
         def get_random_position_inside_own_area():
             return FieldUtils.get_random_position_inside_own_area(
@@ -179,7 +179,7 @@ class FieldUtils:
         goal_area_length: float,
         goal_area_width: float,
         is_left_team: bool,
-        margin = 0.15
+        margin = 0.1
     ):
         return FieldUtils.get_random_position_inside_own_area_except_goal_area(
             field_length,
@@ -225,7 +225,7 @@ class FieldUtils:
         field_width,
         position,
         distance,
-        margin = 0.15
+        margin = 0.1
     ):
         x, y = position
 
