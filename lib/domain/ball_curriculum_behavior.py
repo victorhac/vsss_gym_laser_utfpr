@@ -38,7 +38,7 @@ class BallCurriculumBehavior:
                 self.distance + self.distance_beta * times,
                 self.distance_range)
             
-            self.updates = clip(self.updates + times, (0, 100))
+            self.updates = clip(self.updates + times, (0, self.updates_per_task))
 
     def reset(self):
         if self.distance_range is not None:
@@ -48,9 +48,6 @@ class BallCurriculumBehavior:
     
     def is_over(self):
         return self.updates == self.updates_per_task
-
-    def _is_distance_in_limit(self):
-        return self.distance == self.distance_range[1]
 
     @staticmethod
     def _get_beta(

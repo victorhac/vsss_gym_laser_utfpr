@@ -102,18 +102,6 @@ class RobotCurriculumBehavior:
 
         self.model_path = None
         self.updates = 0
-        
-    def _is_distance_in_limit(self):
-        if self.distance_range is None:
-            return True
-        
-        return self.distance == self.distance_range[1]
-    
-    def _is_velocity_alpha_in_limit(self):
-        if self.velocity_alpha_range is None:
-            return True
-        
-        return self.velocity_alpha == self.velocity_alpha_range[1]
 
     def is_over(self):
         return self.updates == self.updates_per_task
