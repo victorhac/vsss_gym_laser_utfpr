@@ -100,6 +100,7 @@ class Configuration:
     field_ball_radius = configuration["field"]["ball"]["radius"]
 
     model_attacker_path = configuration["model"]["attacker"]["path"]
+    model_attacker_v2_path = configuration["model"]["attacker-v2"]["path"]
     model_defender_path = configuration["model"]["defender"]["path"]
     model_goalkeeper_path = configuration["model"]["goalkeeper"]["path"]
     model_team_path = configuration["model"]["team"]["path"]

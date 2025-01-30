@@ -14,7 +14,9 @@ class AttackerV2Utils:
         is_yellow: bool,
         is_left_team: bool
     ):
-        observation = []
+        observation = [
+            base_environment._get_time_factor()
+        ]
 
         ball = base_environment._get_ball()
 
