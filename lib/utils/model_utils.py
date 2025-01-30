@@ -8,6 +8,9 @@ def _load_ppo_model(model_path: str):
 def _get_attacker_model():
     return _load_ppo_model(Configuration.model_attacker_path)
 
+def _get_attacker_v2_model():
+    return _load_ppo_model(Configuration.model_attacker_v2_path)
+
 def _get_defender_model():
     return _load_ppo_model(Configuration.model_defender_path)
 
@@ -24,6 +27,7 @@ class StoredModel:
 
 class ModelUtils:
     _attacker_model = None
+    _attacker_v2_model = None
     _defender_model = None
     _goalkeeper_model = None
     _team_model = None
@@ -34,7 +38,13 @@ class ModelUtils:
         if ModelUtils._attacker_model is None:
             ModelUtils._attacker_model = _get_attacker_model()
         return ModelUtils._attacker_model
-    
+
+    @staticmethod
+    def attacker_v2_model():
+        if ModelUtils._attacker_v2_model is None:
+            ModelUtils._attacker_v2_model = _get_attacker_v2_model()
+        return ModelUtils._attacker_v2_model
+
     @staticmethod
     def defender_model():
         if ModelUtils._defender_model is None:
