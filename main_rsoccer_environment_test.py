@@ -15,7 +15,9 @@ updates_per_task = 2
 games_count = 2
 default_threshold = 0.5
 
-task = AttackerV2BehaviorUtils.get_task_6(
+model = ModelUtils.attacker_v2_model()
+
+task = AttackerV2BehaviorUtils.get_task_3(
     update_count,
     updates_per_task,
     games_count,
@@ -33,3 +35,5 @@ while True:
     while not done:
         next_state, reward, done, _, _ = env.step(action)
         env.render()
+        observation = AttackerV2Utils.get_observation(env, 0, False, True)
+        action = model.predict(observation)[0]

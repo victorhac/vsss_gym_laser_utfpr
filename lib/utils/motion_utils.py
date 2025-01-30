@@ -57,7 +57,7 @@ class MotionUtils:
 
         motorSpeed = (KP * error) + (KD * (error - last_error))
 
-        motorSpeed = RobotUtils.truncateMotorSpeed(motorSpeed, base_speed)
+        motorSpeed = RobotUtils.truncate_motor_speed(motorSpeed, base_speed)
 
         leftMotorSpeed, rightMotorSpeed = MotionUtils._get_speeds(motorSpeed, base_speed, reversed)
 
