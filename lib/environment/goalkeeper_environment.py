@@ -176,7 +176,7 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
 
         if not is_inside_own_goal_area or not is_inside_playable_field:
             x, y = -0.675, self._get_y_target()
-            return -1 + w_move * self._move_reward((x, y), 5, 5)
+            return -1 + w_move * self._move_reward((x, y))
 
         if self._is_ball_inside_goal_area():
             self.ball_entered_goal_area = True

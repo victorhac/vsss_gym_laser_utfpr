@@ -31,7 +31,6 @@ class GoalkeeperV2Environment(BaseCurriculumEnvironment):
 
         self.is_yellow_team = False
         self.threshold_ball = .07
-        self.ball_entered_goal_area = False
         self.touched_ball = False
 
     def reset(
@@ -40,7 +39,6 @@ class GoalkeeperV2Environment(BaseCurriculumEnvironment):
         seed=None,
         options=None
     ):
-        self.ball_entered_goal_area = False
         self.touched_ball = False
         return super().reset(seed=seed, options=options)
 
@@ -54,9 +52,7 @@ class GoalkeeperV2Environment(BaseCurriculumEnvironment):
         return False
     
     def _is_ball_cleared_from_goal_area(self):
-        if self.ball_entered_goal_area\
-                and self.touched_ball\
-                and not self._is_ball_inside_goal_area():
+        if self.touched_ball and not self._is_ball_inside_goal_area():
             return True
         return False
 
@@ -114,18 +110,20 @@ class GoalkeeperV2Environment(BaseCurriculumEnvironment):
             elif self._is_ball_cleared_from_goal_area():
                 reward = 10
                 self.last_game_score = 1
-            elif self._is_ball_inside_goal_area():
-                reward = -5
-                self.last_game_score = -.5
             else:
                 self.last_game_score = None
+
+        if not self._is_ball_inside_goal_area():
+            self.touched_ball = False
+        else:
+            self._try_set_touched_ball()
 
         return reward, is_done
     
     def _get_ball_gradient_towards_center_line_reward(self):
         ball = self._get_ball()
         own_goal_position = self.get_inside_own_goal_position(self.is_yellow_team)
-        defensive_line_position = (0, ball.y)
+        defensive_line_position = (0.65, ball.y)
 
         return self._ball_gradient_reward_by_positions(
             self.previous_ball_potential,
@@ -145,36 +143,35 @@ class GoalkeeperV2Environment(BaseCurriculumEnvironment):
             robot_position)
 
         if not is_inside_own_goal_area or not is_inside_playable_field:
-            w_move = 1
+            w_move = 0.2
+            w_energy = 2e-4
 
             x, y = -0.675, self._get_y_target()
-            return -1 + w_move * self._move_reward((x, y), 5, 5)
+            return -2 +\
+                w_move * self._move_reward((x, y)) +\
+                w_energy * self._energy_penalty()
 
         if self._is_ball_inside_goal_area():
             w_move = 0.2
             w_ball_gradient = 0.8
             w_energy = 2e-4
 
-            self.ball_entered_goal_area = True
-
             ball = self._get_ball()
 
-            grad_ball_potential, ball_gradient = \
+            ball_gradient_reward, self.previous_ball_potential = \
                 self._get_ball_gradient_towards_center_line_reward()
-
-            self.previous_ball_potential = ball_gradient
 
             move_reward = self._move_reward((ball.x, ball.y))
             energy_penalty = self._energy_penalty()
 
             reward = w_move * move_reward + \
-                w_ball_gradient * grad_ball_potential + \
+                w_ball_gradient * ball_gradient_reward + \
                 w_energy * energy_penalty
         else:
-            w_energy = 2e-4
-            w_alignment = 1
+            self.previous_ball_potential = None
 
-            self.ball_entered_goal_area = False
+            w_energy = 4e-4
+            w_alignment = 1
 
             reward = w_alignment * self._get_alignment_reward() + \
                 w_energy * self._energy_penalty()
@@ -182,7 +179,7 @@ class GoalkeeperV2Environment(BaseCurriculumEnvironment):
         return reward
     
     def _try_set_touched_ball(self):
-        if self._is_ball_inside_goal_area() and not self.touched_ball:
+        if self._is_ball_inside_goal_area():
             robot = self._get_agent()
             ball = self._get_ball()
 
@@ -201,7 +198,7 @@ class GoalkeeperV2Environment(BaseCurriculumEnvironment):
     
     def _get_y_target(self):
         ball = self._get_ball()
-        robot_radius = self.get_robot_radius()
+        robot_radius = self.get_robot_radius() + 0.03
         goal_line_x = -self.get_field_length() / 2
         goal_y_max = self.get_goal_width() / 2
         goal_y_min = -goal_y_max

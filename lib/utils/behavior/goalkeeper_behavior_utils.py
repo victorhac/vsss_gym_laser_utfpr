@@ -51,7 +51,7 @@ class GoalkeeperBehaviorUtils:
             True,
             .6,
             (-.35, .35),
-            False
+            True
         )
 
         return BallCurriculumBehavior(
