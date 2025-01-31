@@ -127,7 +127,7 @@ class AttackerV2BehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .6
+        default_threshold: float = .5
     ):
         behaviors = [
             AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
@@ -142,7 +142,8 @@ class AttackerV2BehaviorUtils:
                 updates_per_task),
             AttackerV2BehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
-                updates_per_task),
+                updates_per_task,
+                distance_range=(.3, .6)),
             AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 True,
@@ -175,7 +176,7 @@ class AttackerV2BehaviorUtils:
         update_count: int = 0,
         updates_per_task: int = 100,
         games_count: int = 100,
-        default_threshold: float = .5
+        default_threshold: float = .4
     ):
         behaviors = [
             AttackerV2BehaviorUtils.get_own_team_from_model_behavior(
@@ -195,7 +196,8 @@ class AttackerV2BehaviorUtils:
                 updates_per_task),
             AttackerV2BehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
-                updates_per_task),
+                updates_per_task,
+                distance_range=(.3, .6)),
             AttackerV2BehaviorUtils.get_stopped_behavior(
                 1,
                 True,
@@ -259,10 +261,12 @@ class AttackerV2BehaviorUtils:
             AttackerV2BehaviorUtils.get_opponent_team_from_previous_model_behavior(
                 0,
                 RelativeToBallPositionSetup(False),
-                updates_per_task),
+                updates_per_task,
+                distance_range=(.3, .6)),
             AttackerV2BehaviorUtils.get_opponent_team_ball_following_behavior(
                 1,
-                updates_per_task),
+                updates_per_task,
+                distance_range=(.3, .6)),
             AttackerV2BehaviorUtils.get_goalkeeper_ball_following_behavior(
                 2,
                 True,
