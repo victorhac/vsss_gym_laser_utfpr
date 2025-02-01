@@ -31,6 +31,7 @@ class RobotCurriculumBehavior:
         self.position_setup = position_setup
 
         self.model_path = None
+        self.role_enum = None
 
     def set_distance_range(
         self,
@@ -48,11 +49,9 @@ class RobotCurriculumBehavior:
 
     def set_model_path(
         self,
-        model_path: str,
-        role_enum: RoleEnum = RoleEnum.ATTACKER
+        model_path: str
     ):
         self.model_path = model_path
-        self.role_enum = role_enum
 
     def _try_set_distance(self):
         if self.distance_range is not None:
