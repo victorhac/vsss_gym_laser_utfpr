@@ -106,7 +106,7 @@
             "path": "models/attacker/PPO/2024_9_24_14_48_13/PPO_model_task_6_update_117_13999986_steps.zip"
         },
         "attacker-v2": {
-            "path": "models/attacker_v2/PPO/2025_1_30_9_44_55/PPO_model_task_1_update_100_3172246_steps.zip"
+            "path": "models/attacker_v2/PPO/2025_1_30_16_58_24/PPO_model_task_3_update_90_99999900_steps.zip"
         },
         "defender": {
             "path": "models/defender/PPO/2025_1_3_23_6_42/interrupted_model.zip"

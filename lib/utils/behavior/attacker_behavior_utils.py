@@ -2,6 +2,7 @@ from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehavi
 from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
 from lib.domain.curriculum_task import CurriculumTask
 from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.domain.enums.role_enum import RoleEnum
 from lib.position_setup.area_except_goal_area_position_setup import AreaExceptGoalAreaPositionSetup
 from lib.position_setup.area_position_setup import AreaPositionSetup
 from lib.position_setup.goal_area_position_setup import GoalAreaPositionSetup
@@ -306,7 +307,7 @@ class AttackerBehaviorUtils:
         )
 
         return builder\
-            .set_from_previous_model_behavior()\
+            .set_from_previous_model_behavior(RoleEnum.ATTACKER)\
             .set_distance_range((.3, .6))\
             .set_velocity_alpha_range((0, .5))\
             .build()
