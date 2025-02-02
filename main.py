@@ -235,7 +235,7 @@ def perform(
     elif state == get_state_name(FoulEnum.KICKOFF, not is_yellow_team):
         commands = kickoff_foe_team(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.FREE_BALL):
-       commands = free_ball(is_yellow_team, is_left_team, field, message)
+       commands = free_ball(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.STOP):
         commands = stop()
     elif state == get_state_name(FoulEnum.GAME_ON):
@@ -323,13 +323,10 @@ def goal_kick_foe_team(
 
 def free_ball(
     is_yellow_team: bool,
-    is_left_team: bool,
-    field: Field,
-    message: RefereeMessage
+    field: Field
 ):
     positionings = ConfigurationUtils.get_game_states_free_ball_team_positionings(
-        is_left_team,
-        message.foul_quadrant
+        FieldUtils.get_quadrant_where_ball_is_located(field.ball)
     )
 
     return positioning(
@@ -385,34 +382,36 @@ yellow_receiver = FirasimReceiver(True, yellow_field)
 blue_machine = GameStateMachine(False)
 yellow_machine = GameStateMachine(True)
 
-referee = Referee()
+referee_message = RefereeMessage()
+
+referee = Referee(referee_message)
 sender = FirasimSender()
 replacer = Replacer()
 
 def main():
     while True:
-        message = RefereeMessage()
-        message.foul_enum = FoulEnum.GAME_ON
-
-        #blue_receiver.update()
+        referee.update()
+        blue_receiver.update()
         yellow_receiver.update()
 
-        # blue_command = perform(
-        #     False,
-        #     blue_field,
-        #     message,
-        #     blue_machine
-        # )
+        print(referee_message.foul_enum)
+
+        blue_command = perform(
+            False,
+            blue_field,
+            referee_message,
+            blue_machine
+        )
 
         yellow_command = perform(
             True,
             yellow_field,
-            message,
+            referee_message,
             yellow_machine
         )
 
-        # if blue_command is not None:
-        #     sender.transmit_team(blue_command)
+        if blue_command is not None:
+            sender.transmit_team(blue_command)
 
         if yellow_command is not None:
             sender.transmit_team(yellow_command)
