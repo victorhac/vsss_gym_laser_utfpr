@@ -103,6 +103,7 @@ class Configuration:
     model_attacker_v2_path = configuration["model"]["attacker-v2"]["path"]
     model_defender_path = configuration["model"]["defender"]["path"]
     model_goalkeeper_path = configuration["model"]["goalkeeper"]["path"]
+    model_goalkeeper_v2_path = configuration["model"]["goalkeeper-v2"]["path"]
     model_team_path = configuration["model"]["team"]["path"]
 
     game_states_free_kick_team_positionings = configuration["game"]["states"]["free-kick"]["team"]["positionings"]

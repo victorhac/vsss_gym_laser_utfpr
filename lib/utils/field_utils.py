@@ -352,6 +352,23 @@ class FieldUtils:
 
         return FieldUtils.to_obstacles(obstacles)
     
+    @staticmethod
+    def to_obstacles_except_current_robot(
+        field: Field,
+        current_robot_id: int
+    ):
+        team_robots = []
+
+        for robot in field.get_active_robots():
+            if robot.id != current_robot_id:
+                team_robots.append(robot)
+
+        obstacles = field.get_active_foes()
+        obstacles.extend(team_robots)
+        obstacles.append(field.ball)
+
+        return FieldUtils.to_obstacles(obstacles)
+    
     def is_close_to_wall(
         position: 'tuple[float, float]',
         field_length: float,

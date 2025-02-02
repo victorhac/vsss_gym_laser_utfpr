@@ -3,6 +3,7 @@ from communication.receiver.socket_receiver import SocketReceiver
 from configuration.configuration import Configuration
 from lib.domain.referee_message import RefereeMessage
 from lib.utils.referee_utils import RefereeUtils
+import select
 
 class Referee(SocketReceiver):
     def __init__(self):
@@ -14,14 +15,19 @@ class Referee(SocketReceiver):
 
         self.receiver_socket.setblocking(False)
         self.last_received_message = RefereeMessage()
+        self.protobuf_command = vssref_command_pb2.VSSRef_Command()
 
     def receive(self):
-        try:
-            data = super().receive()
-            decoded_data = vssref_command_pb2.VSSRef_Command().FromString(data)
-            referee_message = RefereeUtils.get_referee_message(decoded_data)
-            self.last_received_message = referee_message
-        except BlockingIOError as e:
+        ready_to_read, _, _ = select.select([self.receiver_socket], [], [], 0)
+        if ready_to_read:
+            try:
+                data = super().receive()
+                self.protobuf_command.ParseFromString(data)
+                referee_message = RefereeUtils.get_referee_message(self.protobuf_command)
+                self.last_received_message = referee_message
+            except Exception:
+                referee_message = self.last_received_message
+        else:
             referee_message = self.last_received_message
 
         return referee_message

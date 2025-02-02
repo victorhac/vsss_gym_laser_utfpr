@@ -60,6 +60,7 @@ class FirasimReceiver(SocketReceiver):
                 self.is_left_team)
 
         entity.velocity.theta = data_dict.get('vorientation', 0)
+        entity.active = True
 
     def _field_data_from_dict(
         self,

@@ -15,30 +15,30 @@ import os
 
 render_mode = 'human'
 
-update_count = 0
+update_count = 2
 updates_per_task = 2
 games_count = 2
 default_threshold = 0.5
 
-model = PPO.load("models/goalkeeper_v2/PPO/2025_1_30_17_53_48/PPO_model_task_1_update_0_15999984_steps.zip")
+model = ModelUtils.team_model()
 
-task = GoalkeeperV2BehaviorUtils.get_task_1(
+task = TeamBehaviorUtils.get_task_3(
     update_count,
     updates_per_task,
     games_count,
     default_threshold
 )
 
-env = GoalkeeperV2Environment(task, render_mode)
+env = TeamEnvironment(task, render_mode)
 
 while True:
     obs = env.reset()
     reward = 0
     done = False
-    action = (0, 0)
+    action = (0, 0, 0)
 
     while not done:
         next_state, reward, done, _, _ = env.step(action)
         env.render()
-        observation = GoalkeeperV2Utils.get_observation(env, 0, False, True)
+        observation = TeamUtils.get_observation(env, False, True)
         action = model.predict(observation)[0]
