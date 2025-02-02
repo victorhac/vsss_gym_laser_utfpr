@@ -35,9 +35,6 @@ starting_update = 0
 
 log_interval = total_timesteps // 10
 
-number_robot_blue = 3
-number_robot_yellow = 3
-
 def create_env(
     save_path,
     index,
@@ -106,8 +103,6 @@ def main():
         model_name=algorithm_name,
         save_path=save_path,
         log_path=save_path,
-        number_robot_blue=number_robot_blue,
-        number_robot_yellow=number_robot_yellow,
         tasks=tasks)
     
     try:
