@@ -53,5 +53,9 @@ class GameStateMachineUtils:
         foul_enum_name = GameStateMachineUtils.get_trigger_name
 
         if foul_enum in team_foe_team_foul_enums:
+            if is_yellow_team is None:
+                is_yellow_team = True
+
             return foul_enum_name(foul_enum, is_yellow_team)
+
         return foul_enum_name(foul_enum)

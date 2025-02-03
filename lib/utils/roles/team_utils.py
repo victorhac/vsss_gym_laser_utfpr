@@ -5,6 +5,7 @@ from lib.environment.base_environment import BaseEnvironment
 from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 from stable_baselines3 import PPO
 import numpy as np
+import time
 
 class TeamUtils:
     @staticmethod
@@ -65,11 +66,10 @@ class TeamUtils:
         return np.array(observation, dtype=np.float32)
     
     @staticmethod
-    def get_observation_by_field(
-        field: Field,
-        robot_id: int
-    ):
-        observation = []
+    def get_observation_by_field(field: Field, start_time: float):
+        observation = [
+            ((time.time() - start_time) % 40) / 40
+        ]
 
         ball = field.ball
         
@@ -110,12 +110,7 @@ class TeamUtils:
 
         extend_observation_by_ball()
 
-        extend_observation_by_robot(field.get_robot_by_id(robot_id))
-
         for i in range(3):
-            if i == robot_id:
-                continue
-
             extend_observation_by_robot(field.get_robot_by_id(i))
 
         for i in range(3):
@@ -124,16 +119,11 @@ class TeamUtils:
         return np.array(observation, dtype=np.float32)
 
     @staticmethod
-    def get_speeds_by_field(
+    def get_action_by_field(
         field: Field,
-        robot_id: int,
-        model: PPO
+        model: PPO,
+        start_time: float
     ):
-        observation = TeamUtils.get_observation_by_field(
-            field,
-            robot_id
-        )
+        observation = TeamUtils.get_observation_by_field(field, start_time)
 
-        action, _ = model.predict(observation)
-
-        return RSoccerUtils.actions_to_v_wheels(action)
+        return model.predict(observation)[0]

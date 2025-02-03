@@ -54,7 +54,8 @@ class GameStateMachine:
             get_state_name(FoulEnum.KICKOFF, False),
             get_state_name(FoulEnum.FREE_BALL),
             get_state_name(FoulEnum.GAME_ON),
-            get_state_name(FoulEnum.HALT)
+            get_state_name(FoulEnum.HALT),
+            get_state_name(FoulEnum.STOP)
         ]
 
         transitions = [
@@ -112,6 +113,11 @@ class GameStateMachine:
                 'trigger': get_trigger_name(FoulEnum.HALT),
                 'source': '*',
                 'dest': get_state_name(FoulEnum.HALT)
+            },
+            {
+                'trigger': get_trigger_name(FoulEnum.STOP),
+                'source': '*',
+                'dest': get_state_name(FoulEnum.STOP)
             },
         ]
 

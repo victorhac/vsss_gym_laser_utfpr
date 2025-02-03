@@ -114,6 +114,9 @@
         "goalkeeper": {
             "path": "models/goalkeeper/PPO/2025_1_25_18_2_1/PPO_model_task_1_update_100_36667946_steps.zip"
         },
+        "goalkeeper-v2": {
+            "path": "models/goalkeeper_v2/PPO/2025_1_30_17_53_48/PPO_model_task_1_update_0_11999988_steps.zip"
+        },
         "team": {
             "path": "models/team/PPO/2025_1_28_15_59_44/PPO_model_task_4_update_100_30487800_steps.zip"
         }
@@ -175,7 +178,7 @@
                         },
                         "1": {
                             "x": -0.1,
-                            "y": 0
+                            "y": 0.5
                         },
                         "2": {
                             "x": -0.7,
@@ -191,11 +194,11 @@
                         },
                         "0": {
                             "x": 0.1,
-                            "y": 0.2
+                            "y": 0.3
                         },
                         "1": {
                             "x": 0.1,
-                            "y": -0.2
+                            "y": -0.3
                         },
                         "2": {
                             "x": -0.7,

@@ -10,8 +10,6 @@ class BehaviorCallback(BaseCallback):
         model_name: str,
         save_path: str,
         log_path: str,
-        number_robot_blue: int,
-        number_robot_yellow: int,
         tasks: 'list[CurriculumTask]',
         log_count=10000,
         verbose=1
@@ -24,8 +22,6 @@ class BehaviorCallback(BaseCallback):
         self.log_count = log_count
         self.log_path = log_path
 
-        self.number_robot_blue = number_robot_blue
-        self.number_robot_yellow = number_robot_yellow
         self.total_timesteps = total_timesteps
 
         self.tasks = tasks
