@@ -127,3 +127,18 @@ class TeamUtils:
         observation = TeamUtils.get_observation_by_field(field, start_time)
 
         return model.predict(observation)[0]
+    
+    @staticmethod
+    def get_action(
+        base_environment: BaseEnvironment,
+        model: PPO,
+        is_yellow: bool,
+        is_left_team: bool
+    ):
+        observation = TeamUtils.get_observation(
+            base_environment,
+            is_yellow,
+            is_left_team
+        )
+
+        return model.predict(observation)[0]

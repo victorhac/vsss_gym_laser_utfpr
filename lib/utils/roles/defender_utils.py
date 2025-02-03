@@ -141,3 +141,20 @@ class DefenderUtils:
         action, _ = model.predict(observation)
 
         return RSoccerUtils.actions_to_v_wheels(action)
+    
+    @staticmethod
+    def get_action(
+        base_environment: BaseEnvironment,
+        robot_id: int,
+        is_yellow: bool,
+        is_left_team: bool,
+        model: PPO
+    ):
+        observation = DefenderUtils.get_observation(
+            base_environment,
+            robot_id,
+            is_yellow,
+            is_left_team
+        )
+
+        return model.predict(observation)[0]

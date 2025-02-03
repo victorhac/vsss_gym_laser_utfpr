@@ -89,9 +89,6 @@ def get_supporter_speeds(
         obstacles
     )
 
-def get_team_actions(field: Field):
-    return TeamUtils.get_observation_by_field(field)
-
 def is_left_team(is_yellow_team: bool):
     return Configuration.firasim_team_is_yellow_left_team == is_yellow_team
 
