@@ -37,7 +37,7 @@ class RefereeUtils:
         if value == "BLUE":
             return True
 
-        return "BLUE"
+        return True
     
     @staticmethod
     def get_half_enum(value):
