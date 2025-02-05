@@ -381,10 +381,10 @@ class FieldUtils:
         return abs(x) > field_length / 2 - tolerance or abs(y) > field_width / 2 - tolerance
     
     @staticmethod
-    def get_quadrant_where_ball_is_located(
-        ball: Ball
+    def get_quadrant(
+        position: 'tuple[float, float]'
     ):
-        x, y = ball.get_position_tuple()
+        x, y = position
 
         if x > 0:
             if y > 0:

@@ -438,11 +438,11 @@ class BaseEnvironment(gym.Env):
 
     def _any_team_scored_goal(self):
         ball = self._get_ball()
-        return abs(ball.x) > (self.get_field_length() / 2)
+        return abs(ball.x) > (self.get_field_length() / 2 + self.get_ball_radius())
 
     def _has_received_goal(self):
         ball = self._get_ball()
-        return ball.x < -self.get_field_length() / 2
+        return ball.x < -self.get_field_length() / 2 - self.get_ball_radius()
 
     def _has_scored_goal(self):
         if not self._any_team_scored_goal():

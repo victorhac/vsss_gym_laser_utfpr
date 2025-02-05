@@ -138,7 +138,7 @@ class DefenderUtils:
             robot_id
         )
 
-        action, _ = model.predict(observation)
+        action, _ = model.predict(observation, deterministic=True)
 
         return RSoccerUtils.actions_to_v_wheels(action)
     
@@ -148,7 +148,8 @@ class DefenderUtils:
         robot_id: int,
         is_yellow: bool,
         is_left_team: bool,
-        model: PPO
+        model: PPO,
+        deterministic: bool = True
     ):
         observation = DefenderUtils.get_observation(
             base_environment,
@@ -157,4 +158,4 @@ class DefenderUtils:
             is_left_team
         )
 
-        return model.predict(observation)[0]
+        return model.predict(observation, deterministic=deterministic)[0]

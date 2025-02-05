@@ -41,4 +41,4 @@ while True:
         next_state, reward, done, _, _ = env.step(action)
         env.render()
         observation = TeamUtils.get_observation(env, False, True)
-        action = model.predict(observation)[0]
+        action = model.predict(observation, deterministic=True)[0]

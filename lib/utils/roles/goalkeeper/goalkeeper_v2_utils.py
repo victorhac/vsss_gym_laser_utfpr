@@ -117,6 +117,6 @@ class GoalkeeperV2Utils:
             robot_id
         )
 
-        action, _ = model.predict(observation)
+        action, _ = model.predict(observation, deterministic=True)
 
         return RSoccerUtils.actions_to_v_wheels(action)

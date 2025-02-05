@@ -126,14 +126,15 @@ class TeamUtils:
     ):
         observation = TeamUtils.get_observation_by_field(field, start_time)
 
-        return model.predict(observation)[0]
+        return model.predict(observation, deterministic=True)[0]
     
     @staticmethod
     def get_action(
         base_environment: BaseEnvironment,
         model: PPO,
         is_yellow: bool,
-        is_left_team: bool
+        is_left_team: bool,
+        deterministic: bool = True
     ):
         observation = TeamUtils.get_observation(
             base_environment,
@@ -141,4 +142,4 @@ class TeamUtils:
             is_left_team
         )
 
-        return model.predict(observation)[0]
+        return model.predict(observation, deterministic=deterministic)[0]

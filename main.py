@@ -323,7 +323,7 @@ def free_ball(
     field: Field
 ):
     positionings = ConfigurationUtils.get_game_states_free_ball_team_positionings(
-        FieldUtils.get_quadrant_where_ball_is_located(field.ball)
+        FieldUtils.get_quadrant(field.ball.get_position_tuple())
     )
 
     return positioning(
