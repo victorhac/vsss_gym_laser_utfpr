@@ -364,6 +364,12 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             return self._create_from_model_robot_command(behavior)
         elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.MULTIPLE_ROLE:
             return self._create_multiple_role_robot_command(behavior, role_enum)
+        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.STRAIGHT:
+            return self._create_robot_command(
+            behavior.robot_id,
+            behavior.is_yellow,
+            30,
+            30)
 
         return self._create_robot_command(
             behavior.robot_id,
@@ -490,14 +496,16 @@ class BaseCurriculumEnvironment(BaseEnvironment):
                 # in order for the robot to not interfere with the game
                 # and do not appear in the render
                 position = (20 + i, 20 + i)
+                theta1 = theta()
             else:
                 position_function = self.get_position_function_by_behavior(behavior, ball_position)
                 position = get_position(position_function)
+                theta1 = 180
 
             frame.robots_yellow[i] = Robot(
                 x=position[0],
                 y=position[1],
-                theta=theta())
+                theta=theta1)
 
         return frame
 
