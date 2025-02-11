@@ -315,15 +315,15 @@ class BaseCurriculumEnvironment(BaseEnvironment):
 
         if role_enum == RoleEnum.ATTACKER:
             observation = self._frame_to_attacker_observation(robot_id, is_yellow)
-            action = ModelUtils.attacker_model().predict(observation)[0]
+            action = ModelUtils.attacker_model().predict(observation, deterministic=True)[0]
             left_speed, right_speed = self._actions_to_v_wheels(action)
         elif role_enum == RoleEnum.DEFENDER:
             observation = self._frame_to_defender_observation(robot_id, is_yellow)
-            action = ModelUtils.defender_model().predict(observation)[0]
+            action = ModelUtils.defender_model().predict(observation, deterministic=True)[0]
             left_speed, right_speed = self._actions_to_v_wheels(action)
         elif role_enum == RoleEnum.GOALKEEPER:
             observation = self._frame_to_goalkeeper_observation(robot_id, is_yellow)
-            action = ModelUtils.goalkeeper_model().predict(observation)[0]
+            action = ModelUtils.goalkeeper_model().predict(observation, deterministic=True)[0]
             left_speed, right_speed = self._actions_to_v_wheels(action)
         elif role_enum == RoleEnum.SUPPORTER:
             field = RSoccerUtils.get_field_by_frame(self.frame, is_yellow)

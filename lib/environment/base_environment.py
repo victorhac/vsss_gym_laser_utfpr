@@ -307,8 +307,10 @@ class BaseEnvironment(gym.Env):
         distance_to_desired = GeometryUtils.distance(
             (ball.x, ball.y),
             desired_position)
-            
-        distance_to_undesired = GeometryUtils.distance((ball.x, ball.y), undesired_position)
+
+        distance_to_undesired = GeometryUtils.distance(
+            (ball.x, ball.y),
+            undesired_position)
 
         ball_potential = ((distance_to_undesired - distance_to_desired) / field_length - 1) / 2
 
