@@ -46,6 +46,53 @@ def _r_def(
 
     return _r_pos(a_position, b_position, c_position)
 
+def _r_ofe(
+    robot: Robot,
+    ball: Ball,
+    goal_opponent_position: 'tuple[float, float]'
+):
+    a_position = robot.x, robot.y
+    b_position = ball.x, ball.y
+    c_position = goal_opponent_position
+
+    return _r_pos(a_position, b_position, c_position)
+
+def _r_speed(
+    ball: Ball,
+    ball_past: Ball,
+    goal_position: 'tuple[float, float]'
+):
+    return np.clip(
+        v(ball, ball_past, goal_position),
+        -1,
+        1
+    )
+
+def _r_dist(
+    robots: 'list[Robot]',
+    ball: Ball
+):
+    min_distance = 0
+    for robot in robots:
+        distance = GeometryUtils.distance(
+            (robot.x, robot.y),
+            (ball.x, ball.y))
+
+        if min_distance == 0 or distance < min_distance:
+            min_distance = distance
+
+    return -1 if min_distance >= 1 else -min_distance
+
+def v(
+    ball: Ball,
+    past_ball: Ball,
+    goal_position: 'tuple[float, float]'
+):
+    past_ball_position = past_ball.x, past_ball.y
+    ball_position = ball.x, ball.y
+    return (GeometryUtils.distance(past_ball_position, goal_position) - \
+        GeometryUtils.distance(ball_position, goal_position) - 0.05) / 0.14
+
 class TrainingUtils:
     @staticmethod
     def get_defensive_positioning_reward(
@@ -58,6 +105,80 @@ class TrainingUtils:
             ball,
             own_goal_position
         )
+    
+    @staticmethod
+    def get_offensive_positioning_reward(
+        robot: Robot,
+        ball: Ball,
+        goal_opponent_position: 'tuple[float, float]'
+    ):
+        return _r_ofe(
+            robot,
+            ball,
+            goal_opponent_position
+        )
+    
+    @staticmethod
+    def get_speed_reward(
+        ball: Ball,
+        ball_past: Ball,
+        goal_position: 'tuple[float, float]'
+    ):
+        return _r_speed(
+            ball,
+            ball_past,
+            goal_position
+        )
+    
+    @staticmethod
+    def get_distance_reward(
+        robots: 'list[Robot]',
+        ball: Ball
+    ):
+        return _r_dist(
+            robots,
+            ball
+        )
+    
+    @staticmethod
+    def get_team_reward(
+        robots: 'list[Robot]',
+        ball: Ball,
+        ball_past: Ball,
+        own_goal_position: 'tuple[float, float]',
+        opponent_goal_position: 'tuple[float, float]'
+    ):
+        max_r_def = None
+        max_r_ofe = None
+    
+        for i in robots:
+            r_def = _r_def(
+                i,
+                ball,
+                own_goal_position
+            )
+            r_ofe = _r_ofe(
+                i,
+                ball,
+                opponent_goal_position
+            )
+    
+            if max_r_def is None or r_def > max_r_def:
+                max_r_def = r_def
+    
+            if max_r_ofe is None or r_ofe > max_r_ofe:
+                max_r_ofe = r_ofe
+        
+        return max_r_ofe + \
+            max_r_def + \
+            _r_speed(
+                ball,
+                ball_past,
+                own_goal_position
+            ) + _r_dist(
+                robots,
+                ball
+            )
 
     @staticmethod
     def get_gradient_reward(
