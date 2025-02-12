@@ -1,12 +1,11 @@
+import threading
 from communication.receiver.firasim_receiver import FirasimReceiver
 from communication.referee.referee import Referee
 from communication.replacer.replacer import Replacer
 from communication.sender.firasim_sender import FirasimSender
 from configuration.configuration import Configuration
 from lib.command.robot_command import RobotCommand
-from lib.command.robot_replace_command import RobotReplaceCommand
 from lib.command.team_command import TeamCommand
-from lib.command.team_replace_command import TeamReplaceCommand
 from lib.domain.enums.foul_enum import FoulEnum
 from lib.domain.field import Field
 from lib.domain.referee_message import RefereeMessage
@@ -15,14 +14,12 @@ from lib.positioning.default_supporter_positioning import get_supporter_position
 from lib.state_machine.game_state_machine import GameStateMachine
 from lib.utils.configuration_utils import ConfigurationUtils
 from lib.utils.field_utils import FieldUtils
-from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.model_utils import ModelUtils
 from lib.utils.motion_utils import MotionUtils
 from lib.utils.roles.attacker_utils import AttackerUtils
 from lib.utils.roles.defender_utils import DefenderUtils
 from lib.utils.roles.goalkeeper_utils import GoalkeeperUtils
 from lib.utils.game_state_machine_utils import GameStateMachineUtils
-from stable_baselines3 import PPO
 import time
 
 from lib.utils.roles.team_utils import TeamUtils
@@ -388,12 +385,17 @@ referee = Referee(referee_message)
 sender = FirasimSender()
 replacer = Replacer()
 
-def main():
+def update():
     while True:
         referee.update()
         blue_receiver.update()
         yellow_receiver.update()
 
+update_thread = threading.Thread(target=update)
+
+def main():
+    update_thread.start()
+    while True:
         print(referee_message.foul_enum)
 
         blue_command = perform(
