@@ -131,13 +131,14 @@ class DefenderUtils:
     def get_speeds_by_field(
         field: Field,
         robot_id: int,
-        model: PPO
+        model: PPO,
+        deterministic: bool = True
     ):
         observation = DefenderUtils.get_observation_by_field(
             field,
             robot_id
         )
 
-        action, _ = model.predict(observation)
+        action, _ = model.predict(observation, deterministic=deterministic)
 
         return RSoccerUtils.actions_to_v_wheels(action)

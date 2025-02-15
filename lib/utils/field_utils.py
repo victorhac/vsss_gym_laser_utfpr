@@ -324,17 +324,28 @@ class FieldUtils:
 
         return (abs(x) > field_length / 2 - goal_area_length) and (abs(y) < goal_area_width / 2)
     
+    # _goal_obstacles = [
+    #     Obstacle((.8, .25), (0, 0)),
+    #     Obstacle((.8, -.25), (0, 0)),
+    #     Obstacle((-.8, .25), (0, 0)),
+    #     Obstacle((-.8, -.25), (0, 0))
+    # ]
+    
     @staticmethod
     def to_obstacles(
-        obstacles: 'list[(Robot | Ball)]'
+        objects: 'list[(Robot | Ball)]'
     ):
-        return [
+        obstacles = [
             Obstacle(
                 item.get_position_tuple(),
                 item.get_velocity_tuple()
             )
-            for item in obstacles
+            for item in objects
         ]
+
+        #obstacles.extend(FieldUtils._goal_obstacles)
+
+        return obstacles
     
     @staticmethod
     def to_obstacles_except_current_robot_and_ball(

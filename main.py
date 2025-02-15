@@ -108,10 +108,8 @@ def team_coordinated_normal_play(field: Field):
             left_speed, right_speed = get_defender_speeds(field, i)
         elif action[i] == 2:
             left_speed, right_speed = get_goalkeeper_speeds(field, i)
-        elif action[i] == 3:
-            left_speed, right_speed = get_supporter_speeds(field, i)
         else:
-            print(action[i])
+            left_speed, right_speed = get_supporter_speeds(field, i)
 
         robot_commands.append(RobotCommand(left_speed, right_speed))
 
@@ -396,8 +394,6 @@ update_thread = threading.Thread(target=update)
 def main():
     update_thread.start()
     while True:
-        print(referee_message.foul_enum)
-
         blue_command = perform(
             False,
             blue_field,
