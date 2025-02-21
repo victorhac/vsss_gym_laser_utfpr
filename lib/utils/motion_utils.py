@@ -26,7 +26,7 @@ def _is_close(robot: Robot, position: 'tuple[float, float]'):
     return GeometryUtils.is_close(
         robot.get_position_tuple(),
         position,
-        .05) 
+        .05)
 
 class MotionUtils:
     @staticmethod
@@ -41,6 +41,38 @@ class MotionUtils:
     
         x, y = robot.get_position_tuple()
         robot_angle = robot.position.theta
+
+        x_target, y_target = (target_position[0], target_position[1])
+
+        angle_to_target = math.atan2(y_target - y, x_target - x)
+
+        error = GeometryUtils.smallest_angle_difference(angle_to_target, robot_angle)
+
+        if abs(error) > math.pi / 2.0 + math.pi / 20.0:
+            reversed = True
+            robot_angle = GeometryUtils.normalize_in_pi(robot_angle + math.pi)
+            error = GeometryUtils.smallest_angle_difference(angle_to_target, robot_angle)
+        else:
+            reversed = False
+
+        motorSpeed = (KP * error) + (KD * (error - last_error))
+
+        motorSpeed = RobotUtils.truncate_motor_speed(motorSpeed, base_speed)
+
+        leftMotorSpeed, rightMotorSpeed = MotionUtils._get_speeds(motorSpeed, base_speed, reversed)
+
+        return leftMotorSpeed, rightMotorSpeed, error
+    
+    @staticmethod
+    def go_to_point_2(
+        position: 'tuple[float, float]',
+        theta: 'float',
+        target_position: 'tuple[float, float]',
+        last_error: float = 0,
+        base_speed: float = 30
+    ):    
+        x, y = position
+        robot_angle = theta
 
         x_target, y_target = (target_position[0], target_position[1])
 

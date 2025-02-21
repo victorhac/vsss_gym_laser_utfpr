@@ -1,6 +1,11 @@
+from lib.behaviors.ball_following_behavior import BallFollowingBehavior
+from lib.behaviors.from_fixed_model_behavior import FromFixedModelBehavior
+from lib.behaviors.from_model_behavior import FromModelBehavior
+from lib.behaviors.from_previous_model_behavior import FromPreviousModelBehavior
+from lib.behaviors.goalkeeper_ball_following_behavior import GoalkeeperBallFollowingBehavior
+from lib.behaviors.multiple_role_behavior import MultipleRoleBehavior
 from lib.domain.enums.role_enum import RoleEnum
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
-from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.position_setup.position_setup import PositionSetup
 
 class RobotCurriculumBehaviorBuilder:
@@ -17,43 +22,66 @@ class RobotCurriculumBehaviorBuilder:
 
         self.position_setup = position_setup
         self.distance_range = None
-        self.distance_to_wall = None
         self.velocity_alpha_range = None
-        self.model_path = None
-        self.role_enum = None
 
     def set_ball_following_behavior(self):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.BALL_FOLLOWING
+        self.behavior = BallFollowingBehavior(
+            self.robot_id,
+            self.is_yellow
+        )
         return self
     
     def set_goalkeeper_ball_following_behavior(self):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING
+        self.behavior = GoalkeeperBallFollowingBehavior(
+            self.robot_id,
+            self.is_yellow
+        )
         return self
     
     def set_from_previous_model_behavior(
         self,
-        role_enum: RoleEnum
+        role_enum: RoleEnum,
+        deterministic: bool = True
     ):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL
-        self.role_enum = role_enum
+        self.behavior = FromPreviousModelBehavior(
+            self.robot_id,
+            self.is_yellow,
+            role_enum,
+            deterministic
+        )
         return self
     
     def set_from_fixed_model_behavior(
         self,
         model_path: str,
-        role_enum: RoleEnum = RoleEnum.ATTACKER
+        role_enum: RoleEnum = RoleEnum.ATTACKER,
+        deterministic: bool = True
     ):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL
-        self.role_enum = role_enum
-        self.model_path = model_path
+        self.behavior = FromFixedModelBehavior(
+            self.robot_id,
+            self.is_yellow,
+            role_enum,
+            model_path,
+            deterministic
+        )
         return self
     
     def set_from_model_behavior(self):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_MODEL
+        self.behavior = FromModelBehavior(
+            self.robot_id,
+            self.is_yellow
+        )
         return self
     
-    def set_multiple_role_behavior(self):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.MULTIPLE_ROLE
+    def set_multiple_role_behavior(
+        self,
+        deterministic: bool = True
+    ):
+        self.behavior = MultipleRoleBehavior(
+            self.robot_id,
+            self.is_yellow,
+            deterministic
+        )
         return self
     
     def set_distance_range(
@@ -74,7 +102,7 @@ class RobotCurriculumBehaviorBuilder:
         robot_curriculum_behavior = RobotCurriculumBehavior(
             self.robot_id,
             self.is_yellow,
-            self.robot_curriculum_behavior_enum,
+            self.behavior,
             self.position_setup,
             self.updates_per_task
         )
@@ -84,11 +112,6 @@ class RobotCurriculumBehaviorBuilder:
 
         if self.velocity_alpha_range is not None:
             self._set_velocity_alpha_range(robot_curriculum_behavior)
-
-        if self.model_path is not None:
-            robot_curriculum_behavior.set_model_path(self.model_path)
-        if self.role_enum is not None:
-            robot_curriculum_behavior.role_enum = self.role_enum
             
         return robot_curriculum_behavior
     

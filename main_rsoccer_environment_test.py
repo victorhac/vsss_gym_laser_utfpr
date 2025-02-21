@@ -1,5 +1,5 @@
-from lib.environment.team.team_v2_environment import TeamV2Environment
-from lib.utils.behavior.team.team_v2_behavior_utils import TeamV2BehaviorUtils
+from lib.environment.team_environment import TeamEnvironment
+from lib.utils.behavior.team_behavior_utils import TeamBehaviorUtils
 from lib.utils.model_utils import ModelUtils
 from lib.utils.roles.team_utils import TeamUtils
 
@@ -12,14 +12,14 @@ default_threshold = 0.5
 
 model = ModelUtils.team_model()
 
-task = TeamV2BehaviorUtils.get_task_1(
+task = TeamBehaviorUtils.get_task_1(
     update_count,
     updates_per_task,
     games_count,
     default_threshold
 )
 
-env = TeamV2Environment(task, render_mode)
+env = TeamEnvironment(task, render_mode)
 
 while True:
     obs = env.reset()

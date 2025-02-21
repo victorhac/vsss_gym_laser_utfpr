@@ -3,7 +3,6 @@ from typing import List
 import gymnasium as gym
 import numpy as np
 import pygame
-import random
 
 from rsoccer_gym.Entities import Frame, Robot
 from rsoccer_gym.Render import COLORS, VSSRenderField, VSSRobot, Ball
@@ -461,14 +460,14 @@ class BaseEnvironment(gym.Env):
         self,
         id: int,
         is_yellow_robot: bool,
-        v_wheel_0: float,
-        v_wheel_1: float
+        left_speed: float,
+        right_speed: float
     ):
         return Robot(
             yellow=is_yellow_robot,
             id=id,
-            v_wheel0=v_wheel_0,
-            v_wheel1=v_wheel_1)
+            v_wheel0=right_speed,
+            v_wheel1=left_speed)
 
     def _get_yellow_robot_by_id(self, id: int):
         return self.frame.robots_yellow[id]
