@@ -247,8 +247,8 @@ class RSoccerUtils:
         max_v = Configuration.rsoccer_training_max_v
         v_wheel_deadzone = Configuration.rsoccer_robot_speed_dead_zone_meters_seconds
 
-        left_wheel_speed = actions[0] * max_v
-        right_wheel_speed = actions[1] * max_v
+        left_wheel_speed = actions[1] * max_v
+        right_wheel_speed = actions[0] * max_v
 
         left_wheel_speed, right_wheel_speed = np.clip(
             (left_wheel_speed, right_wheel_speed),
@@ -271,4 +271,4 @@ class RSoccerUtils:
         left_wheel_speed /= rbt_wheel_radius
         right_wheel_speed /= rbt_wheel_radius
 
-        return right_wheel_speed, left_wheel_speed
+        return left_wheel_speed, right_wheel_speed

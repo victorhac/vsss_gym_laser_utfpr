@@ -1,4 +1,5 @@
 from rsoccer_gym.Entities import Robot as RSoccerRobot
+from configuration.configuration import Configuration
 from lib.domain.robot import Robot
 from lib.domain.field import Field
 from lib.environment.base_environment import BaseEnvironment
@@ -184,5 +185,25 @@ class AttackerUtils:
         )
 
         action, _ = model.predict(observation, deterministic=deterministic)
+
+        return AttackerUtils.actions_to_v_wheels(action)
+    
+    @staticmethod
+    def get_speeds(
+        base_environment: BaseEnvironment,
+        robot_id: int,
+        is_yellow: bool,
+        is_left_team: bool,
+        model: PPO,
+        deterministic: bool = True
+    ):
+        observation = AttackerUtils.get_observation(
+            base_environment,
+            robot_id,
+            is_yellow,
+            is_left_team
+        )
+
+        action = model.predict(observation, deterministic=deterministic)[0]
 
         return RSoccerUtils.actions_to_v_wheels(action)

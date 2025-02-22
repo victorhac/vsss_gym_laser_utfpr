@@ -143,3 +143,23 @@ class AttackerV2Utils:
         action, _ = model.predict(observation)
 
         return RSoccerUtils.actions_to_v_wheels(action)
+    
+    @staticmethod
+    def get_speeds(
+        base_environment: BaseEnvironment,
+        robot_id: int,
+        is_yellow: bool,
+        is_left_team: bool,
+        model: PPO,
+        deterministic: bool = True
+    ):
+        observation = AttackerV2Utils.get_observation(
+            base_environment,
+            robot_id,
+            is_yellow,
+            is_left_team
+        )
+
+        action = model.predict(observation, deterministic=deterministic)[0]
+
+        return RSoccerUtils.actions_to_v_wheels(action)
