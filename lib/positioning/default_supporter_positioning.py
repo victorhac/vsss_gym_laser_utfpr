@@ -2,8 +2,11 @@ import numpy as np
 from configuration.configuration import Configuration
 from lib.domain.field import Field
 from lib.domain.robot import Robot
+from lib.path_planning.univector_field_navigation import get_univector_field_point_theta
+from lib.path_planning.univector_field_navigation_configuration import UnivectorFieldNavigationConfiguration
 from lib.utils.field_utils import FieldUtils
 from lib.utils.geometry_utils import GeometryUtils
+from lib.utils.motion_utils import MotionUtils
 
 field_length = Configuration.field_length
 field_width = Configuration.field_width
@@ -202,3 +205,44 @@ def get_supporter_position(robot_id: int, field: Field):
                 best_position = position
 
     return best_position
+
+univector_field_navigation_configuration = UnivectorFieldNavigationConfiguration(
+    0.0537,
+    0.0415,
+    0.0012,
+    0.0948,
+    0.0457
+)
+
+def get_supporter_speeds(
+    robot_id: int,
+    field: Field,
+    base_speed: float = 30
+):
+    robot = field.get_robot_by_id(robot_id)
+    target_position = get_supporter_position(robot_id, field)
+
+    if GeometryUtils.is_close(
+        robot.get_position_tuple(),
+        target_position,
+        .05
+    ):
+        return 0, 0
+    
+    obstacles = FieldUtils.to_obstacles_except_current_robot_and_ball(
+        field,
+        robot_id
+    )
+
+    theta = get_univector_field_point_theta(
+        robot.get_position_tuple(),
+        robot.get_velocity_tuple(),
+        target_position,
+        obstacles,
+        univector_field_navigation_configuration
+    )
+
+    return MotionUtils.go_to_point_by_theta(
+        robot,
+        theta,
+        base_speed)

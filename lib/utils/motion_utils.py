@@ -90,16 +90,38 @@ class MotionUtils:
                 speed * K_TURNING * math.sin(angle_difference)])
 
         return motors_speeds
+    
+    @staticmethod
+    def spin_to_theta(
+        robot: Robot,
+        theta_desired,
+        base_speed: float = 30,
+        tolerance=0.05
+    ):
+        theta_current = robot.position.theta
+        theta_error = (theta_desired - theta_current + math.pi) % (2 * math.pi) - math.pi
+        
+        if abs(theta_error) < tolerance:
+            return 0, 0
 
+        if theta_error > 0:
+            return MotionUtils.spin(False, base_speed * (theta_error / math.pi))
+        else:
+            return MotionUtils.spin(True, base_speed * (theta_error / math.pi))
+    
     @staticmethod
     def go_to_point_univector(
         robot: Robot,
         target_position: 'tuple[float, float]',
         obstacles: 'tuple[Obstacle]',
-        base_speed: float = 30
+        base_speed: float = 30,
+        desired_theta: float = None
     ):
         if _is_close(robot, target_position):
-            return 0, 0 
+            if desired_theta is None:
+                return 0, 0
+            else:
+                return MotionUtils.spin_to_theta(robot, desired_theta, base_speed)
 
         theta = get_univector_field_point_theta(
             robot.get_position_tuple(),

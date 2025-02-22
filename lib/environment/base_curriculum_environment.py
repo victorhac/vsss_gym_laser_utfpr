@@ -12,7 +12,7 @@ from lib.domain.enums.role_enum import RoleEnum
 from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
 from lib.environment.base_environment import BaseEnvironment
 from lib.position_setup.position_setup_args import PositionSetupArgs
-from lib.positioning.default_supporter_positioning import get_supporter_position
+from lib.positioning.default_supporter_positioning import get_supporter_position, get_supporter_speeds
 from lib.utils.field_utils import FieldUtils
 from lib.utils.model_utils import ModelUtils
 from lib.utils.motion_utils import MotionUtils
@@ -327,18 +327,11 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             left_speed, right_speed = self._actions_to_v_wheels(action)
         elif role_enum == RoleEnum.SUPPORTER:
             field = RSoccerUtils.get_field_by_frame(self.frame, is_yellow)
-            obstacles = FieldUtils.to_obstacles_except_current_robot_and_ball(
-                field,
-                robot_id)
-
-            position = get_supporter_position(
+            
+            right_speed, left_speed = get_supporter_speeds(
                 robot_id,
-                field)
-
-            right_speed, left_speed = MotionUtils.go_to_point_univector(
-                RSoccerUtils.to_robot(robot),
-                position,
-                obstacles)
+                field
+            )
         else:
             left_speed, right_speed = 0, 0
 
