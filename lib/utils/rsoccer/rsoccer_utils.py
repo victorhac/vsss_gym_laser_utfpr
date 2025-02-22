@@ -41,6 +41,23 @@ class RSoccerUtils:
         robot.velocity.theta = RSoccerUtils.get_corrected_angle(rsoccer_robot.v_theta)
 
         return robot
+    
+    @staticmethod
+    def set_robot(
+        robot: Robot,
+        rsoccer_robot: RSoccerRobot
+    ):
+        robot.active = _is_inside_field(rsoccer_robot)
+
+        robot.position.x = rsoccer_robot.x
+        robot.position.y = rsoccer_robot.y
+        robot.position.theta = RSoccerUtils.get_corrected_angle(rsoccer_robot.theta)
+
+        robot.velocity.x = rsoccer_robot.v_x
+        robot.velocity.y = rsoccer_robot.v_y
+        robot.velocity.theta = RSoccerUtils.get_corrected_angle(rsoccer_robot.v_theta)
+
+        return robot
 
     @staticmethod
     def to_ball(rsoccer_ball: RSoccerBall):
@@ -52,48 +69,38 @@ class RSoccerUtils:
         ball.velocity.y = rsoccer_ball.v_y
 
         return ball
-
+    
     @staticmethod
-    def get_field_by_frame(
+    def set_ball(ball: Ball, rsoccer_ball: RSoccerBall):
+        ball.position.x = rsoccer_ball.x
+        ball.position.y = rsoccer_ball.y
+        ball.velocity.x = rsoccer_ball.v_x
+        ball.velocity.y = rsoccer_ball.v_y
+
+        return ball
+    
+    @staticmethod
+    def set_field_by_frame(
+        field: Field,
         frame: Frame,
         is_yellow_team: bool
     ):
-        field = Field()
+        RSoccerUtils.set_ball(field.ball, frame.ball)
 
-        ball = RSoccerUtils.to_ball(frame.ball)
+        robots = frame.robots_yellow if is_yellow_team else frame.robots_blue
+        foes = frame.robots_blue if is_yellow_team else frame.robots_yellow
 
-        blue_team = {
-            0: None,
-            1: None,
-            2: None
-        }
+        for item in robots:
+            RSoccerUtils.set_robot(
+                field._robots[item],
+                robots[item]
+            )
 
-        yellow_team = {
-            0: None,
-            1: None,
-            2: None
-        }
-
-        for item in frame.robots_blue:
-            robot = frame.robots_blue[item]
-            blue_team[item] = RSoccerUtils.to_robot(
-                robot,
-                _is_inside_field(robot))
-
-        for item in frame.robots_yellow:
-            robot = frame.robots_yellow[item]
-            yellow_team[item] = RSoccerUtils.to_robot(
-                robot,
-                _is_inside_field(robot))
-
-        field.ball = ball
-
-        if is_yellow_team:
-            field.set_robots(yellow_team)
-            field.set_foes(blue_team)
-        else:
-            field.set_robots(blue_team)
-            field.set_foes(yellow_team)
+        for item in foes:
+            RSoccerUtils.set_robot(
+                field._foes[item],
+                foes[item]
+            )
 
         return field
     

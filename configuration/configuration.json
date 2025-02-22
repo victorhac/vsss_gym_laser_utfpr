@@ -105,17 +105,11 @@
         "attacker": {
             "path": "models/attacker/PPO/2024_9_24_14_48_13/PPO_model_task_6_update_117_13999986_steps.zip"
         },
-        "attacker-v2": {
-            "path": "models/attacker_v2/PPO/2025_1_30_16_58_24/PPO_model_task_3_update_90_99999900_steps.zip"
-        },
         "defender": {
             "path": "models/defender/PPO/2025_1_3_23_6_42/interrupted_model.zip"
         },
         "goalkeeper": {
             "path": "models/goalkeeper/PPO/2025_1_25_18_2_1/PPO_model_task_1_update_100_36667946_steps.zip"
-        },
-        "goalkeeper-v2": {
-            "path": "models/goalkeeper_v2/PPO/2025_1_30_17_53_48/PPO_model_task_1_update_0_11999988_steps.zip"
         },
         "team": {
             "path": "models/team/PPO/2025_1_28_15_59_44/PPO_model_task_4_update_100_30487800_steps.zip"
@@ -375,21 +369,19 @@
             }
         }
     },
-    "positioning": {
-        "default-supporter": {
-            "distance-to-wall": 0.1,
-            "x-step-count": 10,
-            "y-step-count": 10,
-            "ball-min-distance": 0.3,
-            "robot-min-distance": 0.2,
-            "considered-robot-distance": 0.4,
-            "distance-behind-ball": 0.1,
-            "weights": {
-                "distance-to-robot": 0.3,
-                "distance-to-position": 0.2,
-                "distance-to-ball": 0.2,
-                "distance-to-goal": 0.3
-            }
+    "supporter": {
+        "distance-to-wall": 0.1,
+        "x-step-count": 10,
+        "y-step-count": 10,
+        "ball-min-distance": 0.3,
+        "robot-min-distance": 0.2,
+        "considered-robot-distance": 0.4,
+        "distance-behind-ball": 0.1,
+        "weights": {
+            "distance-to-robot": 0.3,
+            "distance-to-position": 0.2,
+            "distance-to-ball": 0.2,
+            "distance-to-goal": 0.3
         }
     },
     "univector-field-navigation": {

@@ -211,7 +211,7 @@ class AttackerEnvironment(BaseCurriculumEnvironment):
         if abs(right_wheel_speed) < self.v_wheel_deadzone:
             right_wheel_speed = 0
 
-        left_wheel_speed /= self.field.rbt_wheel_radius
-        right_wheel_speed /= self.field.rbt_wheel_radius
+        left_wheel_speed /= self.field_params.rbt_wheel_radius
+        right_wheel_speed /= self.field_params.rbt_wheel_radius
 
         return left_wheel_speed, right_wheel_speed

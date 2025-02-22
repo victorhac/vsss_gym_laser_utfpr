@@ -9,6 +9,7 @@ from rsoccer_gym.Render import COLORS, VSSRenderField, VSSRobot, Ball
 from rsoccer_gym.Simulators.rsim import RSimVSS
 from rsoccer_gym.Utils import KDTree
 
+from lib.domain.field import Field
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.field_utils import FieldUtils
 from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
@@ -48,9 +49,9 @@ class BaseEnvironment(gym.Env):
         self.n_robots_yellow = n_robots_yellow
 
         self.field_type = field_type
-        self.field = self.rsim.get_field_params()
-        max_wheel_rad_s = (self.field.rbt_motor_max_rpm / 60) * 2 * np.pi
-        self.max_v = max_wheel_rad_s * self.field.rbt_wheel_radius
+        self.field_params = self.rsim.get_field_params()
+        max_wheel_rad_s = (self.field_params.rbt_motor_max_rpm / 60) * 2 * np.pi
+        self.max_v = max_wheel_rad_s * self.field_params.rbt_wheel_radius
 
         # 0.04 = robot radius (0.0375) + wheel thicknees (0.0025)
         self.max_w = np.rad2deg(self.max_v / 0.04)
@@ -68,6 +69,9 @@ class BaseEnvironment(gym.Env):
         self.window_size = self.field_renderer.window_size
         self.clock = None
 
+        self.field = Field()
+        self.opponent_field = Field()
+
     def step(self, action):
         self.steps += 1
         commands: List[Robot] = self._get_commands(action)
@@ -78,6 +82,9 @@ class BaseEnvironment(gym.Env):
 
         self.rendering_frame = self._get_rendering_frame_from_rsim()
         self.frame = RSoccerUtils._get_frame_by_rendering_frame(self.rendering_frame)
+
+        RSoccerUtils.set_field_by_frame(self.field, self.frame, False)
+        RSoccerUtils.set_field_by_frame(self.opponent_field, self.frame, True)
 
         observation = self._frame_to_observations()
         reward, done = self._calculate_reward_and_done()
@@ -101,6 +108,9 @@ class BaseEnvironment(gym.Env):
 
         self.rendering_frame = self._get_rendering_frame_from_rsim()
         self.frame = RSoccerUtils._get_frame_by_rendering_frame(self.rendering_frame)
+
+        RSoccerUtils.set_field_by_frame(self.field, self.frame, False)
+        RSoccerUtils.set_field_by_frame(self.opponent_field, self.frame, True)
 
         obs = self._frame_to_observations()
 
@@ -259,22 +269,22 @@ class BaseEnvironment(gym.Env):
         return self.get_field_width() / 2
 
     def get_field_length(self):
-        return self.field.length
+        return self.field_params.length
 
     def get_field_width(self):
-        return self.field.width
+        return self.field_params.width
 
     def get_goal_area_length(self):
-        return self.field.penalty_length
+        return self.field_params.penalty_length
 
     def get_goal_area_width(self):
-        return self.field.penalty_width
+        return self.field_params.penalty_width
 
     def get_goal_depth(self):
-        return self.field.goal_depth
+        return self.field_params.goal_depth
     
     def get_goal_width(self):
-        return self.field.goal_width
+        return self.field_params.goal_width
 
     def get_inside_own_goal_position(self, is_yellow_team: bool):
         return FieldUtils.get_inside_own_goal_position(
@@ -286,10 +296,10 @@ class BaseEnvironment(gym.Env):
         return self.frame.ball
 
     def get_ball_radius(self):
-        return self.field.ball_radius
+        return self.field_params.ball_radius
 
     def get_robot_radius(self):
-        return self.field.rbt_radius
+        return self.field_params.rbt_radius
 
     def get_frame(self):
         return self.frame

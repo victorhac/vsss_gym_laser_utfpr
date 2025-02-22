@@ -76,7 +76,7 @@ class BaseCurriculumEnvironment(BaseEnvironment):
             right_speed)
     
     def _get_velocity_factor(self):
-        rsoccer_max_motor_speed = self.max_v / self.field.rbt_wheel_radius
+        rsoccer_max_motor_speed = self.max_v / self.field_params.rbt_wheel_radius
         return self.max_motor_speed / rsoccer_max_motor_speed
 
     def _actions_to_v_wheels(
@@ -86,10 +86,10 @@ class BaseCurriculumEnvironment(BaseEnvironment):
         left_wheel_speed = actions[0] * self.max_motor_speed
         right_wheel_speed = actions[1] * self.max_motor_speed
 
-        if abs(left_wheel_speed * self.field.rbt_wheel_radius) < self.v_wheel_deadzone:
+        if abs(left_wheel_speed * self.field_params.rbt_wheel_radius) < self.v_wheel_deadzone:
             left_wheel_speed = 0
 
-        if abs(right_wheel_speed * self.field.rbt_wheel_radius) < self.v_wheel_deadzone:
+        if abs(right_wheel_speed * self.field_params.rbt_wheel_radius) < self.v_wheel_deadzone:
             right_wheel_speed = 0
 
         return left_wheel_speed, right_wheel_speed

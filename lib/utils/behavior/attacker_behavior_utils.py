@@ -152,8 +152,8 @@ class AttackerBehaviorUtils:
     def get_task_5(
         update_count: int = 0,
         updates_per_task: int = 100,
-        default_threshold: float = .5,
-        games_count: int = 200
+        games_count: int = 200,
+        default_threshold: float = .5
     ):
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(
@@ -207,8 +207,8 @@ class AttackerBehaviorUtils:
     def get_task_6(
         update_count: int = 0,
         updates_per_task: int = 100,
-        default_threshold: float = .4,
-        games_count: int = 200
+        games_count: int = 200,
+        default_threshold: float = .4
     ):
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(

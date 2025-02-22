@@ -8,27 +8,27 @@ from lib.utils.field_utils import FieldUtils
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.motion_utils import MotionUtils
 
-field_length = Configuration.field_length
-field_width = Configuration.field_width
-goal_area_length = Configuration.field_goal_area_length
-goal_area_width = Configuration.field_goal_area_width
-max_distance = Configuration.rsoccer_training_max_distance
+FIELD_LENGTH = Configuration.field_length
+FIELD_WIDTH = Configuration.field_width
+GOAL_AREA_LENGTH = Configuration.field_goal_area_length
+GOAL_AREA_WIDTH = Configuration.field_goal_area_width
+MAX_DISTANCE = Configuration.rsoccer_training_max_distance
 
-distance_to_wall = Configuration.positioning_default_supporter_distance_to_wall
-considered_length = field_length - 2 * distance_to_wall
-considered_width = field_width - 2 * distance_to_wall
+DISTANCE_TO_WALL = Configuration.supporter_distance_to_wall
+CONSIDERED_LENGTH = FIELD_LENGTH - 2 * DISTANCE_TO_WALL
+CONSIDERED_WIDTH = FIELD_WIDTH - 2 * DISTANCE_TO_WALL
 
-x_step_count = Configuration.positioning_default_supporter_x_step_count
-y_step_count = Configuration.positioning_default_supporter_y_step_count
-ball_min_distance = Configuration.positioning_default_supporter_ball_min_distance
-robot_min_distance = Configuration.positioning_default_supporter_robot_min_distance
-considered_robot_distance = Configuration.positioning_default_supporter_considered_robot_distance
-distance_behind_ball = Configuration.positioning_default_supporter_distance_behind_ball
+X_STEP_COUNT = Configuration.supporter_x_step_count
+Y_STEP_COUNT = Configuration.supporter_y_step_count
+BALL_MIN_DISTANCE = Configuration.supporter_ball_min_distance
+ROBOT_MIN_DISTANCE = Configuration.supporter_robot_min_distance
+CONSIDERED_ROBOT_DISTANCE = Configuration.supporter_considered_robot_distance
+DISTANCE_BEHIND_BALL = Configuration.supporter_distance_behind_ball
 
-w_distance_to_robot = Configuration.positioning_default_supporter_weights_distance_to_robot
-w_distance_to_position = Configuration.positioning_default_supporter_weights_distance_to_position
-w_distance_to_ball = Configuration.positioning_default_supporter_weights_distance_to_ball
-w_distance_to_goal = Configuration.positioning_default_supporter_weights_distance_to_goal
+W_DISTANCE_TO_ROBOT = Configuration.supporter_weights_distance_to_robot
+W_DISTANCE_TO_POSITION = Configuration.supporter_weights_distance_to_position
+W_DISTANCE_TO_BALL = Configuration.supporter_weights_distance_to_ball
+W_DISTANCE_TO_GOAL = Configuration.supporter_weights_distance_to_goal
 
 def _get_distance(
     position1: 'tuple[float, float]',
@@ -50,7 +50,7 @@ def _get_attraction_distance_score(
     if distance < min_distance:
         return 0
     
-    return 1 - ((distance - min_distance) / (max_distance - min_distance))
+    return 1 - ((distance - min_distance) / (MAX_DISTANCE - min_distance))
 
 def _get_repulsive_distance_score(
     current_position: 'tuple[float, float]',
@@ -64,7 +64,7 @@ def _get_repulsive_distance_score(
     if distance < min_distance:
         return 0
     
-    return (distance - min_distance) / (max_distance - min_distance)
+    return (distance - min_distance) / (MAX_DISTANCE - min_distance)
 
 def _get_ball_distance_score(
     position: 'tuple[float, float]',
@@ -73,7 +73,7 @@ def _get_ball_distance_score(
     return _get_attraction_distance_score(
         position,
         field.ball.get_position_tuple(),
-        ball_min_distance)
+        BALL_MIN_DISTANCE)
 
 def _get_distance_to_robot_score(
     position: 'tuple[float, float]',
@@ -91,13 +91,13 @@ def _get_distance_to_robot_score(
             ball_position
         )
 
-        if distance > considered_robot_distance:
+        if distance > CONSIDERED_ROBOT_DISTANCE:
             return
 
         distance_score = _get_repulsive_distance_score(
             position,
             robot.get_position_tuple(),
-            robot_min_distance)
+            ROBOT_MIN_DISTANCE)
 
         distance_scores.append(distance_score)
 
@@ -131,12 +131,12 @@ def _get_distance_to_goal_score(
     is_ball_inside_defensive_area = ball.position.x < 0
     
     if is_ball_inside_defensive_area:
-        reference_position = (-field_length / 2, 0)
+        reference_position = (-FIELD_LENGTH / 2, 0)
     else:
-        if position[0] > (ball.position.x - distance_behind_ball):
+        if position[0] > (ball.position.x - DISTANCE_BEHIND_BALL):
             return 0
         else:
-            reference_position = (field_length / 2, 0)
+            reference_position = (FIELD_LENGTH / 2, 0)
 
     return _get_attraction_distance_score(
         position,
@@ -148,9 +148,9 @@ def _is_inside_goal_area(
 ):
     return FieldUtils.is_inside_goal_area(
         position,
-        field_length,
-        goal_area_length,
-        goal_area_width)
+        FIELD_LENGTH,
+        GOAL_AREA_LENGTH,
+        GOAL_AREA_WIDTH)
 
 def _get_score(
     robot_id: int,
@@ -178,15 +178,15 @@ def _get_score(
         position,
         field)
 
-    return w_distance_to_robot * distance_to_robot_score +\
-        w_distance_to_position * distance_to_position_score +\
-            w_distance_to_ball * distance_to_ball_score +\
-            w_distance_to_goal * distance_to_goal_score
+    return W_DISTANCE_TO_ROBOT * distance_to_robot_score +\
+        W_DISTANCE_TO_POSITION * distance_to_position_score +\
+            W_DISTANCE_TO_BALL * distance_to_ball_score +\
+            W_DISTANCE_TO_GOAL * distance_to_goal_score
 
 def get_supporter_position(robot_id: int, field: Field):
-    x_step = considered_length / (x_step_count + 1)
-    y_step = considered_width / (y_step_count + 1)
-    max_x, max_y = considered_length / 2, considered_width / 2
+    x_step = CONSIDERED_LENGTH / (X_STEP_COUNT + 1)
+    y_step = CONSIDERED_WIDTH / (Y_STEP_COUNT + 1)
+    max_x, max_y = CONSIDERED_LENGTH / 2, CONSIDERED_WIDTH / 2
     min_x, min_y = -max_x, -max_y
 
     max_score = -1

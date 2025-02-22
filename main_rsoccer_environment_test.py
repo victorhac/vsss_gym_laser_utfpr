@@ -12,7 +12,7 @@ default_threshold = 0.5
 
 model = ModelUtils.team_model()
 
-task = TeamBehaviorUtils.get_task_1(
+task = TeamBehaviorUtils.get_task_4(
     update_count,
     updates_per_task,
     games_count,
@@ -29,7 +29,6 @@ while True:
 
     while not done:
         next_state, reward, done, _, _ = env.step(action)
-        print(reward)
         env.render()
         observation = TeamUtils.get_observation(env, False, True)
         action = model.predict(observation)[0]

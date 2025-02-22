@@ -10,7 +10,7 @@ from lib.domain.enums.foul_enum import FoulEnum
 from lib.domain.field import Field
 from lib.domain.referee_message import RefereeMessage
 from lib.domain.robot import Robot
-from lib.positioning.default_supporter_positioning import get_supporter_speeds
+from lib.supporter.default_supporter import get_supporter_speeds
 from lib.state_machine.game_state_machine import GameStateMachine
 from lib.utils.configuration_utils import ConfigurationUtils
 from lib.utils.field_utils import FieldUtils
