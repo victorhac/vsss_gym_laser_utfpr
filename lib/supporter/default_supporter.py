@@ -3,7 +3,7 @@ from configuration.configuration import Configuration
 from lib.domain.field import Field
 from lib.domain.robot import Robot
 from lib.path_planning.univector_field_navigation import get_univector_field_point_theta
-from lib.path_planning.univector_field_navigation_configuration import UnivectorFieldNavigationConfiguration
+from lib.domain.univector_field_navigation.univector_field_navigation_configuration import UnivectorFieldNavigationConfiguration
 from lib.utils.field_utils import FieldUtils
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.motion_utils import MotionUtils
@@ -29,6 +29,14 @@ W_DISTANCE_TO_ROBOT = Configuration.supporter_weights_distance_to_robot
 W_DISTANCE_TO_POSITION = Configuration.supporter_weights_distance_to_position
 W_DISTANCE_TO_BALL = Configuration.supporter_weights_distance_to_ball
 W_DISTANCE_TO_GOAL = Configuration.supporter_weights_distance_to_goal
+
+univector_field_navigation_configuration = UnivectorFieldNavigationConfiguration(
+    Configuration.supporter_univector_field_navigation_de,
+    Configuration.supporter_univector_field_navigation_kr,
+    Configuration.supporter_univector_field_navigation_k0,
+    Configuration.supporter_univector_field_navigation_dmin,
+    Configuration.supporter_univector_field_navigation_gaussian_delta
+)
 
 def _get_distance(
     position1: 'tuple[float, float]',
@@ -206,18 +214,10 @@ def get_supporter_position(robot_id: int, field: Field):
 
     return best_position
 
-univector_field_navigation_configuration = UnivectorFieldNavigationConfiguration(
-    0.0537,
-    0.0415,
-    0.0012,
-    0.0948,
-    0.0457
-)
-
 def get_supporter_speeds(
     robot_id: int,
     field: Field,
-    base_speed: float = 30
+    base_speed: float = Configuration.team_max_motor_speed
 ):
     robot = field.get_robot_by_id(robot_id)
     target_position = get_supporter_position(robot_id, field)

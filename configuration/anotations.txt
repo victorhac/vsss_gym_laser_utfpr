@@ -1,7 +1,0 @@
-"univector-field-navigation": {
-    "de": 0.0537,
-    "kr": 0.0415,
-    "k0": 1.5,
-    "dmin": 0.0348,
-    "gaussian-delta": 0.0557
-}

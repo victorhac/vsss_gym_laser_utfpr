@@ -4,13 +4,13 @@ import numpy as np
 from rsoccer_gym.Entities import Frame, Robot, Ball
 from rsoccer_gym.Utils import KDTree
 
-from lib.behaviors.behavior_args import BehaviorArgs
-from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
-from lib.domain.curriculum_task import CurriculumTask
+from lib.domain.behavior_args import BehaviorArgs
+from lib.curriculum.ball_curriculum_behavior import BallCurriculumBehavior
+from lib.curriculum.curriculum_task import CurriculumTask
 from lib.domain.enums.role_enum import RoleEnum
-from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
+from lib.curriculum.robot_curriculum_behavior import RobotCurriculumBehavior
 from lib.environment.base_environment import BaseEnvironment
-from lib.position_setup.position_setup_args import PositionSetupArgs
+from lib.domain.position_setup_args import PositionSetupArgs
 
 from configuration.configuration import Configuration
 
@@ -24,7 +24,7 @@ V_WHEEL_DEADZONE = Configuration.rsoccer_robot_speed_dead_zone_meters_seconds
 TIME_STEP = Configuration.rsoccer_training_time_step
 
 # addapt this for your robot
-MAX_MOTOR_SPEED = Configuration.firasim_robot_speed_max_radians_seconds
+MAX_MOTOR_SPEED = Configuration.team_max_motor_speed
 
 class BaseCurriculumEnvironment(BaseEnvironment):
     def __init__(

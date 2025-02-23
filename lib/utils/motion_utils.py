@@ -11,6 +11,7 @@ import math
 KP = Configuration.motion_pid_constants_kp
 KD = Configuration.motion_pid_constants_kd
 K_TURNING = 0.443467
+BASE_SPEED = Configuration.team_max_motor_speed
 
 def wrap_to_pi(angle: float):
     pi = np.pi
@@ -34,7 +35,7 @@ class MotionUtils:
         robot: Robot, 
         target_position: 'tuple[float, float]',
         last_error: float = 0,
-        base_speed: float = 30
+        base_speed: float = BASE_SPEED
     ):
         if _is_close(robot, target_position):
             return 0, 0
@@ -69,7 +70,7 @@ class MotionUtils:
         theta: 'float',
         target_position: 'tuple[float, float]',
         last_error: float = 0,
-        base_speed: float = 30
+        base_speed: float = BASE_SPEED
     ):    
         x, y = position
         robot_angle = theta
@@ -99,7 +100,7 @@ class MotionUtils:
     def go_to_point_by_theta(
         robot: Robot,
         theta: float,
-        base_speed: float = 30
+        base_speed: float = BASE_SPEED
     ):
         vector = np.array([math.cos(theta), math.sin(theta)])
 
@@ -127,7 +128,7 @@ class MotionUtils:
     def spin_to_theta(
         robot: Robot,
         theta_desired,
-        base_speed: float = 30,
+        base_speed: float = BASE_SPEED,
         tolerance=0.05
     ):
         theta_current = robot.position.theta
@@ -146,7 +147,7 @@ class MotionUtils:
         robot: Robot,
         target_position: 'tuple[float, float]',
         obstacles: 'tuple[Obstacle]',
-        base_speed: float = 30,
+        base_speed: float = BASE_SPEED,
         desired_theta: float = None
     ):
         if _is_close(robot, target_position):

@@ -2,7 +2,7 @@ import math
 import numpy as np
 from gymnasium.spaces import Box
 from rsoccer_gym.Entities import Robot
-from lib.domain.curriculum_task import CurriculumTask
+from lib.curriculum.curriculum_task import CurriculumTask
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils

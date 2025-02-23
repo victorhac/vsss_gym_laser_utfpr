@@ -1,8 +1,8 @@
 from collections import deque
 import numpy as np
-from lib.behaviors.from_previous_model_behavior import FromPreviousModelBehavior
-from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
-from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
+from lib.curriculum.behaviors.from_previous_model_behavior import FromPreviousModelBehavior
+from lib.curriculum.ball_curriculum_behavior import BallCurriculumBehavior
+from lib.curriculum.robot_curriculum_behavior import RobotCurriculumBehavior
 
 class CurriculumTask:
     def __init__(

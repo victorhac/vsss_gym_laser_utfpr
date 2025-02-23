@@ -1,11 +1,11 @@
 from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehaviorBuilder
-from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
-from lib.domain.curriculum_task import CurriculumTask
+from lib.curriculum.ball_curriculum_behavior import BallCurriculumBehavior
+from lib.curriculum.curriculum_task import CurriculumTask
 from configuration.configuration import Configuration
-from lib.position_setup.behind_ball_position_setup import BehindBallPositionSetup
-from lib.position_setup.goal_area_position_setup import GoalAreaPositionSetup
-from lib.position_setup.position_setup import PositionSetup
-from lib.position_setup.relative_to_vertical_line_position_setup import RelativeToVerticalLinePositionSetup
+from lib.curriculum.position_setup.behind_ball_position_setup import BehindBallPositionSetup
+from lib.curriculum.position_setup.goal_area_position_setup import GoalAreaPositionSetup
+from lib.curriculum.position_setup.position_setup import PositionSetup
+from lib.curriculum.position_setup.relative_to_vertical_line_position_setup import RelativeToVerticalLinePositionSetup
 
 class GoalkeeperBehaviorUtils:
     @staticmethod

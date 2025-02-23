@@ -1,8 +1,7 @@
 from math import cos, pi, sin, sqrt, atan2, exp
 import numpy as np
-from configuration.configuration import Configuration
 from lib.domain.univector_field_navigation.obstacle import Obstacle
-from lib.path_planning.univector_field_navigation_configuration import UnivectorFieldNavigationConfiguration
+from lib.domain.univector_field_navigation.univector_field_navigation_configuration import UnivectorFieldNavigationConfiguration
 
 default_configuration = UnivectorFieldNavigationConfiguration()
 

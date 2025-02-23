@@ -382,6 +382,13 @@
             "distance-to-position": 0.2,
             "distance-to-ball": 0.2,
             "distance-to-goal": 0.3
+        },
+        "univector-field-navigation": {
+            "de": 0.0537,
+            "kr": 0.0415,
+            "k0": 0.0012,
+            "dmin": 0.0948,
+            "gaussian-delta": 0.0457
         }
     },
     "univector-field-navigation": {
@@ -390,5 +397,8 @@
         "k0": 1.5,
         "dmin": 0.0348,
         "gaussian-delta": 0.0557
+    },
+    "team": {
+        "max-motor-speed": 30
     }
 }

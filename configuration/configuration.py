@@ -236,11 +236,19 @@ class Configuration:
     supporter_weights_distance_to_ball = configuration["supporter"]["weights"]["distance-to-ball"]
     supporter_weights_distance_to_goal = configuration["supporter"]["weights"]["distance-to-goal"]
 
+    supporter_univector_field_navigation_de = configuration["supporter"]["univector-field-navigation"]["de"]
+    supporter_univector_field_navigation_kr = configuration["supporter"]["univector-field-navigation"]["kr"]
+    supporter_univector_field_navigation_k0 = configuration["supporter"]["univector-field-navigation"]["k0"]
+    supporter_univector_field_navigation_dmin = configuration["supporter"]["univector-field-navigation"]["dmin"]
+    supporter_univector_field_navigation_gaussian_delta = configuration["supporter"]["univector-field-navigation"]["gaussian-delta"]
+
     univector_field_navigation_de = configuration["univector-field-navigation"]["de"]
     univector_field_navigation_kr = configuration["univector-field-navigation"]["kr"]
     univector_field_navigation_k0 = configuration["univector-field-navigation"]["k0"]
     univector_field_navigation_dmin = configuration["univector-field-navigation"]["dmin"]
     univector_field_navigation_gaussian_delta = configuration["univector-field-navigation"]["gaussian-delta"]
+
+    team_max_motor_speed = configuration["team"]["max-motor-speed"]
 
     def get_firasim_is_left_team():
         return Configuration.firasim_team_is_yellow_left_team \

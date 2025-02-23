@@ -186,7 +186,7 @@ class AttackerUtils:
 
         action, _ = model.predict(observation, deterministic=deterministic)
 
-        return AttackerUtils.actions_to_v_wheels(action)
+        return RSoccerUtils.actions_to_v_wheels(action)
     
     @staticmethod
     def get_speeds(

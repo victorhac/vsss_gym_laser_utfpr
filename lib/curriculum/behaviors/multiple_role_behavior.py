@@ -1,5 +1,5 @@
-from lib.behaviors.behavior import Behavior
-from lib.behaviors.behavior_args import BehaviorArgs
+from lib.curriculum.behaviors.behavior import Behavior
+from lib.domain.behavior_args import BehaviorArgs
 from lib.domain.enums.role_enum import RoleEnum
 from lib.supporter.default_supporter import get_supporter_speeds
 from lib.utils.model_utils import ModelUtils

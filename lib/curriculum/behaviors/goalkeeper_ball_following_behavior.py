@@ -1,6 +1,6 @@
 import numpy as np
-from lib.behaviors.behavior import Behavior
-from lib.behaviors.behavior_args import BehaviorArgs
+from lib.curriculum.behaviors.behavior import Behavior
+from lib.domain.behavior_args import BehaviorArgs
 from lib.utils.motion_utils import MotionUtils
 from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 

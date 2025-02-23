@@ -1,7 +1,7 @@
-from lib.behaviors.behavior import Behavior
 import numpy as np
 
-from lib.position_setup.position_setup import PositionSetup
+from lib.curriculum.behaviors.behavior import Behavior
+from lib.curriculum.position_setup.position_setup import PositionSetup
 
 class RobotCurriculumBehavior:
     def __init__(

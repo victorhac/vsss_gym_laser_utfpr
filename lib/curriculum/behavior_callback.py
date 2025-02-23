@@ -1,6 +1,6 @@
 import os
 from stable_baselines3.common.callbacks import BaseCallback
-from lib.domain.curriculum_task import CurriculumTask
+from lib.curriculum.curriculum_task import CurriculumTask
 
 class BehaviorCallback(BaseCallback):
     def __init__(

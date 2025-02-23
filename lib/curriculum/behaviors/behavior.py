@@ -1,4 +1,4 @@
-from lib.behaviors.behavior_args import BehaviorArgs
+from lib.domain.behavior_args import BehaviorArgs
 
 class Behavior:
     def __init__(

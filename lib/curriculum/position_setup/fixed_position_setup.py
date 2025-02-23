@@ -1,4 +1,4 @@
-from lib.position_setup.position_setup import PositionSetup
+from lib.curriculum.position_setup.position_setup import PositionSetup
 
 class FixedPositionSetup(PositionSetup):
     def __init__(

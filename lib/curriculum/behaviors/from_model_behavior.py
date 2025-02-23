@@ -1,5 +1,5 @@
-from lib.behaviors.behavior import Behavior
-from lib.behaviors.behavior_args import BehaviorArgs
+from lib.curriculum.behaviors.behavior import Behavior
+from lib.domain.behavior_args import BehaviorArgs
 
 class FromModelBehavior(Behavior):
     def __init__(

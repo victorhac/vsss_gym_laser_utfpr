@@ -1,12 +1,12 @@
-from lib.behaviors.ball_following_behavior import BallFollowingBehavior
-from lib.behaviors.from_fixed_model_behavior import FromFixedModelBehavior
-from lib.behaviors.from_model_behavior import FromModelBehavior
-from lib.behaviors.from_previous_model_behavior import FromPreviousModelBehavior
-from lib.behaviors.goalkeeper_ball_following_behavior import GoalkeeperBallFollowingBehavior
-from lib.behaviors.multiple_role_behavior import MultipleRoleBehavior
+from lib.curriculum.behaviors.ball_following_behavior import BallFollowingBehavior
+from lib.curriculum.behaviors.from_fixed_model_behavior import FromFixedModelBehavior
+from lib.curriculum.behaviors.from_model_behavior import FromModelBehavior
+from lib.curriculum.behaviors.from_previous_model_behavior import FromPreviousModelBehavior
+from lib.curriculum.behaviors.goalkeeper_ball_following_behavior import GoalkeeperBallFollowingBehavior
+from lib.curriculum.behaviors.multiple_role_behavior import MultipleRoleBehavior
 from lib.domain.enums.role_enum import RoleEnum
-from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
-from lib.position_setup.position_setup import PositionSetup
+from lib.curriculum.robot_curriculum_behavior import RobotCurriculumBehavior
+from lib.curriculum.position_setup.position_setup import PositionSetup
 
 class RobotCurriculumBehaviorBuilder:
     def __init__(

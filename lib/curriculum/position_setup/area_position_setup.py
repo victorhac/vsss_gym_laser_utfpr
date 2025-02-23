@@ -1,5 +1,5 @@
 from configuration.configuration import Configuration
-from lib.position_setup.position_setup import PositionSetup
+from lib.curriculum.position_setup.position_setup import PositionSetup
 from lib.utils.field_utils import FieldUtils
 
 class AreaPositionSetup(PositionSetup):

@@ -1,6 +1,6 @@
 from configuration.configuration import Configuration
-from lib.position_setup.position_setup import PositionSetup
-from lib.position_setup.position_setup_args import PositionSetupArgs
+from lib.curriculum.position_setup.position_setup import PositionSetup
+from lib.domain.position_setup_args import PositionSetupArgs
 from lib.utils.field_utils import FieldUtils
 
 class RelativeToBallPositionSetup(PositionSetup):
