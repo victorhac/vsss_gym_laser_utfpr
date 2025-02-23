@@ -80,11 +80,7 @@ class BaseEnvironment(gym.Env):
 
         self.last_frame = self.frame
 
-        self.rendering_frame = self._get_rendering_frame_from_rsim()
-        self.frame = RSoccerUtils._get_frame_by_rendering_frame(self.rendering_frame)
-
-        RSoccerUtils.set_field_by_frame(self.field, self.frame, False)
-        RSoccerUtils.set_field_by_frame(self.opponent_field, self.frame, True)
+        self._set_frame()
 
         observation = self._frame_to_observations()
         reward, done = self._calculate_reward_and_done()
@@ -105,12 +101,7 @@ class BaseEnvironment(gym.Env):
         )
 
         self.rsim.reset(initial_pos_frame)
-
-        self.rendering_frame = self._get_rendering_frame_from_rsim()
-        self.frame = RSoccerUtils._get_frame_by_rendering_frame(self.rendering_frame)
-
-        RSoccerUtils.set_field_by_frame(self.field, self.frame, False)
-        RSoccerUtils.set_field_by_frame(self.opponent_field, self.frame, True)
+        self._set_frame()
 
         obs = self._frame_to_observations()
 
@@ -118,6 +109,13 @@ class BaseEnvironment(gym.Env):
             self.render()
 
         return obs, {}
+    
+    def _set_frame(self):
+        self.rendering_frame = self._get_rendering_frame_from_rsim()
+        self.frame = RSoccerUtils._get_frame_by_rendering_frame(self.rendering_frame)
+
+        RSoccerUtils.set_field_by_frame(self.field, self.frame, False)
+        RSoccerUtils.set_field_by_frame(self.opponent_field, self.frame, True)
     
     def _get_rendering_frame_from_rsim(self):
         rendering_frame = self.rsim.get_frame()

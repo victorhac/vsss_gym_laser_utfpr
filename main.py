@@ -185,7 +185,6 @@ def perform(
 ):
     machine.set_state_by_referee_message(message)
     state = machine.get_state()
-    is_left_team = Configuration.firasim_team_is_yellow_left_team == is_yellow_team
     
     def get_state_name(
         foul_enum: FoulEnum,
@@ -198,9 +197,9 @@ def perform(
         )
 
     if state == get_state_name(FoulEnum.FREE_KICK, is_yellow_team):
-        commands = free_kick_team(is_yellow_team, is_left_team, field)
+        commands = free_kick_team(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.FREE_KICK, not is_yellow_team):
-        commands = free_kick_foe_team(is_yellow_team, is_left_team, field)
+        commands = free_kick_foe_team(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.PENALTY_KICK, is_yellow_team):
         commands = penalty_kick_team(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.PENALTY_KICK, not is_yellow_team):
@@ -234,10 +233,9 @@ def perform(
 
 def free_kick_team(
     is_yellow_team: bool,
-    is_left_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_free_kick_team_positionings(is_left_team)
+    positionings = Configuration.game_states_free_kick_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -246,10 +244,9 @@ def free_kick_team(
 
 def free_kick_foe_team(
     is_yellow_team: bool,
-    is_left_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_free_kick_foe_team_positionings(is_left_team)
+    positionings = Configuration.game_states_free_kick_foe_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -260,7 +257,7 @@ def penalty_kick_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_penalty_kick_team_positionings()
+    positionings = Configuration.game_states_penalty_kick_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -271,7 +268,7 @@ def penalty_kick_foe_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_penalty_kick_foe_team_positionings()
+    positionings = Configuration.game_states_penalty_kick_foe_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -282,7 +279,7 @@ def goal_kick_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_goal_kick_team_positionings()
+    positionings = Configuration.game_states_goal_kick_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -293,7 +290,7 @@ def goal_kick_foe_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_goal_kick_foe_team_positionings()
+    positionings = Configuration.game_states_goal_kick_foe_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -318,7 +315,7 @@ def kickoff_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_kickoff_team_positionings()
+    positionings = Configuration.game_states_kickoff_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -329,7 +326,7 @@ def kickoff_foe_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_kickoff_foe_team_positionings()
+    positionings = Configuration.game_states_kickoff_foe_team_positionings
     return positioning(
         is_yellow_team,
         positionings,

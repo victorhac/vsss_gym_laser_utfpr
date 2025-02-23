@@ -147,12 +147,6 @@ def phi_tuf(
 
     return wrap_to_pi(phi_tuf_value)
 
-_goal_obstacles = [
-    Obstacle((.8, .25), (0, 0)),
-    Obstacle((.8, -.25), (0, 0)),
-    Obstacle((-.8, .25), (0, 0)),
-    Obstacle((-.8, -.25), (0, 0))
-]
 
 def get_univector_field_point_theta(
     robot_position: 'tuple[float, float]',
@@ -171,8 +165,7 @@ def get_univector_field_point_theta(
         theta,
         point_desired_vector,
         configuration)
-    
-    obstacles.extend(_goal_obstacles)
+
 
     return get_phi_composed_value(
         phi_tuf_value,
