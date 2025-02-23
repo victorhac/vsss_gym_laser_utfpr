@@ -1,43 +1,33 @@
-from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 import numpy as np
+
+from lib.curriculum.behaviors.behavior import Behavior
+from lib.curriculum.position_setup.position_setup import PositionSetup
 
 class RobotCurriculumBehavior:
     def __init__(
         self,
         robot_id: int,
         is_yellow: bool,
-        robot_curriculum_behavior_enum: RobotCurriculumBehaviorEnum,
+        behavior: Behavior,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         self.robot_id = robot_id
         self.is_yellow = is_yellow
-        self.robot_curriculum_behavior_enum = robot_curriculum_behavior_enum
         self.updates_per_task = updates_per_task
+        self.behavior = behavior
 
         self.updates = 0
-
-        self.position_enum = None
 
         self.distance = None
         self.distance_range = None
         self.distance_beta = None
-        self.distance_to_wall = None
 
         self.velocity_alpha = None
         self.velocity_alpha_range = None
         self.velocity_beta = None
 
-        self.x_line = None
-        self.y_range = None
-        self.left_to_line = None
-
-        self.model_path = None
-
-    def set_distance_to_wall(
-        self,
-        distance_to_wall: float
-    ):
-        self.distance_to_wall = distance_to_wall
+        self.position_setup = position_setup
 
     def set_distance_range(
         self,
@@ -52,19 +42,6 @@ class RobotCurriculumBehavior:
     ):
         self.velocity_alpha_range = velocity_alpha_range
         self._try_set_velocity_alpha()
-
-    def set_model_path(self, model_path: str):
-        self.model_path = model_path
-
-    def set_relative_to_vertical_line_position_enum_values(
-        self,
-        x_line: float,
-        y_range: 'tuple[float, float]',
-        left_to_line: bool
-    ):
-        self.x_line = x_line
-        self.y_range = y_range
-        self.left_to_line = left_to_line
 
     def _try_set_distance(self):
         if self.distance_range is not None:
@@ -99,11 +76,14 @@ class RobotCurriculumBehavior:
                 self.velocity_alpha + self.velocity_beta * times,
                 self.velocity_alpha_range)
             
+            self.behavior.velocity_alpha = self.velocity_alpha
+            
         self.updates = clip(self.updates + times, (0, 100))
 
     def reset(self):
         if self.velocity_alpha_range is not None:
             self.velocity_alpha = self.velocity_alpha_range[0]
+            self.behavior.velocity_alpha = self.velocity_alpha
         else:
             self.velocity_alpha = None
 
@@ -112,29 +92,11 @@ class RobotCurriculumBehavior:
         else:
             self.distance = None
 
-        self.model_path = None
+        self.behavior.reset()
         self.updates = 0
-        
-    def _is_distance_in_limit(self):
-        if self.distance_range is None:
-            return True
-        
-        return self.distance == self.distance_range[1]
-    
-    def _is_velocity_alpha_in_limit(self):
-        if self.velocity_alpha_range is None:
-            return True
-        
-        return self.velocity_alpha == self.velocity_alpha_range[1]
 
     def is_over(self):
         return self.updates == self.updates_per_task
-    
-    def has_behavior(
-        self,
-        robot_curriculum_behavior_enum: RobotCurriculumBehaviorEnum
-    ):
-        return self.robot_curriculum_behavior_enum == robot_curriculum_behavior_enum
     
     def get_velocity_alpha(self):
         if self.velocity_alpha_range is None:

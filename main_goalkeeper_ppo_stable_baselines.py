@@ -2,7 +2,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.monitor import Monitor
 
-from lib.domain.behavior_callback import BehaviorCallback
+from lib.curriculum.behavior_callback import BehaviorCallback
 from lib.environment.goalkeeper_environment import GoalkeeperEnvironment
 from lib.utils.behavior.goalkeeper_behavior_utils import GoalkeeperBehaviorUtils
 
@@ -34,9 +34,6 @@ check_count = 100
 starting_update = 0
 
 log_interval = total_timesteps // 10
-
-number_robot_blue = 3
-number_robot_yellow = 3
 
 def create_env(
     save_path,
@@ -106,8 +103,6 @@ def main():
         model_name=algorithm_name,
         save_path=save_path,
         log_path=save_path,
-        number_robot_blue=number_robot_blue,
-        number_robot_yellow=number_robot_yellow,
         tasks=tasks)
     
     try:

@@ -2,7 +2,7 @@ from rsoccer_gym.Entities import Robot as RSoccerRobot
 from lib.domain.field import Field
 from lib.domain.robot import Robot
 from lib.environment.base_environment import BaseEnvironment
-from lib.utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 import numpy as np
 from stable_baselines3 import PPO
 
@@ -102,7 +102,7 @@ class GoalkeeperUtils:
 
         extend_observation_by_ball()
 
-        extend_observation_by_robot(field.robots[robot_id])
+        extend_observation_by_robot(field.get_robot_by_id(robot_id))
 
         return np.array(observation, dtype=np.float32)
 
@@ -110,13 +110,34 @@ class GoalkeeperUtils:
     def get_speeds_by_field(
         field: Field,
         robot_id: int,
-        model: PPO
+        model: PPO,
+        deterministic: bool = True
     ):
         observation = GoalkeeperUtils.get_observation_by_field(
             field,
             robot_id
         )
 
-        action, _ = model.predict(observation)
+        action, _ = model.predict(observation, deterministic=deterministic)
+
+        return RSoccerUtils.actions_to_v_wheels(action)
+    
+    @staticmethod
+    def get_speeds(
+        base_environment: BaseEnvironment,
+        robot_id: int,
+        is_yellow: bool,
+        is_left_team: bool,
+        model: PPO,
+        deterministic: bool = True
+    ):
+        observation = GoalkeeperUtils.get_observation(
+            base_environment,
+            robot_id,
+            is_yellow,
+            is_left_team
+        )
+
+        action = model.predict(observation, deterministic=deterministic)[0]
 
         return RSoccerUtils.actions_to_v_wheels(action)

@@ -1,8 +1,11 @@
 from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehaviorBuilder
-from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
-from lib.domain.curriculum_task import CurriculumTask
-from lib.domain.enums.position_enum import PositionEnum
+from lib.curriculum.ball_curriculum_behavior import BallCurriculumBehavior
+from lib.curriculum.curriculum_task import CurriculumTask
 from configuration.configuration import Configuration
+from lib.curriculum.position_setup.behind_ball_position_setup import BehindBallPositionSetup
+from lib.curriculum.position_setup.goal_area_position_setup import GoalAreaPositionSetup
+from lib.curriculum.position_setup.position_setup import PositionSetup
+from lib.curriculum.position_setup.relative_to_vertical_line_position_setup import RelativeToVerticalLinePositionSetup
 
 class GoalkeeperBehaviorUtils:
     @staticmethod
@@ -18,7 +21,7 @@ class GoalkeeperBehaviorUtils:
                 updates_per_task),
             GoalkeeperBehaviorUtils.get_opponent_team_from_fixed_model_behavior(
                 0,
-                PositionEnum.BEHIND_BALL,
+                BehindBallPositionSetup(False),
                 updates_per_task,
                 (.5, 1),
                 (.2, .2)
@@ -44,34 +47,39 @@ class GoalkeeperBehaviorUtils:
         updates_per_task: int,
         distance_range: 'tuple[float, float] | None' = None
     ):
+        position_setup = RelativeToVerticalLinePositionSetup(
+            True,
+            .6,
+            (-.35, .35),
+            True
+        )
+
         return BallCurriculumBehavior(
-            position_enum=PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE,
+            position_setup=position_setup,
             updates_per_task=updates_per_task,
-            distance_range=distance_range,
-            x_line=-.6,
-            y_range=(-.35, .35),
-            left_to_line=False)
+            distance_range=distance_range)
     
     @staticmethod
     def get_own_team_from_model_behavior(
         robot_id: int,
         updates_per_task: int
     ):
+        position_setup = GoalAreaPositionSetup(True)
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_from_model_behavior()\
-            .set_position_enum(PositionEnum.OWN_GOAL_AREA)\
             .build()
     
     @staticmethod
     def get_opponent_team_from_fixed_model_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int,
         velocity_alpha_range: 'tuple[float, float]',
         distance_range: 'tuple[float, float]' = (.2, .5)
@@ -79,14 +87,14 @@ class GoalkeeperBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         model_path = Configuration.model_attacker_path
 
         return builder\
             .set_from_fixed_model_behavior(model_path)\
-            .set_position_enum(position_enum)\
             .set_distance_range(distance_range)\
             .set_velocity_alpha_range(velocity_alpha_range)\
             .build()

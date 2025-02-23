@@ -1,12 +1,9 @@
 from math import cos, pi, sin, sqrt, atan2, exp
 import numpy as np
 from lib.domain.univector_field_navigation.obstacle import Obstacle
+from lib.domain.univector_field_navigation.univector_field_navigation_configuration import UnivectorFieldNavigationConfiguration
 
-d_e = 0.0537
-kr = 0.0415
-k0 = 0.0012
-d_min = 0.0948
-gaussian_delta = 0.0457
+default_configuration = UnivectorFieldNavigationConfiguration()
 
 def get_vector(
     point1: 'tuple[float, float]',
@@ -14,8 +11,11 @@ def get_vector(
 ):
     return point2[0] - point1[0], point2[1] - point1[1]
 
-def gaussian(r: float):
-    return exp(-(r ** 2 / (2 * gaussian_delta ** 2)))
+def gaussian(
+    r: float,
+    configuration: UnivectorFieldNavigationConfiguration
+):
+    return exp(-(r ** 2 / (2 * configuration.gaussian_delta ** 2)))
 
 def get_vector_norm(vector: 'tuple[float, float]'):
     return sqrt(vector[0] ** 2 + vector[1] ** 2)
@@ -57,13 +57,14 @@ def phi_auf(
     obstacle: Obstacle,
     robot_position: 'tuple[float, float]',
     robot_velocity: 'tuple[float, float]',
-    point_obstacle_distance: float
+    point_obstacle_distance: float,
+    configuration: UnivectorFieldNavigationConfiguration
 ):
     obstacle_position = np.array(obstacle.position)
     obstacle_velocities = np.array(obstacle.velocities)
     velocities = np.array(robot_velocity)
 
-    shifting_vector = k0 * (obstacle_velocities - velocities)
+    shifting_vector = configuration.k_0 * (obstacle_velocities - velocities)
     shifting_vector_norm = get_vector_norm(shifting_vector)
 
     if point_obstacle_distance >= shifting_vector_norm:
@@ -81,14 +82,15 @@ def phi_composed(
     phi_tuf_value: float,
     phi_auf_value: float,
     distance: 'float | None',
-    obstacle: 'Obstacle | None'
+    obstacle: 'Obstacle | None',
+    configuration: UnivectorFieldNavigationConfiguration
 ):
     if obstacle is None:
         phi_composed_value = wrap_to_pi(phi_tuf_value)
     else:
-        gaussian_value = gaussian(distance - d_min)
+        gaussian_value = gaussian(distance - configuration.d_min, configuration)
         
-        if distance <= d_min:
+        if distance <= configuration.d_min:
             phi_composed_value = phi_auf_value
         else:
             diff = wrap_to_pi(phi_auf_value - phi_tuf_value)
@@ -99,12 +101,13 @@ def phi_composed(
 def phi_h(
     rho: float,
     theta: float,
-    clockwise: bool
+    clockwise: bool,
+    configuration: UnivectorFieldNavigationConfiguration
 ):
-    if rho > d_e:
-        angle = (pi / 2) * (2 - ((d_e + kr) / (rho + kr)))
-    elif 0 <= rho <= d_e:
-        angle = (pi / 2) * sqrt(rho / d_e)
+    if rho > configuration.de:
+        angle = (pi / 2) * (2 - ((configuration.de + configuration.kr) / (rho + configuration.kr)))
+    elif 0 <= rho <= configuration.de:
+        angle = (pi / 2) * sqrt(rho / configuration.de)
 
     if clockwise:
         return wrap_to_pi(theta + angle)
@@ -116,36 +119,41 @@ def phi_r(vector: 'tuple[float, float]'):
 
 def phi_tuf(
     theta: float,
-    vector: 'tuple[float, float]'
+    vector: 'tuple[float, float]',
+    configuration: UnivectorFieldNavigationConfiguration
 ):
-    y_l = vector[1] + d_e
-    y_r = vector[1] - d_e
+    de = configuration.de
 
-    ro_l = get_vector_norm((vector[0], vector[1] - d_e))
-    ro_r = get_vector_norm((vector[0], vector[1] + d_e))
+    y_l = vector[1] + de
+    y_r = vector[1] - de
 
-    phi_counter_clockwise = phi_h(ro_l, theta, False)
-    phi_clockwise = phi_h(ro_r, theta, True)
+    ro_l = get_vector_norm((vector[0], vector[1] - de))
+    ro_r = get_vector_norm((vector[0], vector[1] + de))
+
+    phi_counter_clockwise = phi_h(ro_l, theta, False, configuration)
+    phi_clockwise = phi_h(ro_r, theta, True, configuration)
 
     nh_counter_clockwise = n_h(phi_counter_clockwise)
     nh_clockwise = n_h(phi_clockwise)
 
-    spiral_merge = (abs(y_l) * nh_counter_clockwise + abs(y_r) * nh_clockwise) / (2 * d_e) 
+    spiral_merge = (abs(y_l) * nh_counter_clockwise + abs(y_r) * nh_clockwise) / (2 * de) 
 
-    if -d_e <= vector[1] < d_e:
+    if -de <= vector[1] < de:
         phi_tuf_value = atan2(spiral_merge[1], spiral_merge[0])
-    elif vector[1] < -d_e:
-        phi_tuf_value = phi_h(ro_l, theta, True)
+    elif vector[1] < -de:
+        phi_tuf_value = phi_h(ro_l, theta, True, configuration)
     else:
-        phi_tuf_value = phi_h(ro_r, theta, False)
+        phi_tuf_value = phi_h(ro_r, theta, False, configuration)
 
     return wrap_to_pi(phi_tuf_value)
+
 
 def get_univector_field_point_theta(
     robot_position: 'tuple[float, float]',
     robot_velocity: 'tuple[float, float]',
     desired_position: 'tuple[float, float]',
-    obstacles: 'list[Obstacle]'
+    obstacles: 'list[Obstacle]',
+    configuration: UnivectorFieldNavigationConfiguration = default_configuration
 ):
     point_desired_vector = get_vector(
         desired_position,
@@ -155,19 +163,23 @@ def get_univector_field_point_theta(
 
     phi_tuf_value = phi_tuf(
         theta,
-        point_desired_vector)
+        point_desired_vector,
+        configuration)
+
 
     return get_phi_composed_value(
         phi_tuf_value,
         robot_position,
         robot_velocity,
-        obstacles)
+        obstacles,
+        configuration)
 
 def get_phi_composed_value(
     phi_tuf_value: float,
     robot_position: 'tuple[float, float]',
     robot_velocity: 'tuple[float, float]',
-    obstacles: 'list[Obstacle]'
+    obstacles: 'list[Obstacle]',
+    configuration: UnivectorFieldNavigationConfiguration
 ):
     if len(obstacles) == 0:
         return wrap_to_pi(phi_tuf_value)
@@ -176,13 +188,15 @@ def get_phi_composed_value(
         phi_tuf_value,
         robot_position,
         robot_velocity,
-        obstacles)
+        obstacles,
+        configuration)
 
 def get_phi_composed_value_when_there_exists_obstacle(
     phi_tuf_value: float,
     robot_position: 'tuple[float, float]',
     robot_velocity: 'tuple[float, float]',
-    obstacles: 'list[Obstacle]'
+    obstacles: 'list[Obstacle]',
+    configuration: UnivectorFieldNavigationConfiguration
 ):
     obstacle = get_closest_obstacle(robot_position, obstacles)
     obstacle_point_vector = get_vector(
@@ -195,10 +209,12 @@ def get_phi_composed_value_when_there_exists_obstacle(
         obstacle,
         robot_position,
         robot_velocity,
-        obstacle_point_distance)
+        obstacle_point_distance,
+        configuration)
 
     return phi_composed(
         phi_tuf_value,
         phi_auf_value,
         obstacle_point_distance,
-        obstacle)
+        obstacle,
+        configuration)

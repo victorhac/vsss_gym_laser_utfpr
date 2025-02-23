@@ -2,7 +2,7 @@ from rsoccer_gym.Entities import Robot as RSoccerRobot
 from lib.domain.field import Field
 from lib.domain.field import Robot
 from lib.environment.base_environment import BaseEnvironment
-from lib.utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 from stable_baselines3 import PPO
 import numpy as np
 
@@ -114,16 +114,16 @@ class DefenderUtils:
 
         extend_observation_by_ball()
 
-        extend_observation_by_robot(field.robots[robot_id])
+        extend_observation_by_robot(field.get_robot_by_id(robot_id))
 
         for i in range(3):
             if i == robot_id:
                 continue
 
-            extend_observation_by_robot(field.robots[i])
+            extend_observation_by_robot(field.get_robot_by_id(i))
 
         for i in range(3):
-            extend_observation_by_robot(field.foes[i])
+            extend_observation_by_robot(field.get_foe_by_id(i))
 
         return np.array(observation, dtype=np.float32)
 
@@ -131,13 +131,34 @@ class DefenderUtils:
     def get_speeds_by_field(
         field: Field,
         robot_id: int,
-        model: PPO
+        model: PPO,
+        deterministic: bool = True
     ):
         observation = DefenderUtils.get_observation_by_field(
             field,
             robot_id
         )
 
-        action, _ = model.predict(observation)
+        action, _ = model.predict(observation, deterministic=deterministic)
+
+        return RSoccerUtils.actions_to_v_wheels(action)
+    
+    @staticmethod
+    def get_speeds(
+        base_environment: BaseEnvironment,
+        robot_id: int,
+        is_yellow: bool,
+        is_left_team: bool,
+        model: PPO,
+        deterministic: bool = True
+    ):
+        observation = DefenderUtils.get_observation(
+            base_environment,
+            robot_id,
+            is_yellow,
+            is_left_team
+        )
+
+        action = model.predict(observation, deterministic=deterministic)[0]
 
         return RSoccerUtils.actions_to_v_wheels(action)

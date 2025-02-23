@@ -1,91 +1,87 @@
-from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
-from lib.domain.enums.position_enum import PositionEnum
-from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.curriculum.behaviors.ball_following_behavior import BallFollowingBehavior
+from lib.curriculum.behaviors.from_fixed_model_behavior import FromFixedModelBehavior
+from lib.curriculum.behaviors.from_model_behavior import FromModelBehavior
+from lib.curriculum.behaviors.from_previous_model_behavior import FromPreviousModelBehavior
+from lib.curriculum.behaviors.goalkeeper_ball_following_behavior import GoalkeeperBallFollowingBehavior
+from lib.curriculum.behaviors.multiple_role_behavior import MultipleRoleBehavior
+from lib.domain.enums.role_enum import RoleEnum
+from lib.curriculum.robot_curriculum_behavior import RobotCurriculumBehavior
+from lib.curriculum.position_setup.position_setup import PositionSetup
 
 class RobotCurriculumBehaviorBuilder:
     def __init__(
         self,
         robot_id: int,
         is_yellow: bool,
-        updates_per_task: int
+        updates_per_task: int,
+        position_setup: PositionSetup
     ):
         self.robot_id = robot_id
         self.is_yellow = is_yellow
         self.updates_per_task = updates_per_task
 
-        self.position_enum = None
+        self.position_setup = position_setup
         self.distance_range = None
-        self.distance_to_wall = None
         self.velocity_alpha_range = None
-        self.model_path = None
 
     def set_ball_following_behavior(self):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.BALL_FOLLOWING
+        self.behavior = BallFollowingBehavior(
+            self.robot_id,
+            self.is_yellow
+        )
         return self
     
     def set_goalkeeper_ball_following_behavior(self):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING
+        self.behavior = GoalkeeperBallFollowingBehavior(
+            self.robot_id,
+            self.is_yellow
+        )
         return self
     
-    def set_from_previous_model_behavior(self, model_path: 'str | None' = None):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL
-        self.model_path = model_path
+    def set_from_previous_model_behavior(
+        self,
+        role_enum: RoleEnum,
+        deterministic: bool = True
+    ):
+        self.behavior = FromPreviousModelBehavior(
+            self.robot_id,
+            self.is_yellow,
+            role_enum,
+            deterministic
+        )
         return self
     
-    def set_from_fixed_model_behavior(self, model_path: str):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL
-        self.model_path = model_path
+    def set_from_fixed_model_behavior(
+        self,
+        model_path: str,
+        role_enum: RoleEnum = RoleEnum.ATTACKER,
+        deterministic: bool = True
+    ):
+        self.behavior = FromFixedModelBehavior(
+            self.robot_id,
+            self.is_yellow,
+            role_enum,
+            model_path,
+            deterministic
+        )
         return self
     
     def set_from_model_behavior(self):
-        self.robot_curriculum_behavior_enum = RobotCurriculumBehaviorEnum.FROM_MODEL
-        return self
-
-    def set_position_enum(
-        self,
-        position_enum: PositionEnum
-    ):
-        self.position_enum = position_enum
+        self.behavior = FromModelBehavior(
+            self.robot_id,
+            self.is_yellow
+        )
         return self
     
-    def set_own_goal_relative_to_wall_position_enum(
+    def set_multiple_role_behavior(
         self,
-        distance_to_wall: float
+        deterministic: bool = True
     ):
-        self.distance_to_wall = distance_to_wall
-        self.position_enum = PositionEnum.OWN_GOAL_RELATIVE_TO_WALL
-        return self
-    
-    def set_opponent_goal_relative_to_wall_position_enum(
-        self,
-        distance_to_wall: float
-    ):
-        self.distance_to_wall = distance_to_wall
-        self.position_enum = PositionEnum.OPPONENT_GOAL_RELATIVE_TO_WALL
-        return self
-    
-    def set_relative_to_own_vertical_line_position_enum(
-        self,
-        x_line: float,
-        y_range: 'tuple[float, float]',
-        left_to_line: bool
-    ):
-        self.x_line = x_line
-        self.y_range = y_range
-        self.left_to_line = left_to_line
-        self.position_enum = PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE
-        return self
-    
-    def set_relative_to_opponent_vertical_line_position_enum(
-        self,
-        x_line: float,
-        y_range: 'tuple[float, float]',
-        left_to_line: bool
-    ):
-        self.x_line = x_line
-        self.y_range = y_range
-        self.left_to_line = left_to_line
-        self.position_enum = PositionEnum.RELATIVE_TO_OPPONENT_VERTICAL_LINE
+        self.behavior = MultipleRoleBehavior(
+            self.robot_id,
+            self.is_yellow,
+            deterministic
+        )
         return self
     
     def set_distance_range(
@@ -106,39 +102,18 @@ class RobotCurriculumBehaviorBuilder:
         robot_curriculum_behavior = RobotCurriculumBehavior(
             self.robot_id,
             self.is_yellow,
-            self.robot_curriculum_behavior_enum,
+            self.behavior,
+            self.position_setup,
             self.updates_per_task
         )
-
-        if self.position_enum is not None:
-            self._set_position_enum(robot_curriculum_behavior)
         
         if self.distance_range is not None:
             self._set_distance_range(robot_curriculum_behavior)
 
         if self.velocity_alpha_range is not None:
             self._set_velocity_alpha_range(robot_curriculum_behavior)
-
-        if self.model_path is not None:
-            robot_curriculum_behavior.set_model_path(self.model_path)
             
         return robot_curriculum_behavior
-
-    def _set_position_enum(
-        self,
-        robot_curriculum_behavior: RobotCurriculumBehavior
-    ):
-        robot_curriculum_behavior.position_enum = self.position_enum
-
-        if self.position_enum == PositionEnum.OWN_GOAL_RELATIVE_TO_WALL or\
-                self.position_enum == PositionEnum.OPPONENT_GOAL_RELATIVE_TO_WALL:
-            robot_curriculum_behavior.set_distance_to_wall(self.distance_to_wall)
-        elif self.position_enum == PositionEnum.RELATIVE_TO_OWN_VERTICAL_LINE or\
-                self.position_enum == PositionEnum.RELATIVE_TO_OPPONENT_VERTICAL_LINE:
-            robot_curriculum_behavior.set_relative_to_vertical_line_position_enum_values(
-                self.x_line,
-                self.y_range,
-                self.left_to_line)
     
     def _set_distance_range(
         self,

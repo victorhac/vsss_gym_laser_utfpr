@@ -1,13 +1,10 @@
 import numpy as np
 from gymnasium.spaces import Box
 from rsoccer_gym.Entities import Robot
-from lib.domain.curriculum_task import CurriculumTask
-from lib.domain.robot_curriculum_behavior import RobotCurriculumBehavior
-from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.curriculum.curriculum_task import CurriculumTask
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
-from lib.utils.roles.attacker_utils import AttackerUtils
 from lib.utils.geometry_utils import GeometryUtils
-from lib.utils.rsoccer_utils import RSoccerUtils
+from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
 
 class GoalkeeperEnvironment(BaseCurriculumEnvironment):
     def __init__(
@@ -97,58 +94,6 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
 
         return np.array(observation, dtype=np.float32)
 
-    def _frame_to_opponent_attacker_observations(self, robot_id: int):
-        return AttackerUtils.get_observation(
-            self,
-            robot_id,
-            True,
-            False)
-    
-    def _create_from_model_robot_command(self, behavior: RobotCurriculumBehavior):
-        is_yellow = behavior.is_yellow
-        robot_id = behavior.robot_id
-
-        actions = self._get_from_model_actions(behavior)
-
-        left_speed, right_speed = self._actions_to_v_wheels(actions)
-        velocity_alpha = behavior.get_velocity_alpha()
-
-        return self._create_robot_command(
-            robot_id,
-            is_yellow,
-            left_speed * velocity_alpha,
-            right_speed * velocity_alpha)
-    
-    def _create_robot_command_by_behavior(self, behavior: RobotCurriculumBehavior):
-        robot_curriculum_behavior_enum = behavior.robot_curriculum_behavior_enum
-
-        if robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.BALL_FOLLOWING:
-            return self._create_ball_following_robot_command(behavior)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING:
-            return self._create_goalkeeper_ball_following_robot_command(behavior)
-        elif robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_PREVIOUS_MODEL or\
-            robot_curriculum_behavior_enum == RobotCurriculumBehaviorEnum.FROM_FIXED_MODEL:
-            return self._create_from_model_robot_command(behavior)
-
-        return self._create_robot_command(
-            behavior.robot_id,
-            behavior.is_yellow,
-            0,
-            0)
-
-    def _get_from_model_actions(self, behavior: RobotCurriculumBehavior):
-        model = self._update_model(
-            behavior.robot_id,
-            behavior.is_yellow,
-            behavior.model_path)
-
-        if model is None:
-            return (0, 0)
-
-        return model.predict(
-            self._frame_to_opponent_attacker_observations(behavior.robot_id)
-        )[0]
-
     def _ball_gradient_reward_by_positions(
         self,
         previous_ball_potential: 'float | None',
@@ -231,7 +176,7 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
 
         if not is_inside_own_goal_area or not is_inside_playable_field:
             x, y = -0.675, self._get_y_target()
-            return -1 + w_move * self._move_reward((x, y), 5, 5)
+            return -1 + w_move * self._move_reward((x, y))
 
         if self._is_ball_inside_goal_area():
             self.ball_entered_goal_area = True
@@ -306,3 +251,31 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         distance_to_target = abs(robot.y - y_target)
 
         return (1 - distance_to_target / max_distance) * 2 - 1
+
+    def _actions_to_v_wheels(
+        self,
+        actions: np.ndarray
+    ):
+        left_wheel_speed = actions[1] * self.max_v
+        right_wheel_speed = actions[0] * self.max_v
+
+        left_wheel_speed, right_wheel_speed = np.clip(
+            (left_wheel_speed, right_wheel_speed),
+            -self.max_v,
+            self.max_v)
+
+        factor = self._get_velocity_factor()
+
+        left_wheel_speed *= factor
+        right_wheel_speed *= factor
+
+        if abs(left_wheel_speed) < self.v_wheel_deadzone:
+            left_wheel_speed = 0
+
+        if abs(right_wheel_speed) < self.v_wheel_deadzone:
+            right_wheel_speed = 0
+
+        left_wheel_speed /= self.field_params.rbt_wheel_radius
+        right_wheel_speed /= self.field_params.rbt_wheel_radius
+
+        return left_wheel_speed, right_wheel_speed

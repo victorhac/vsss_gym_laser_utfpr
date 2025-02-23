@@ -1,8 +1,14 @@
 from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehaviorBuilder
-from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
-from lib.domain.curriculum_task import CurriculumTask
-from lib.domain.enums.position_enum import PositionEnum
+from lib.curriculum.ball_curriculum_behavior import BallCurriculumBehavior
+from lib.curriculum.curriculum_task import CurriculumTask
 from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
+from lib.domain.enums.role_enum import RoleEnum
+from lib.curriculum.position_setup.area_except_goal_area_position_setup import AreaExceptGoalAreaPositionSetup
+from lib.curriculum.position_setup.area_position_setup import AreaPositionSetup
+from lib.curriculum.position_setup.goal_area_position_setup import GoalAreaPositionSetup
+from lib.curriculum.position_setup.position_setup import PositionSetup
+from lib.curriculum.position_setup.relative_to_ball_position_setup import RelativeToBallPositionSetup
+from lib.curriculum.position_setup.relative_to_goal_position_setup import RelativeToGoalPositionSetup
 
 class AttackerBehaviorUtils:
     @staticmethod
@@ -15,12 +21,12 @@ class AttackerBehaviorUtils:
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task)
         ]
 
         ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
-            PositionEnum.RELATIVE_TO_OPPONENT_GOAL,
+            RelativeToGoalPositionSetup(False),
             updates_per_task,
             distance_range=(.2, 1.3)
         )
@@ -44,17 +50,17 @@ class AttackerBehaviorUtils:
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 0,
                 True,
-                PositionEnum.OWN_AREA,
+                AreaPositionSetup(False),
                 updates_per_task)
         ]
     
         ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
-            PositionEnum.OWN_AREA,
+            AreaPositionSetup(True),
             updates_per_task
         )
 
@@ -77,7 +83,7 @@ class AttackerBehaviorUtils:
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
@@ -85,7 +91,7 @@ class AttackerBehaviorUtils:
         ]
     
         ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
-            PositionEnum.OWN_AREA,
+            AreaPositionSetup(True),
             updates_per_task
         )
 
@@ -108,12 +114,12 @@ class AttackerBehaviorUtils:
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 1,
                 False,
-                PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA,
+                AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
@@ -121,12 +127,12 @@ class AttackerBehaviorUtils:
             AttackerBehaviorUtils.get_stopped_behavior(
                 1,
                 True,
-                PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA,
+                AreaExceptGoalAreaPositionSetup(False),
                 updates_per_task)
         ]
     
         ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
-            PositionEnum.OWN_AREA,
+            AreaPositionSetup(True),
             updates_per_task
         )
 
@@ -146,23 +152,23 @@ class AttackerBehaviorUtils:
     def get_task_5(
         update_count: int = 0,
         updates_per_task: int = 100,
-        default_threshold: float = .5,
-        games_count: int = 200
+        games_count: int = 200,
+        default_threshold: float = .5
     ):
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 1,
                 False,
-                PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA,
+                AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 2,
                 False,
-                PositionEnum.OWN_GOAL_AREA,
+                GoalAreaPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_opponent_team_ball_following_behavior(
                 0,
@@ -170,17 +176,17 @@ class AttackerBehaviorUtils:
             AttackerBehaviorUtils.get_stopped_behavior(
                 1,
                 True,
-                PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA,
+                AreaExceptGoalAreaPositionSetup(False),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 2,
                 True,
-                PositionEnum.OWN_GOAL_AREA,
+                GoalAreaPositionSetup(False),
                 updates_per_task)
         ]
     
         ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
-            PositionEnum.OWN_AREA,
+            AreaPositionSetup(True),
             updates_per_task
         )
 
@@ -201,42 +207,42 @@ class AttackerBehaviorUtils:
     def get_task_6(
         update_count: int = 0,
         updates_per_task: int = 100,
-        default_threshold: float = .4,
-        games_count: int = 200
+        games_count: int = 200,
+        default_threshold: float = .4
     ):
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 1,
                 False,
-                PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA,
+                AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 2,
                 False,
-                PositionEnum.OWN_GOAL_AREA,
+                AreaExceptGoalAreaPositionSetup(True),
                 updates_per_task),
             AttackerBehaviorUtils.get_opponent_team_from_previous_model_behavior(
                 0,
-                PositionEnum.RELATIVE_TO_BALL,
+                RelativeToBallPositionSetup(False),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 1,
                 True,
-                PositionEnum.OWN_AREA_EXCEPT_GOAL_AREA,
+                AreaExceptGoalAreaPositionSetup(False),
                 updates_per_task),
             AttackerBehaviorUtils.get_stopped_behavior(
                 2,
                 True,
-                PositionEnum.OWN_GOAL_AREA,
+                GoalAreaPositionSetup(False),
                 updates_per_task),
         ]
     
         ball_behavior = AttackerBehaviorUtils.get_ball_behavior(
-            PositionEnum.OWN_AREA,
+            AreaPositionSetup(True),
             updates_per_task
         )
 
@@ -254,54 +260,54 @@ class AttackerBehaviorUtils:
     def get_stopped_behavior(
         robot_id: int,
         is_yellow: bool,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             is_yellow,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_ball_following_behavior()\
-            .set_position_enum(position_enum)\
             .set_velocity_alpha_range((0, 0))\
             .build()
     
     @staticmethod
     def get_own_team_from_model_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             False,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
             .set_from_model_behavior()\
-            .set_position_enum(position_enum)\
             .set_distance_range((.2, .5))\
             .build()
     
     @staticmethod
     def get_opponent_team_from_previous_model_behavior(
         robot_id: int,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         updates_per_task: int
     ):
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
         return builder\
-            .set_from_previous_model_behavior()\
-            .set_position_enum(position_enum)\
+            .set_from_previous_model_behavior(RoleEnum.ATTACKER)\
             .set_distance_range((.3, .6))\
             .set_velocity_alpha_range((0, .5))\
             .build()
@@ -310,7 +316,7 @@ class AttackerBehaviorUtils:
     def get_ball_following_behavior(
         robot_id: int,
         is_yellow: bool,
-        position_enum: PositionEnum,
+        position_setup: PositionSetup,
         distance_range: 'tuple[float, float] | None',
         velocity_alpha_range: 'tuple[float, float] | None',
         updates_per_task: int
@@ -318,12 +324,11 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             is_yellow,
-            updates_per_task
+            updates_per_task,
+            position_setup
         )
 
-        builder\
-            .set_ball_following_behavior()\
-            .set_position_enum(position_enum)
+        builder.set_ball_following_behavior()
 
         if distance_range is not None:
             builder.set_distance_range(distance_range)
@@ -341,12 +346,12 @@ class AttackerBehaviorUtils:
         builder = RobotCurriculumBehaviorBuilder(
             robot_id,
             True,
-            updates_per_task
+            updates_per_task,
+            RelativeToBallPositionSetup(False)
         )
 
         return builder\
             .set_ball_following_behavior()\
-            .set_position_enum(PositionEnum.RELATIVE_TO_BALL)\
             .set_distance_range((.3, .6))\
             .set_velocity_alpha_range((0, .5))\
             .build()
@@ -361,21 +366,21 @@ class AttackerBehaviorUtils:
             robot_id,
             is_yellow,
             RobotCurriculumBehaviorEnum.GOALKEEPER_BALL_FOLLOWING,
-            updates_per_task
+            updates_per_task,
+            GoalAreaPositionSetup(not is_yellow)
         )
 
         return builder\
-            .set_position_enum(PositionEnum.OWN_GOAL_AREA)\
             .set_velocity_alpha_range((.2, .2))\
             .build()
     
     @staticmethod
     def get_ball_behavior(
-        position_enum: PositionEnum,
-        updates_per_task: int = 10,
+        position_setup: PositionSetup,
+        updates_per_task: int,
         distance_range: 'tuple[float, float] | None' = None
     ):
         return BallCurriculumBehavior(
-            position_enum=position_enum,
+            position_setup=position_setup,
             updates_per_task=updates_per_task,
             distance_range=distance_range)

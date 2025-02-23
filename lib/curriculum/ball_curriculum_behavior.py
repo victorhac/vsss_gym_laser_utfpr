@@ -1,25 +1,16 @@
-from lib.domain.enums.position_enum import PositionEnum
 import numpy as np
+from lib.curriculum.position_setup.position_setup import PositionSetup
 
 class BallCurriculumBehavior:
     def __init__(
         self,
-        position_enum: PositionEnum,
-        updates_per_task: int = 10,
-        distance_range: 'tuple[float, float] | None' = None,
-        distance_to_wall: 'float | None' = None,
-        x_line: 'float | None' = None,
-        y_range: 'tuple[float, float] | None' = None,
-        left_to_line: 'bool | None' = None
+        updates_per_task: int,
+        position_setup: PositionSetup,
+        distance_range: 'tuple[float, float] | None' = None
     ):
-        self.position_enum = position_enum
         self.updates_per_task = updates_per_task
         self.distance_range = distance_range
-        self.distance_to_wall = distance_to_wall
-
-        self.x_line = x_line
-        self.y_range = y_range
-        self.left_to_line = left_to_line
+        self.position_setup = position_setup
 
         self.updates = 0
         
@@ -46,7 +37,7 @@ class BallCurriculumBehavior:
                 self.distance + self.distance_beta * times,
                 self.distance_range)
             
-            self.updates = clip(self.updates + times, (0, 100))
+            self.updates = clip(self.updates + times, (0, self.updates_per_task))
 
     def reset(self):
         if self.distance_range is not None:
@@ -56,9 +47,6 @@ class BallCurriculumBehavior:
     
     def is_over(self):
         return self.updates == self.updates_per_task
-
-    def _is_distance_in_limit(self):
-        return self.distance == self.distance_range[1]
 
     @staticmethod
     def _get_beta(

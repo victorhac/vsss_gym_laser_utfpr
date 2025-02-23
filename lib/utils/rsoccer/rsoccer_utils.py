@@ -5,11 +5,19 @@ from lib.domain.ball import Ball
 from lib.utils.domain_utils import DomainUtils
 from lib.utils.field_utils import FieldUtils
 from lib.utils.geometry_utils import GeometryUtils
-
 from rsoccer_gym.Entities import Robot as RSoccerRobot, Ball as RSoccerBall
 from rsoccer_gym.Entities.Frame import Frame
-
 import numpy as np
+
+def _is_inside_field(robot: RSoccerRobot):
+    return FieldUtils.is_inside_field(
+        robot.x,
+        robot.y,
+        Configuration.field_length,
+        Configuration.field_width,
+        Configuration.field_goal_width,
+        Configuration.field_goal_depth
+    )
 
 class RSoccerUtils:
     @staticmethod
@@ -18,8 +26,28 @@ class RSoccerUtils:
         return GeometryUtils.normalize_in_pi(angleRadians)
 
     @staticmethod
-    def to_robot(rsoccer_robot: RSoccerRobot):
-        robot = Robot()
+    def to_robot(
+        rsoccer_robot: RSoccerRobot,
+        active: bool = True
+    ):
+        robot = Robot(rsoccer_robot.id, active)
+
+        robot.position.x = rsoccer_robot.x
+        robot.position.y = rsoccer_robot.y
+        robot.position.theta = RSoccerUtils.get_corrected_angle(rsoccer_robot.theta)
+
+        robot.velocity.x = rsoccer_robot.v_x
+        robot.velocity.y = rsoccer_robot.v_y
+        robot.velocity.theta = RSoccerUtils.get_corrected_angle(rsoccer_robot.v_theta)
+
+        return robot
+    
+    @staticmethod
+    def set_robot(
+        robot: Robot,
+        rsoccer_robot: RSoccerRobot
+    ):
+        robot.active = _is_inside_field(rsoccer_robot)
 
         robot.position.x = rsoccer_robot.x
         robot.position.y = rsoccer_robot.y
@@ -41,26 +69,40 @@ class RSoccerUtils:
         ball.velocity.y = rsoccer_ball.v_y
 
         return ball
-
+    
     @staticmethod
-    def get_field_by_frame(frame: Frame, is_yellow_team: bool):
-        field_data = Field()
+    def set_ball(ball: Ball, rsoccer_ball: RSoccerBall):
+        ball.position.x = rsoccer_ball.x
+        ball.position.y = rsoccer_ball.y
+        ball.velocity.x = rsoccer_ball.v_x
+        ball.velocity.y = rsoccer_ball.v_y
 
-        ball = RSoccerUtils.to_ball(frame.ball)
+        return ball
+    
+    @staticmethod
+    def set_field_by_frame(
+        field: Field,
+        frame: Frame,
+        is_yellow_team: bool
+    ):
+        RSoccerUtils.set_ball(field.ball, frame.ball)
 
-        blue_team = [RSoccerUtils.to_robot(frame.robots_blue[i]) for i in frame.robots_blue]
-        yellow_team = [RSoccerUtils.to_robot(frame.robots_yellow[i]) for i in frame.robots_yellow]
+        robots = frame.robots_yellow if is_yellow_team else frame.robots_blue
+        foes = frame.robots_blue if is_yellow_team else frame.robots_yellow
 
-        field_data.ball = ball
+        for item in robots:
+            RSoccerUtils.set_robot(
+                field._robots[item],
+                robots[item]
+            )
 
-        if is_yellow_team:
-            field_data.robots = yellow_team
-            field_data.foes = blue_team
-        else:
-            field_data.robots = blue_team
-            field_data.foes = yellow_team
+        for item in foes:
+            RSoccerUtils.set_robot(
+                field._foes[item],
+                foes[item]
+            )
 
-        return field_data
+        return field
     
     @staticmethod
     def _get_rendering_frame_by_frame(frame: Frame):
@@ -212,8 +254,8 @@ class RSoccerUtils:
         max_v = Configuration.rsoccer_training_max_v
         v_wheel_deadzone = Configuration.rsoccer_robot_speed_dead_zone_meters_seconds
 
-        left_wheel_speed = actions[0] * max_v
-        right_wheel_speed = actions[1] * max_v
+        left_wheel_speed = actions[1] * max_v
+        right_wheel_speed = actions[0] * max_v
 
         left_wheel_speed, right_wheel_speed = np.clip(
             (left_wheel_speed, right_wheel_speed),
@@ -236,4 +278,4 @@ class RSoccerUtils:
         left_wheel_speed /= rbt_wheel_radius
         right_wheel_speed /= rbt_wheel_radius
 
-        return right_wheel_speed, left_wheel_speed
+        return left_wheel_speed, right_wheel_speed

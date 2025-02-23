@@ -1,7 +1,9 @@
 from .pose_2d import Pose2D
 
 class Robot():
-    def __init__(self):
+    def __init__(self, id, active):
+        self.id = id
+        self.active = active
         self.position = Pose2D()
         self.velocity = Pose2D()
 

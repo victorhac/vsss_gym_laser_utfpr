@@ -109,7 +109,10 @@
             "path": "models/defender/PPO/2025_1_3_23_6_42/interrupted_model.zip"
         },
         "goalkeeper": {
-            "path": "models/goalkeeper/PPO/2025_1_4_18_57_50/PPO_model_task_1_update_100_102286296_steps.zip"
+            "path": "models/goalkeeper/PPO/2025_1_25_18_2_1/PPO_model_task_1_update_100_36667946_steps.zip"
+        },
+        "team": {
+            "path": "models/team/PPO/2025_1_28_15_59_44/PPO_model_task_4_update_100_30487800_steps.zip"
         }
     },
     "game": {
@@ -164,12 +167,12 @@
                             "y": 0
                         },
                         "0": {
-                            "x": 0.3,
+                            "x": 0.25,
                             "y": 0
                         },
                         "1": {
                             "x": -0.1,
-                            "y": 0
+                            "y": 0.5
                         },
                         "2": {
                             "x": -0.7,
@@ -185,11 +188,11 @@
                         },
                         "0": {
                             "x": 0.1,
-                            "y": 0.2
+                            "y": 0.3
                         },
                         "1": {
                             "x": 0.1,
-                            "y": -0.2
+                            "y": -0.3
                         },
                         "2": {
                             "x": -0.7,
@@ -350,11 +353,11 @@
                             "y": 0
                         },
                         "0": {
-                            "x": -0.2,
+                            "x": -0.3,
                             "y": 0
                         },
                         "1": {
-                            "x": -0.45,
+                            "x": -0.5,
                             "y": 0
                         },
                         "2": {
@@ -366,21 +369,36 @@
             }
         }
     },
-    "positioning": {
-        "default-supporter": {
-            "distance-to-wall": 0.1,
-            "x-step-count": 10,
-            "y-step-count": 10,
-            "ball-min-distance": 0.3,
-            "robot-min-distance": 0.2,
-            "considered-robot-distance": 0.4,
-            "distance-behind-ball": 0.1,
-            "weights": {
-                "distance-to-robot": 0.3,
-                "distance-to-position": 0.2,
-                "distance-to-ball": 0.2,
-                "distance-to-goal": 0.3
-            }
+    "supporter": {
+        "distance-to-wall": 0.1,
+        "x-step-count": 10,
+        "y-step-count": 10,
+        "ball-min-distance": 0.3,
+        "robot-min-distance": 0.2,
+        "considered-robot-distance": 0.4,
+        "distance-behind-ball": 0.1,
+        "weights": {
+            "distance-to-robot": 0.3,
+            "distance-to-position": 0.2,
+            "distance-to-ball": 0.2,
+            "distance-to-goal": 0.3
+        },
+        "univector-field-navigation": {
+            "de": 0.0537,
+            "kr": 0.0415,
+            "k0": 0.0012,
+            "dmin": 0.0948,
+            "gaussian-delta": 0.0457
         }
+    },
+    "univector-field-navigation": {
+        "de": 0.0537,
+        "kr": 0.0415,
+        "k0": 1.5,
+        "dmin": 0.0348,
+        "gaussian-delta": 0.0557
+    },
+    "team": {
+        "max-motor-speed": 30
     }
 }
