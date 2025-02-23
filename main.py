@@ -10,7 +10,7 @@ from lib.domain.enums.foul_enum import FoulEnum
 from lib.domain.field import Field
 from lib.domain.referee_message import RefereeMessage
 from lib.domain.robot import Robot
-from lib.positioning.default_supporter_positioning import get_supporter_position
+from lib.supporter.default_supporter import get_supporter_speeds
 from lib.state_machine.game_state_machine import GameStateMachine
 from lib.utils.configuration_utils import ConfigurationUtils
 from lib.utils.field_utils import FieldUtils
@@ -69,23 +69,6 @@ def get_goalkeeper_speeds(
         goalkeeper_model
     )
 
-def get_supporter_speeds(
-    field: Field,
-    robot_id: int
-):
-    robot = field.get_robot_by_id(robot_id)
-    position = get_supporter_position(robot_id, field)
-    obstacles = FieldUtils.to_obstacles_except_current_robot_and_ball(
-        field,
-        robot_id
-    )
-
-    return MotionUtils.go_to_point_univector(
-        robot,
-        position,
-        obstacles
-    )
-
 def get_team_actions(field: Field):
     return TeamUtils.get_observation_by_field(field)
 
@@ -108,10 +91,8 @@ def team_coordinated_normal_play(field: Field):
             left_speed, right_speed = get_defender_speeds(field, i)
         elif action[i] == 2:
             left_speed, right_speed = get_goalkeeper_speeds(field, i)
-        elif action[i] == 3:
-            left_speed, right_speed = get_supporter_speeds(field, i)
         else:
-            print(action[i])
+            left_speed, right_speed = get_supporter_speeds(i, field)
 
         robot_commands.append(RobotCommand(left_speed, right_speed))
 
@@ -164,7 +145,8 @@ def go_to_point_command(
     left_speed, right_speed = MotionUtils.go_to_point_univector(
         robot,
         point,
-        obstacles
+        obstacles,
+        desired_theta=0
     )
 
     return RobotCommand(left_speed, right_speed), 0
@@ -203,7 +185,6 @@ def perform(
 ):
     machine.set_state_by_referee_message(message)
     state = machine.get_state()
-    is_left_team = Configuration.firasim_team_is_yellow_left_team == is_yellow_team
     
     def get_state_name(
         foul_enum: FoulEnum,
@@ -216,9 +197,9 @@ def perform(
         )
 
     if state == get_state_name(FoulEnum.FREE_KICK, is_yellow_team):
-        commands = free_kick_team(is_yellow_team, is_left_team, field)
+        commands = free_kick_team(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.FREE_KICK, not is_yellow_team):
-        commands = free_kick_foe_team(is_yellow_team, is_left_team, field)
+        commands = free_kick_foe_team(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.PENALTY_KICK, is_yellow_team):
         commands = penalty_kick_team(is_yellow_team, field)
     elif state == get_state_name(FoulEnum.PENALTY_KICK, not is_yellow_team):
@@ -252,10 +233,9 @@ def perform(
 
 def free_kick_team(
     is_yellow_team: bool,
-    is_left_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_free_kick_team_positionings(is_left_team)
+    positionings = Configuration.game_states_free_kick_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -264,10 +244,9 @@ def free_kick_team(
 
 def free_kick_foe_team(
     is_yellow_team: bool,
-    is_left_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_free_kick_foe_team_positionings(is_left_team)
+    positionings = Configuration.game_states_free_kick_foe_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -278,7 +257,7 @@ def penalty_kick_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_penalty_kick_team_positionings()
+    positionings = Configuration.game_states_penalty_kick_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -289,7 +268,7 @@ def penalty_kick_foe_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_penalty_kick_foe_team_positionings()
+    positionings = Configuration.game_states_penalty_kick_foe_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -300,7 +279,7 @@ def goal_kick_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_goal_kick_team_positionings()
+    positionings = Configuration.game_states_goal_kick_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -311,7 +290,7 @@ def goal_kick_foe_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_goal_kick_foe_team_positionings()
+    positionings = Configuration.game_states_goal_kick_foe_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -336,7 +315,7 @@ def kickoff_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_kickoff_team_positionings()
+    positionings = Configuration.game_states_kickoff_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -347,7 +326,7 @@ def kickoff_foe_team(
     is_yellow_team: bool,
     field: Field
 ):
-    positionings = ConfigurationUtils.get_game_states_kickoff_foe_team_positionings()
+    positionings = Configuration.game_states_kickoff_foe_team_positionings
     return positioning(
         is_yellow_team,
         positionings,
@@ -396,8 +375,6 @@ update_thread = threading.Thread(target=update)
 def main():
     update_thread.start()
     while True:
-        print(referee_message.foul_enum)
-
         blue_command = perform(
             False,
             blue_field,

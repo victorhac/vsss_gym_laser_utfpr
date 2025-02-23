@@ -1,14 +1,14 @@
 from lib.builders.robot_curriculum_behavior_builder import RobotCurriculumBehaviorBuilder
-from lib.domain.ball_curriculum_behavior import BallCurriculumBehavior
-from lib.domain.curriculum_task import CurriculumTask
+from lib.curriculum.ball_curriculum_behavior import BallCurriculumBehavior
+from lib.curriculum.curriculum_task import CurriculumTask
 from lib.domain.enums.robot_curriculum_behavior_enum import RobotCurriculumBehaviorEnum
 from lib.domain.enums.role_enum import RoleEnum
-from lib.position_setup.area_except_goal_area_position_setup import AreaExceptGoalAreaPositionSetup
-from lib.position_setup.area_position_setup import AreaPositionSetup
-from lib.position_setup.goal_area_position_setup import GoalAreaPositionSetup
-from lib.position_setup.position_setup import PositionSetup
-from lib.position_setup.relative_to_ball_position_setup import RelativeToBallPositionSetup
-from lib.position_setup.relative_to_goal_position_setup import RelativeToGoalPositionSetup
+from lib.curriculum.position_setup.area_except_goal_area_position_setup import AreaExceptGoalAreaPositionSetup
+from lib.curriculum.position_setup.area_position_setup import AreaPositionSetup
+from lib.curriculum.position_setup.goal_area_position_setup import GoalAreaPositionSetup
+from lib.curriculum.position_setup.position_setup import PositionSetup
+from lib.curriculum.position_setup.relative_to_ball_position_setup import RelativeToBallPositionSetup
+from lib.curriculum.position_setup.relative_to_goal_position_setup import RelativeToGoalPositionSetup
 
 class AttackerBehaviorUtils:
     @staticmethod
@@ -152,8 +152,8 @@ class AttackerBehaviorUtils:
     def get_task_5(
         update_count: int = 0,
         updates_per_task: int = 100,
-        default_threshold: float = .5,
-        games_count: int = 200
+        games_count: int = 200,
+        default_threshold: float = .5
     ):
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(
@@ -207,8 +207,8 @@ class AttackerBehaviorUtils:
     def get_task_6(
         update_count: int = 0,
         updates_per_task: int = 100,
-        default_threshold: float = .4,
-        games_count: int = 200
+        games_count: int = 200,
+        default_threshold: float = .4
     ):
         behaviors = [
             AttackerBehaviorUtils.get_own_team_from_model_behavior(

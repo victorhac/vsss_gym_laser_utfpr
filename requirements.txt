@@ -1,5 +1,5 @@
-stable_baselines3
+stable_baselines3==2.3.2
 stable_baselines3[extra]
-ipywidgets
-tqdm
-transitions
+ipywidgets==8.1.5
+tqdm==4.66.5
+transitions==0.9.2

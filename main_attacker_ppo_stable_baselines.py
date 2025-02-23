@@ -2,7 +2,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.monitor import Monitor
 
-from lib.domain.behavior_callback import BehaviorCallback
+from lib.curriculum.behavior_callback import BehaviorCallback
 from lib.environment.attacker_environment import AttackerEnvironment
 from lib.utils.behavior.attacker_behavior_utils import AttackerBehaviorUtils
 

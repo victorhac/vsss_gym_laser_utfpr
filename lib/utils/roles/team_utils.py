@@ -122,8 +122,9 @@ class TeamUtils:
     def get_action_by_field(
         field: Field,
         model: PPO,
-        start_time: float
+        start_time: float,
+        deterministic: bool = True
     ):
         observation = TeamUtils.get_observation_by_field(field, start_time)
 
-        return model.predict(observation)[0]
+        return model.predict(observation, deterministic=deterministic)[0]

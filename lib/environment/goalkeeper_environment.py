@@ -1,7 +1,7 @@
 import numpy as np
 from gymnasium.spaces import Box
 from rsoccer_gym.Entities import Robot
-from lib.domain.curriculum_task import CurriculumTask
+from lib.curriculum.curriculum_task import CurriculumTask
 from lib.environment.base_curriculum_environment import BaseCurriculumEnvironment
 from lib.utils.geometry_utils import GeometryUtils
 from lib.utils.rsoccer.rsoccer_utils import RSoccerUtils
@@ -251,3 +251,31 @@ class GoalkeeperEnvironment(BaseCurriculumEnvironment):
         distance_to_target = abs(robot.y - y_target)
 
         return (1 - distance_to_target / max_distance) * 2 - 1
+
+    def _actions_to_v_wheels(
+        self,
+        actions: np.ndarray
+    ):
+        left_wheel_speed = actions[1] * self.max_v
+        right_wheel_speed = actions[0] * self.max_v
+
+        left_wheel_speed, right_wheel_speed = np.clip(
+            (left_wheel_speed, right_wheel_speed),
+            -self.max_v,
+            self.max_v)
+
+        factor = self._get_velocity_factor()
+
+        left_wheel_speed *= factor
+        right_wheel_speed *= factor
+
+        if abs(left_wheel_speed) < self.v_wheel_deadzone:
+            left_wheel_speed = 0
+
+        if abs(right_wheel_speed) < self.v_wheel_deadzone:
+            right_wheel_speed = 0
+
+        left_wheel_speed /= self.field_params.rbt_wheel_radius
+        right_wheel_speed /= self.field_params.rbt_wheel_radius
+
+        return left_wheel_speed, right_wheel_speed

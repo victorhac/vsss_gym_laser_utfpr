@@ -1,15 +1,13 @@
 from stable_baselines3 import PPO
 import uuid
 from configuration.configuration import Configuration
+from lib.domain.enums.role_enum import RoleEnum
 
 def _load_ppo_model(model_path: str):
     return PPO.load(model_path)
 
 def _get_attacker_model():
     return _load_ppo_model(Configuration.model_attacker_path)
-
-def _get_attacker_v2_model():
-    return _load_ppo_model(Configuration.model_attacker_v2_path)
 
 def _get_defender_model():
     return _load_ppo_model(Configuration.model_defender_path)
@@ -27,7 +25,6 @@ class StoredModel:
 
 class ModelUtils:
     _attacker_model = None
-    _attacker_v2_model = None
     _defender_model = None
     _goalkeeper_model = None
     _team_model = None
@@ -38,12 +35,6 @@ class ModelUtils:
         if ModelUtils._attacker_model is None:
             ModelUtils._attacker_model = _get_attacker_model()
         return ModelUtils._attacker_model
-
-    @staticmethod
-    def attacker_v2_model():
-        if ModelUtils._attacker_v2_model is None:
-            ModelUtils._attacker_v2_model = _get_attacker_v2_model()
-        return ModelUtils._attacker_v2_model
 
     @staticmethod
     def defender_model():
@@ -64,6 +55,16 @@ class ModelUtils:
         return ModelUtils._team_model
     
     @staticmethod
+    def get_model_by_role_enum(role_enum: RoleEnum):
+        if role_enum == RoleEnum.ATTACKER:
+            return ModelUtils.attacker_model()
+        elif role_enum == RoleEnum.DEFENDER:
+            return ModelUtils.defender_model()
+        elif role_enum == RoleEnum.GOALKEEPER:
+            return ModelUtils.goalkeeper_model()
+        return None
+    
+    @staticmethod
     def get_id():
         id = str(uuid.uuid4())
         ModelUtils._model_dictionary[id] = StoredModel()
@@ -81,6 +82,7 @@ class ModelUtils:
 
         if item.path != path:
             item.path = path
+            del item.model
             item.model = _load_ppo_model(path)
 
         return item.model

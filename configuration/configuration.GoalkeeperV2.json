@@ -1,8 +1,0 @@
-{
-    "rsoccer": {
-        "training": {
-            "time-step": 0.025,
-            "episode-duration": 15
-        }
-    }
-}

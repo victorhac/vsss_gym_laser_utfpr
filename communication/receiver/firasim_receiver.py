@@ -1,6 +1,7 @@
 from communication.protobuf.firasim import packet_pb2
 from communication.receiver.socket_receiver import SocketReceiver
 from configuration.configuration import Configuration
+from lib.utils.field_utils import FieldUtils
 from lib.utils.firasim_utils import FIRASimUtils
 
 from lib.domain.field import Field
@@ -77,8 +78,42 @@ class FirasimReceiver(SocketReceiver):
         if 'ball' in raw_data_dict:
             self._entity_from_dict(field.ball, raw_data_dict['ball'])
 
-        for i in range(len(team_list_of_dicts)):
-            self._entity_from_dict(field._robots[i], team_list_of_dicts[i])
+        self._team_from_dict(
+            team_list_of_dicts,
+            self.field._robots
+        )
 
-        for i in range(len(foes_list_of_dicts)):
-            self._entity_from_dict(field._foes[i], foes_list_of_dicts[i])
+        self._team_from_dict(
+            foes_list_of_dicts,
+            self.field._foes
+        )
+
+    def _is_robot_inside_field(
+        self,
+        robot: Robot
+    ):
+        return FieldUtils.is_inside_field(
+            robot.position.x,
+            robot.position.y,
+            Configuration.field_length,
+            Configuration.field_width,
+            Configuration.field_goal_width,
+            Configuration.field_goal_depth
+        )
+
+    def _team_from_dict(
+        self,
+        team_list_of_dicts: list,
+        robots: list
+    ):
+        robot_ids = [robot.get('robotId', 0) for robot in team_list_of_dicts]
+
+        for i in range(len(team_list_of_dicts)):
+            data_dict = team_list_of_dicts[i]
+            robot_id = data_dict.get('robotId', 0)
+            self._entity_from_dict(robots[robot_id], data_dict)
+
+        for i in range(len(robots)):
+            robot = robots[i]
+            if i not in robot_ids or not self._is_robot_inside_field(robot):
+                robot.active = False
